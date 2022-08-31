@@ -108,7 +108,7 @@ def minimize_difference(all_pn: PenaltyNode):
 
 
 def prepare_ocp(
-        biorbd_model_path: str = "Piano_final_version.bioMod",
+        biorbd_model_path: str = "Piano_final_version_with_thorax_2.bioMod",
         ode_solver: OdeSolver = OdeSolver.RK4(),
         long_optim: bool = False,
 ) -> OptimalControlProgram:
