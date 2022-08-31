@@ -108,7 +108,7 @@ def minimize_difference(all_pn: PenaltyNode):
 
 
 def prepare_ocp(
-        biorbd_model_path: str = "Piano_final_version.bioMod",
+        biorbd_model_path: str = "Piano_final_version_with_thorax_2.bioMod",
         ode_solver: OdeSolver = OdeSolver.RK4(),
         long_optim: bool = False,
 ) -> OptimalControlProgram:
@@ -129,15 +129,14 @@ def prepare_ocp(
     The OptimalControlProgram ready to be solved
     """
 
-    biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
-                    biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path))
+    biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path))
 
     # Problem parameters
     if long_optim:
         n_shooting = (25, 25, 25, 25)
     else:
         n_shooting = (15, 15, 15, 15, 15)
-    final_time = (mean_time_phase_0, mean_time_phase_1, mean_time_phase_2, mean_time_phase_3, mean_time_phase_4)
+    final_time = (mean_time_phase_0, mean_time_phase_1, mean_time_phase_2)
     tau_min, tau_max, tau_init = -200, 200, 0
 
     # Add objective functions
@@ -145,8 +144,6 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=0)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=1)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=2)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=3)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=4)
 
     # Objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q",weight=100)
 
@@ -191,27 +188,10 @@ def prepare_ocp(
                             weight=10000, phase=2
                             )
 
-    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
-                            custom_type=ObjectiveFcn.Mayer,
-                            node=Node.END,
-                            first_marker="middle_hand",
-                            second_marker="accord_3_haut",
-                            weight=10000, phase=3
-                            )
-
-    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
-                            custom_type=ObjectiveFcn.Mayer,
-                            node=Node.END,
-                            first_marker="middle_hand",
-                            second_marker="accord_1_haut",
-                            weight=10000, phase=4
-                            )
 
     # Dynamics
     dynamics = DynamicsList()
     expand = False if isinstance(ode_solver, OdeSolver.IRK) else True
-    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, expand=expand)
-    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, expand=expand)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, expand=expand)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, expand=expand)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, expand=expand)
@@ -227,10 +207,6 @@ def prepare_ocp(
                     second_marker="accord_2_haut", phase=1)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
                     second_marker="accord_3_haut", phase=2)
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
-                    second_marker="accord_3_haut", phase=3)
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
-                    second_marker="accord_1_haut", phase=4)
 
     # Target velocity z , with min bound = mean vel z - stdev and max bound = mean vel z + stdev
 
@@ -249,43 +225,34 @@ def prepare_ocp(
                     max_bound=stdev_vel_z_3,
                     node=Node.END, phase=2, axes=Axis.Z, marker_index=0)
 
-    constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_4, min_bound=-stdev_vel_z_4,
-                    max_bound=stdev_vel_z_4,
-                    node=Node.END, phase=3, axes=Axis.Z, marker_index=0)
-    constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_5, min_bound=-stdev_vel_z_5,
-                    max_bound=stdev_vel_z_5,
-                    node=Node.END, phase=4, axes=Axis.Z, marker_index=0)
+
 
     # Path constraint
     x_bounds = BoundsList()
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
-    x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
-    x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
+
 
     # Initial guess
     x_init = InitialGuessList()
     x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
     x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
     x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
-    x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
-    x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
+
 
     # Define control path constraint
     u_bounds = BoundsList()
     u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
     u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
     u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
-    u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
-    u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
+
 
     u_init = InitialGuessList()
     u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
     u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
     u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
-    u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
-    u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
+
 
     return OptimalControlProgram(
         biorbd_model,
