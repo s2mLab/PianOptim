@@ -367,7 +367,9 @@ def prepare_ocp(
                     second_marker="accord_1_haut", phase=9)
     constraints.add(ConstraintFcn.TRACK_MARKERS, min_bound=0, node=Node.ALL, axes=Axis.Z, marker_index=0)
 
-    # Constraints on the velocity z of the hand (marker middle_hand has index 0):
+    # Constraints on the velocity z of the marker of the hand (marker middle_hand has index 0):
+    # With: target = valeur a cibler
+    # Bounds = limit
 
     constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_0, min_bound=-stdev_vel_z_0,
                     max_bound=stdev_vel_z_0, node=Node.MID, phase=0, axes=Axis.Z, marker_index=0)
