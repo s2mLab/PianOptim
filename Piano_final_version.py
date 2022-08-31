@@ -1,6 +1,11 @@
 "Pianoptim "
+
+import sys
+sys.path.append("/home/lim/Documents/Stage_mathilde/programation/bioptim")
+
 import biorbd_casadi as biorbd
 import numpy as np
+
 from bioptim import (
     PenaltyNode,
     OptimalControlProgram,
