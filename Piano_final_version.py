@@ -27,27 +27,6 @@ from bioptim import (
 
 # Constants from data collect
 # mean positions and mean velocities of the right hand of subject 134 for 5 events, calculated for 30 cycles
-vel_x_0 = 0.52489776
-vel_x_1 = -0.00321311
-vel_x_2 = 0.64569518
-vel_x_3 = 0.04628122
-vel_x_4 = -0.01133422
-vel_x_5 = 0.31271958
-
-vel_y_0 = 0.54408214
-vel_y_1 = 0.01283999
-vel_y_2 = 0.28540601
-vel_y_3 = 0.02580192
-vel_y_4 = 0.09021791
-vel_y_5 = 0.42298668
-
-vel_z_0 = 0.7477114
-vel_z_1 = 0.17580993
-vel_z_2 = 0.6360936
-vel_z_3 = 0.3468823
-vel_z_4 = -0.03609537
-vel_z_5 = 0.38915613
-
 pos_x_0 = 0.10665989
 pos_x_1 = 0.25553592
 pos_x_2 = 0.26675006
@@ -68,6 +47,27 @@ pos_z_2 = 2.76575107
 pos_z_3 = 2.73511557
 pos_z_4 = 2.72985087
 pos_z_5 = 2.75654283
+
+vel_x_0 = 0.52489776
+vel_x_1 = -0.00321311
+vel_x_2 = 0.64569518
+vel_x_3 = 0.04628122
+vel_x_4 = -0.01133422
+vel_x_5 = 0.31271958
+
+vel_y_0 = 0.54408214
+vel_y_1 = 0.01283999
+vel_y_2 = 0.28540601
+vel_y_3 = 0.02580192
+vel_y_4 = 0.09021791
+vel_y_5 = 0.42298668
+
+vel_z_0 = 0.7477114
+vel_z_1 = 0.17580993
+vel_z_2 = 0.6360936
+vel_z_3 = 0.3468823
+vel_z_4 = -0.03609537
+vel_z_5 = 0.38915613
 
 stdev_vel_x_0 = 0.12266391
 stdev_vel_x_1 = 0.05459328
