@@ -22,13 +22,13 @@ segment thorax
         1.4745	0.000000	0.000000
         0.000000	0.7555	0.000000
         0.000000	0.000000	1.4314
-     meshfile thorax.vtp
+     meshfile mesh_files/thorax.vtp
 endsegment
 
 
 segment spine
 	parent	thorax
-     meshfile hat_spine.vtp
+     meshfile mesh_files/hat_spine.vtp
 endsegment
 
 
@@ -58,7 +58,7 @@ segment clavicle_right
         0              0               0                1
     mass 0.2
     com -0.0127205 0.00849541 0.0659846
-    meshfile clavicle.vtp
+    meshfile mesh_files/clavicle.vtp
 endsegment
 
 segment scapula_effector_right
@@ -75,28 +75,28 @@ segment scapula_right
     RT 0.52 -0.52 0 xyz 0 0 0
     mass 0.5
     com -0.072 -0.039 -0.065
-    meshfile scapula.vtp
+    meshfile mesh_files/scapula.vtp
 endsegment
 
 
 
 segment humerus_right
-    parent scapula_right
-    RT 0 0 0 xyz -0.00955 -0.034 0.009
-	 rotations xyz
+    parent scapula_right                        // segment parent
+    RT 0 0 0 xyz -0.00955 -0.034 0.009          // roto-translation et coordonnees
+	 rotations xyz                              // degres de liberte
 
-	ranges
+	ranges                                      // limites d angles de rotation des ddl
 	    -pi/2 0.1
         -pi/2 pi/2
         -pi/4 pi
 
-    mass 2.0325
-    com 0 -0.164502 0
+    mass 2.0325                                 // masse en kg du segment
+    com 0 -0.164502 0                           // coordonnes du center of mass
     inertia
-        0.011946 0 0
+        0.011946 0 0                            // matrice d inertie du segment
         0 0.004121 0
         0 0 0.013409
-    meshfile humerus.vtp
+    meshfile mesh_files/humerus.vtp             // fichier .vpt pour obtenir un maillage visuel
 endsegment
 
 
@@ -126,7 +126,7 @@ segment ulna_right
         0.002962 0 0
         0 0.000618 0
         0 0 0.003213
-    meshfile ulna.vtp
+    meshfile mesh_files/ulna.vtp
 endsegment
 
 
@@ -157,7 +157,7 @@ segment radius_right
         0.002962 0 0
         0 0.000618 0
         0 0 0.003213
-    meshfile radius.vtp
+    meshfile mesh_files/radius.vtp
 endsegment
 
 
