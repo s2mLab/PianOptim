@@ -286,9 +286,7 @@ def main():
 
     print('temps de resolution : ', time.time() - tic)
     ocp.print(to_console=False, to_graph=False)
-    # to solve solutions # to check
-    # import numpy as np
-    # np.savetxt('data.csv')
+
 
     # --- Show results --- #
     sol.animate()
