@@ -281,8 +281,15 @@ def main():
     # --- Solve the program --- #
     solv = Solver.IPOPT(show_online_optim=True)
     solv.set_linear_solver("ma57")
+    tic = time.time()
     sol = ocp.solve(solv)
+
+    print('temps de resolution : ', time.time() - tic)
     ocp.print(to_console=False, to_graph=False)
+    # to solve solutions # to check
+    # import numpy as np
+    # np.savetxt('data.csv')
+
     # --- Show results --- #
     sol.animate()
     sol.print()
