@@ -16,20 +16,20 @@ segment pelvis
 		0	0	-1	0
 		0	1	0	0
 		0	0	0	1
-	translations	xyz
-	rotations	XYZ
-        rangesQ -10   10
-                -5    5
-                -0.5  1.5
-                -pi/2 pi/2
-                -pi/4 pi/4
-                -pi/4 pi/4
-        rangesQdot -5      5
- 	               -5      5
-                   -5      5
-                   -5.2360 5.2360
-                   -5.2360 5.2360
-                   -5.2360 5.2360
+	// translations	xyz
+	rotations	ZY
+        rangesQ //-10   10
+                //-5    5
+                //-0.5  1.5
+                //-pi/2 pi/2
+                  -pi/4 pi/4
+                  -pi/4 pi/4
+        rangesQdot //-5      5
+ 	               //-5      5
+                   //-5      5
+                   //-5.2360 5.2360
+                     -5.2360 5.2360
+                     -5.2360 5.2360
 	mass	7.8384
 	inertia
 		0.058836	0	0
@@ -42,13 +42,14 @@ segment pelvis
 	mesh -0.17639	 0.012676	 0.0489
 	mesh -0.020816	-0.029674	 0.12337
 	mesh -0.020816	-0.029674	-0.12337
+
 endsegment
 
 segment thorax
     parent pelvis
      // translations xz
-    // rotations xyz
-     RT 0 0 0 xyz 0 0.36 0
+     // rotations z
+    RT 0 0 0 xyz 0 0.36 0
     ranges
         -0.1 0.1
         -0.1 0.1
@@ -100,14 +101,14 @@ endsegment
 
 
 segment scapula_effector_right
-    parent clavicle_right
-    // rotations xyz  // This correspond to a ZYX sequence
+      parent clavicle_right
+      // rotations xyz  // This correspond to a ZYX sequence
     // rotations xz
-    ranges
-        -0.5  0.1
+      -0.5  0.1
         -0.05 0.5
     RT -0.52 0.52 0 xyz -0.01433 0.02007 0.135535
 endsegment
+
 segment scapula_right
     parent scapula_effector_right
     RT 0.52 -0.52 0 xyz 0 0 0
