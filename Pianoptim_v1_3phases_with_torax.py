@@ -3,6 +3,7 @@
  ici on a : Y -» X , Z-» Y et X -» Z
  """
 import biorbd_casadi as biorbd
+import time
 from bioptim import (
     PenaltyNode,
     OptimalControlProgram,
