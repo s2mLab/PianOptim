@@ -2,7 +2,7 @@
 import bioviz
 
 
-model_path = "Piano_final_version_with_thorax_2.bioMod"
+model_path = "MATHILDE_Piano_final_version_with_pelvis.bioMod"
 
 b = bioviz.Viz(model_path)
 b.exec()
