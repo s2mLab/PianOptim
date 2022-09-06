@@ -36,21 +36,40 @@ segment pelvis
 		0	0.064617	0
 		0	0	0.064617
 	com	-0.093546	-0.028679	0
+endsegment
 
-	mesh -0.020816	-0.029674	-0.12337
-	mesh -0.17639	 0.012676	-0.0489
-	mesh -0.17639	 0.012676	 0.0489
-	mesh -0.020816	-0.029674	 0.12337
-	mesh -0.020816	-0.029674	-0.12337
+segment pelvis_r
+    parent pelvis
+     // translations xz
+     // rotations zy
+        RT 0 0 0 xyz 0.13 -0.07 0
+    meshfile mesh_files/r_pelvis_Rajagopal.vtp
+endsegment
 
+segment pelvis_l
+    parent pelvis
+     // translations xz
+     //rotations zy
+       RT 0 0 0 xyz 0.13 -0.07 0
+    meshfile mesh_files/l_pelvis_Rajagopal.vtp
+endsegment
+
+segment toraxoffset
+    parent pelvis
+     // translations xz
+     rotations zy
+    RT 0 0 0 xyz 0 0.13 0
+    ranges
+        -0.1 0.1
+        -0.1 0.1
 endsegment
 
 
 segment thorax
-    parent pelvis
+    parent toraxoffset
      // translations xz
-     rotations zy
-    RT 0 0 0 xyz 0 0.36 0
+     // rotations zy
+    RT 0 0 0 xyz 0.035 0.23 0
     ranges
         -0.1 0.1
         -0.1 0.1
@@ -63,8 +82,7 @@ segment thorax
      meshfile mesh_files/thorax.vtp
 endsegment
 
-
-segment spine
+segment hat_spine
 	parent	thorax
      meshfile mesh_files/hat_spine.vtp
 endsegment
@@ -98,7 +116,6 @@ segment clavicle_right
     com -0.0127205 0.00849541 0.0659846
     meshfile mesh_files/clavicle.vtp
 endsegment
-
 
 
 segment scapula_effector_right
