@@ -289,7 +289,7 @@ def main():
 
 
     # --- Show results --- #
-    sol.animate()
+    sol.animate(show_floor=False, show_global_ref_frame=False)
     sol.print()
 
 
