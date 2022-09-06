@@ -316,7 +316,7 @@ def main():
     sol = ocp.solve(solv)
     ocp.print(to_console=False, to_graph=False)
     # --- Show results --- #
-    sol.animate()
+    sol.animate(show_floor=False, show_global_ref_frame=False)
     sol.print()
 
 
