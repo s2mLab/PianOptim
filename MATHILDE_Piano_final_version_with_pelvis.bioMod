@@ -17,18 +17,18 @@ segment pelvis
 		0	1	0	0
 		0	0	0	1
 	// translations	xyz
-	rotations	ZY
+	rotations	z
         rangesQ //-10   10
                 //-5    5
                 //-0.5  1.5
                 //-pi/2 pi/2
-                  -pi/8 pi/8
+                //-pi/8 pi/8
                   -pi/8 pi/8
         rangesQdot //-5      5
  	               //-5      5
                    //-5      5
                    //-5.2360 5.2360
-                     -5.2360 5.2360
+                   //-5.2360 5.2360
                      -5.2360 5.2360
 	mass	7.8384
 	inertia
@@ -54,19 +54,20 @@ segment pelvis_l
     meshfile mesh_files/l_pelvis_Rajagopal.vtp
 endsegment
 
-segment toraxoffset
+segment thorax
     parent pelvis
      // translations xz
-     rotations zy
+     rotations xyz
     RT 0 0 0 xyz 0 0.13 0
     ranges
+        -0.1 0.1
         -0.1 0.1
         -0.1 0.1
 endsegment
 
 
-segment thorax
-    parent toraxoffset
+segment thorax_3D
+    parent thorax
      // translations xz
      // rotations zy
     RT 0 0 0 xyz 0.035 0.23 0
@@ -83,13 +84,13 @@ segment thorax
 endsegment
 
 segment hat_spine
-	parent	thorax
+	parent	thorax_3D
      meshfile mesh_files/hat_spine.vtp
 endsegment
 
 
 segment clavicle_effector_right
-    parent thorax
+    parent thorax_3D
     // rotations xyz  // This correspond to a YXZ sequence
    // rotations xy
     ranges

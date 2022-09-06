@@ -135,10 +135,14 @@ def prepare_ocp(
     # Problem parameters
     if long_optim:
         n_shooting = (25, 25, 25, 25)
+    # n_shooting = (35, 35, 35, 35)
     else:
         n_shooting = (15, 15, 15, 15, 15)
+    #    n_shooting = (25, 25, 25, 25, 25)
     final_time = (mean_time_phase_0, mean_time_phase_1, mean_time_phase_2)
     tau_min, tau_max, tau_init = -200, 200, 0
+  #  tau_min, tau_max, tau_init = -100, 100, 0
+
 
     # Add objective functions
     objective_functions = ObjectiveList()
@@ -162,7 +166,7 @@ def prepare_ocp(
                             node=Node.START,
                             first_marker="middle_hand",
                             second_marker="accord_1_haut",
-                            weight=10000, phase=0
+                            weight=40000, phase=0
                             )
 
     objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
@@ -170,7 +174,7 @@ def prepare_ocp(
                             node=Node.END,
                             first_marker="middle_hand",
                             second_marker="accord_2_haut",
-                            weight=10000, phase=0
+                            weight=40000, phase=0
                             )
 
     objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
@@ -178,7 +182,7 @@ def prepare_ocp(
                             node=Node.END,
                             first_marker="middle_hand",
                             second_marker="accord_2_haut",
-                            weight=10000, phase=1
+                            weight=40000, phase=1
                             )
 
     objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
@@ -186,7 +190,7 @@ def prepare_ocp(
                             node=Node.END,
                             first_marker="middle_hand",
                             second_marker="accord_3_haut",
-                            weight=10000, phase=2
+                            weight=40000, phase=2
                             )
 
 
@@ -290,7 +294,7 @@ def main():
 
     # --- Show results --- #
     sol.animate(show_floor=False, show_global_ref_frame=False)
-    sol.print()
+    sol.print_cost()
 
 
 if __name__ == "__main__":
