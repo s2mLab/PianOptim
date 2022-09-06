@@ -3,6 +3,7 @@
  ici on a : Y -» X , Z-» Y et X -» Z
  """
 import biorbd_casadi as biorbd
+import time
 from bioptim import (
     PenaltyNode,
     OptimalControlProgram,
@@ -313,8 +314,12 @@ def main():
     # --- Solve the program --- #
     solv = Solver.IPOPT(show_online_optim=True)
     solv.set_linear_solver("ma57")
+    tic = time.time()
     sol = ocp.solve(solv)
+
+    print('temps de resolution : ', time.time() - tic)
     ocp.print(to_console=False, to_graph=False)
+
     # --- Show results --- #
     sol.animate(show_floor=False, show_global_ref_frame=False)
     sol.print()
