@@ -547,7 +547,7 @@ marker accord_1_haut
 	    position 0.17 0 0.07
 	endmarker
 
-// use this if thumb and little finger are used
+/////// use this if thumb and little finger are used ///////
 /*
 marker accord_1_haut_a
     parent ground
@@ -645,7 +645,9 @@ marker accord_3_bas_b
 	endmarker
 */
 
+///// Use this if you want to use high intermediate markers /////
 
+/*
 marker m_inter0
     parent ground
     position 0.17 -0.075 0.16
@@ -666,5 +668,5 @@ marker m_inter2
 marker m_inter3
     parent ground
     position 0.17 -0.29 0.16
-endmarker
+endmarker */
 
