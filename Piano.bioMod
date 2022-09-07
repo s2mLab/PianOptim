@@ -1,5 +1,5 @@
 // The kinematics model originates from (https://simtk.org/projects/wu-shoulder), which is itself based on Holzbaur
-
+version 4
 
 gravity 0 0 -9.81
 
