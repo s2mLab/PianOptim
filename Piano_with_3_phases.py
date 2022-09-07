@@ -4,8 +4,8 @@
  """
 import biorbd_casadi as biorbd
 import time
-# import numpy as np
-# import pickle
+import numpy as np
+import pickle
 from bioptim import (
     PenaltyNode,
     OptimalControlProgram,
@@ -306,7 +306,7 @@ def main():
         param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp]
     )
 
-    with open("Piano.pckl", "wb") as file:
+    with open("Piano_pckl", "wb") as file:
         pickle.dump(data, file)
 
 
