@@ -3,6 +3,7 @@
  ici on a : Y -» X , Z-» Y et X -» Z
  """
 import biorbd_casadi as biorbd
+import time
 from bioptim import (
     PenaltyNode,
     OptimalControlProgram,
@@ -108,7 +109,7 @@ def minimize_difference(all_pn: PenaltyNode):
 
 
 def prepare_ocp(
-        biorbd_model_path: str = "Piano_final_version.bioMod",
+        biorbd_model_path: str = "Piano_with_thorax.bioMod",
         ode_solver: OdeSolver = OdeSolver.RK4(),
         long_optim: bool = False,
 ) -> OptimalControlProgram:
@@ -313,10 +314,14 @@ def main():
     # --- Solve the program --- #
     solv = Solver.IPOPT(show_online_optim=True)
     solv.set_linear_solver("ma57")
+    tic = time.time()
     sol = ocp.solve(solv)
+
+    print('temps de resolution : ', time.time() - tic)
     ocp.print(to_console=False, to_graph=False)
+
     # --- Show results --- #
-    sol.animate()
+    sol.animate(show_floor=False, show_global_ref_frame=False)
     sol.print()
 
 
