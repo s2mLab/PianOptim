@@ -4,6 +4,8 @@
  """
 import biorbd_casadi as biorbd
 import time
+import numpy as np
+import pickle
 from bioptim import (
     PenaltyNode,
     OptimalControlProgram,
@@ -109,7 +111,7 @@ def minimize_difference(all_pn: PenaltyNode):
 
 
 def prepare_ocp(
-        biorbd_model_path: str = "Piano_with_thorax.bioMod",
+        biorbd_model_path: str = "Piano.bioMod",
         ode_solver: OdeSolver = OdeSolver.RK4(),
         long_optim: bool = False,
 ) -> OptimalControlProgram:
@@ -324,6 +326,16 @@ def main():
     sol.animate(show_floor=False, show_global_ref_frame=False)
     sol.print()
 
+    data = dict(
+        states=sol.states, controls=sol.controls, parameters=sol.parameters,
+        iterations=sol.iterations,
+        cost=np.array(sol.cost)[0][0], detailed_cost=sol.detailed_cost,
+        real_time_to_optimize=sol.real_time_to_optimize,
+        param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp]
+    )
+
+    with open("Piano.pckl", "wb") as file:
+        pickle.dump(data, file)
 
 if __name__ == "__main__":
     main()
