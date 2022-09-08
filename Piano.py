@@ -334,7 +334,7 @@ def main():
         param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp]
     )
 
-    with open("Piano_pickle_file", "wb") as file:
+    with open("Piano_results.pckl", "wb") as file:
         pickle.dump(data, file)
 
 
