@@ -295,8 +295,8 @@ def main():
 
 
     # --- Show results --- #
-    sol.animate(show_floor=False, show_global_ref_frame=False)
-    sol.print_cost()
+    # sol.animate(show_floor=False, show_global_ref_frame=False)
+    # sol.print_cost()
 
     data = dict(
         states=sol.states, controls=sol.controls, parameters=sol.parameters,
@@ -306,7 +306,7 @@ def main():
         param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp]
     )
 
-    with open("Piano_pckl", "wb") as file:
+    with open("Piano.pckl", "wb") as file:
         pickle.dump(data, file)
 
 
