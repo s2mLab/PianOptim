@@ -309,6 +309,7 @@ def main():
     with open("Piano_results_3_phases.pckl", "wb") as file:
         pickle.dump(data, file)
 
+  #  print(sol.controls['tau'])
 
 if __name__ == "__main__":
     main()
