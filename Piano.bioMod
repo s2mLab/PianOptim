@@ -15,19 +15,19 @@ segment pelvis
 		0	1	0	0
 		0	0	0	1
 	// translations	xyz
-	rotations	z
+	// rotations	z
         rangesQ //-10   10
                 //-5    5
                 //-0.5  1.5
                 //-pi/2 pi/2
                 //-pi/8 pi/8
-                  -pi/8 pi/8
+                // -pi/8 pi/8
         rangesQdot //-5      5
  	               //-5      5
                    //-5      5
                    //-5.2360 5.2360
                    //-5.2360 5.2360
-                     -5.2360 5.2360
+                   // -5.2360 5.2360
 	mass	7.8384
 	inertia
 		0.058836	0	0
@@ -55,7 +55,7 @@ endsegment
 segment thorax
     parent pelvis
      // translations xz
-     rotations xyz
+     // rotations xyz
     RT 0 0 0 xyz 0 0.13 0
     ranges
         -0.1 0.1
@@ -219,7 +219,7 @@ endsegment
 
 segment hand_right
    parent radius_right
-    RT 0 0 0 xyz 0.0171148952815322 -0.230100258785044 0.023770687891017
+    RT 0 0 0 xyz 0.023770687891017 -0.230100258785044 0.0171148952815322
      rotations xz
 	ranges
 	   -pi/5 pi/12

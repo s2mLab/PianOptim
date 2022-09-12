@@ -306,10 +306,9 @@ def main():
         param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp]
     )
 
-    with open("Piano_results_3_phases.pckl", "wb") as file:
+    with open("Piano_results_3_phases_without_pelvis_rotZ_and_thorax.pckl", "wb") as file:
         pickle.dump(data, file)
 
-  #  print(sol.controls['tau'])
 
 if __name__ == "__main__":
     main()
