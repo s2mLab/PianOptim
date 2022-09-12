@@ -292,19 +292,19 @@ def main():
 
 
     # # --- Show results --- #
-    # sol.animate(show_floor=False, show_global_ref_frame=False)
-    # sol.print_cost()
+    sol.animate(show_floor=False, show_global_ref_frame=False)
+    sol.print_cost()
 
-    data = dict(
-        states=sol.states, controls=sol.controls, parameters=sol.parameters,
-        iterations=sol.iterations,
-        cost=np.array(sol.cost)[0][0], detailed_cost=sol.detailed_cost,
-        real_time_to_optimize=sol.real_time_to_optimize,
-        param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp]
-    )
-
-    with open("Piano_results_3_phases_without_pelvis_rotZ_and_thorax.pckl", "wb") as file:
-        pickle.dump(data, file)
+    # data = dict(
+    #     states=sol.states, controls=sol.controls, parameters=sol.parameters,
+    #     iterations=sol.iterations,
+    #     cost=np.array(sol.cost)[0][0], detailed_cost=sol.detailed_cost,
+    #     real_time_to_optimize=sol.real_time_to_optimize,
+    #     param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp]
+    # )
+    #
+    # with open("Piano_results_3_phases_without_pelvis_rotZ_and_thorax.pckl", "wb") as file:
+    #     pickle.dump(data, file)
 
 
 if __name__ == "__main__":
