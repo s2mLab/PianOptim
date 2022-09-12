@@ -140,7 +140,7 @@ def prepare_ocp(
     else:
         n_shooting = (15, 15, 15, 15, 15)
     final_time = (mean_time_phase_0, mean_time_phase_1, mean_time_phase_2)
-    tau_min, tau_max, tau_init = -100, 100, 0
+    tau_min, tau_max, tau_init = -200, 200, 0
 
     # Add objective functions # Torques generated into articulations
     # weight : you want to minimize a lot = 10000, to minimize less = 50
@@ -274,7 +274,7 @@ def prepare_ocp(
         objective_functions,
         constraints,
         ode_solver=ode_solver,
-        #  phase_transitions=phase_transitions,
+        # phase_transitions=phase_transitions,
     )
 
 
@@ -294,7 +294,8 @@ def main():
     print('temps de resolution : ', time.time() - tic)
     ocp.print(to_console=False, to_graph=False)
 
-    # --- Show results --- #
+
+    # # --- Show results --- #
     # sol.animate(show_floor=False, show_global_ref_frame=False)
     # sol.print_cost()
 
@@ -306,7 +307,7 @@ def main():
         param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp]
     )
 
-    with open("Piano_results_3_phases.pckl", "wb") as file:
+    with open("Piano_results_3_phases_without_pelvis_rotZ_and_thorax.pckl", "wb") as file:
         pickle.dump(data, file)
 
 

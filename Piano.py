@@ -358,8 +358,8 @@ def main():
     ocp.print(to_console=False, to_graph=False)
 
     # --- Show results --- #
-    sol.animate(show_floor=False, show_global_ref_frame=False)
-    sol.print()
+    # sol.animate(show_floor=False, show_global_ref_frame=False)
+    # sol.print()
 
     data = dict(
         states=sol.states, controls=sol.controls, parameters=sol.parameters,
