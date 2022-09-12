@@ -137,13 +137,10 @@ def prepare_ocp(
     # Problem parameters
     if long_optim:
         n_shooting = (25, 25, 25, 25)
-    # n_shooting = (35, 35, 35, 35)
     else:
         n_shooting = (15, 15, 15, 15, 15)
-    #    n_shooting = (25, 25, 25, 25, 25)
     final_time = (mean_time_phase_0, mean_time_phase_1, mean_time_phase_2)
     tau_min, tau_max, tau_init = -200, 200, 0
-  #  tau_min, tau_max, tau_init = -100, 100, 0
 
 
     # Add objective functions
@@ -273,7 +270,7 @@ def prepare_ocp(
         objective_functions,
         constraints,
         ode_solver=ode_solver,
-        #  phase_transitions=phase_transitions,
+        # phase_transitions=phase_transitions,
     )
 
 
@@ -294,7 +291,7 @@ def main():
     ocp.print(to_console=False, to_graph=False)
 
 
-    # --- Show results --- #
+    # # --- Show results --- #
     # sol.animate(show_floor=False, show_global_ref_frame=False)
     # sol.print_cost()
 
