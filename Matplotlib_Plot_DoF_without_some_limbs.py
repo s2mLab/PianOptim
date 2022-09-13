@@ -5,8 +5,9 @@ import numpy as np
 
 # Import results with pelvis rotZ
 with open("Piano_results.pckl",'rb') as file:new_dict = pickle.load(file)
-with open("Piano_results_without_pelvis_rotZ.pckl", 'rb') as file: new_dict2 = pickle.load(file)
-with open("Piano_results_without_pelvis_rotZ_and_thorax.pckl", 'rb') as file: new_dict3 = pickle.load(file)
+with open("Piano_minimisation_1_humerus.pckl", 'rb') as file: new_dict2 = pickle.load(file)
+# with open("Piano_minimisation_1_humerus_thorax.pckl", 'rb') as file: new_dict3 = pickle.load(file)
+# with open("Piano_minimisation_1_humerus_thorax_pelvis.pckl", 'rb') as file: new_dict4 = pickle.load(file)
 
 # Print the dic ###########################################
 # print(new_dict)
@@ -89,7 +90,7 @@ for i in range(0, 3):
         axs[i, j].axvline(x=0.36574653+0.10555556+0.40625+0.10387153, color='gray', linestyle='--')
 
 for ax in axs.flat:
-    ax.set(xlabel='Time', ylabel='q')
+    ax.set(xlabel='Time (s)', ylabel='q (rad)')
 
 
 figQ.suptitle('State q of each DoF depending of the time for multiple contexts', fontname="Times New Roman", fontweight="bold")
@@ -171,7 +172,7 @@ for i in range(0, 3):
         axs[i, j].axvline(x=0.36574653+0.10555556+0.40625, color='gray', linestyle='--')
         axs[i, j].axvline(x=0.36574653+0.10555556+0.40625+0.10387153, color='gray', linestyle='--')
 for ax in axs.flat:
-    ax.set(xlabel='Time', ylabel='Qdot')
+    ax.set(xlabel='Time (s)', ylabel='Qdot (rad.s⁻1)')
 figQdot.suptitle('Velocity Qdot of each DoF depending of the time for multiple contexts', fontname="Times New Roman", fontweight="bold")
 
 # legends
@@ -217,6 +218,7 @@ axs[1, 1].set_title("Tau_humerus_rotY_rotation_extern(-)/intern(+) \n")
 axs[1, 1].plot(T, U2[4, :], 'tab:blue')
 axs[1, 1].plot(T, U3[1, :], 'tab:orange')
 
+
 axs[1, 2].plot(T, U[6, :], 'tab:red')
 axs[1, 2].set_title("Tau_humerus_rotZ_extension(-)/flexion(+) \n")
 axs[1, 2].plot(T, U2[5, :], 'tab:blue')
@@ -252,7 +254,7 @@ for i in range(0, 3):
         axs[i, j].axvline(x=0.36574653+0.10555556+0.40625, color='gray', linestyle='--')
         axs[i, j].axvline(x=0.36574653+0.10555556+0.40625+0.10387153, color='gray', linestyle='--')
 for ax in axs.flat:
-    ax.set(xlabel='Time', ylabel='Tau')
+    ax.set(xlabel='Time (s)', ylabel='Tau (Nm)')
 figU.suptitle('Torque of each DoF depending of the time for multiple contexts', fontname="Times New Roman", fontweight="bold")
 figU.legend(loc="upper right", borderaxespad=0, title="Legend Titles", prop={"size": 8})
 
