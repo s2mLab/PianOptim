@@ -147,9 +147,9 @@ def prepare_ocp(
     objective_functions = ObjectiveList()
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=0)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=1)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=2)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=3)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=4)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=4000, phase=2)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=4000, phase=3)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=4000, phase=4)
 
     # Objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q",weight=100)
 
@@ -323,19 +323,19 @@ def main():
     ocp.print(to_console=False, to_graph=False)
 
     # --- Show results --- #
-    # sol.animate(show_floor=False, show_global_ref_frame=False)
-    # sol.print()
+    sol.animate(show_floor=False, show_global_ref_frame=False)
+    sol.print()
 
-    data = dict(
-        states=sol.states, controls=sol.controls, parameters=sol.parameters,
-        iterations=sol.iterations,
-        cost=np.array(sol.cost)[0][0], detailed_cost=sol.detailed_cost,
-        real_time_to_optimize=sol.real_time_to_optimize,
-        param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp]
-    )
-
-    with open("Piano_results.pckl", "wb") as file:
-        pickle.dump(data, file)
+    # data = dict(
+    #     states=sol.states, controls=sol.controls, parameters=sol.parameters,
+    #     iterations=sol.iterations,
+    #     cost=np.array(sol.cost)[0][0], detailed_cost=sol.detailed_cost,
+    #     real_time_to_optimize=sol.real_time_to_optimize,
+    #     param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp]
+    # )
+    #
+    # with open("Piano_results.pckl", "wb") as file:
+    #     pickle.dump(data, file)
 
 
 if __name__ == "__main__":
