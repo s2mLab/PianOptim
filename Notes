@@ -1,5 +1,5 @@
 
 # Minimiser le controle pour seulement un seul degré de liberté en rajoutant index [],
 # En sachant que :
-# ddl pelvis = 1 [0] # ddl thorax = 1 [1], 2 [2], 3 [3] # ddl l'humerus = 1 [4], 2 [5], 3 [6] # ddl ulna = 1 [7] # ddl radius = 1 [8] # ddl hand = 1 [9], 2 [10
+# ddl pelvis = 1 [0] # ddl thorax = 1 [1], 2 [2], 3 [3] # ddl l'humerus = 1 [4], 2 [5], 3 [6] # ddl ulna = 1 [7] # ddl radius = 1 [8] # ddl hand = 1 [9], 2 [10]
   objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=0, index=[3])
