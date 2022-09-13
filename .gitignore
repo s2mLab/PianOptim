@@ -129,3 +129,19 @@ dmypy.json
 .pyre/
 
 .idea/
+
+Piano_optimisation_minimalisation.py
+
+Piano_results_3_phases_without_pelvis_rotZ_and_thorax.pckl
+
+Piano_results_3_phases_without_pelvis_rotZ.pckl
+
+Piano_results_3_phases.pckl
+
+Piano_results_without_pelvis_rotZ_and_thorax.pckl
+
+Piano_results_without_pelvis_rotZ.pckl
+
+Piano_results.pckl
+
+Piano_with_3_phases_minimize_torque.py
