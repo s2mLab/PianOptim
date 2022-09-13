@@ -179,9 +179,9 @@ def prepare_ocp(
 
     objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
                             custom_type=ObjectiveFcn.Mayer,
-                            node=Node.END,
+                            node=Node.START,
                             first_marker="middle_hand",
-                            second_marker="accord_2_haut",
+                            second_marker="m_inter0",
                             weight=1000, phase=0
                             )
 
@@ -190,7 +190,31 @@ def prepare_ocp(
                             node=Node.END,
                             first_marker="middle_hand",
                             second_marker="accord_2_haut",
+                            weight=1000, phase=0
+                            )
+
+    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+                            custom_type=ObjectiveFcn.Mayer,
+                            node=Node.START,
+                            first_marker="middle_hand",
+                            second_marker="m_inter1",
                             weight=1000, phase=1
+                            )
+
+    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+                            custom_type=ObjectiveFcn.Mayer,
+                            node=Node.END,
+                            first_marker="middle_hand",
+                            second_marker="accord_2_haut",
+                            weight=1000, phase=1
+                            )
+
+    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+                            custom_type=ObjectiveFcn.Mayer,
+                            node=Node.START,
+                            first_marker="middle_hand",
+                            second_marker="m_inter2",
+                            weight=1000, phase=2
                             )
 
     objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
@@ -215,9 +239,15 @@ def prepare_ocp(
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.START, first_marker="middle_hand",
                     second_marker="accord_1_haut", phase=0)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+                    second_marker="m_inter0", phase=0)
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
                     second_marker="accord_2_haut", phase=0)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+                    second_marker="m_inter1", phase=1)
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
                     second_marker="accord_2_haut", phase=1)
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+                    second_marker="m_inter2", phase=2)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
                     second_marker="accord_3_haut", phase=2)
 

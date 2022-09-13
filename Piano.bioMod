@@ -645,7 +645,7 @@ marker accord_3_bas_b
 
 ///// Use this if you want to use high intermediate markers /////
 
-/*
+
 marker m_inter0
     parent ground
     position 0.17 -0.075 0.16
@@ -666,5 +666,5 @@ marker m_inter2
 marker m_inter3
     parent ground
     position 0.17 -0.29 0.16
-endmarker */
+endmarker
 
