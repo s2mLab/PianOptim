@@ -1,0 +1,58 @@
+version 4
+
+gravity 0 0 -9.81
+
+segment ground
+endsegment
+
+// finger
+segment finger
+    parent square
+    translations z
+    mass   1
+    com    0 0.15 0
+    RT 0 0 0 xyz 0 0 0
+	inertia
+	  1 0 0
+	  0 1 0
+	  0 0 1
+	com 0 0 0
+	ranges -0.1 0.5
+	externalforceindex 0
+endsegment
+
+// touche de piano
+segment square
+    mesh 0 0.1 0
+    mesh 0 0.1 -0.1
+    mesh 0 0.2 0
+    mesh 0 0.2 -0.1
+    mesh 0 0.1 0
+    mesh 0 0.2 0
+    mesh 0 0.1 -0.1
+    mesh 0 0.2 -0.1
+endsegment
+
+// markers
+marker finger_marker
+        parent finger
+	    position 0 0.15 0
+    endmarker
+
+marker high_square
+    parent square
+	    position 0 0.15 0.0
+	endmarker
+
+marker low_square
+	    parent square
+	    position 0  0.15 -0.1
+	endmarker
+
+// Contact
+    contact    Seg1_contact2
+        parent finger_marker
+        position    0 0.15 0
+        axis    z
+    endcontact
+
