@@ -5,10 +5,11 @@ gravity 0 0 -9.81
 segment ground
 endsegment
 
+
 // finger
 segment finger
-    parent square
-    translations z
+    parent bras
+    translations yz
     mass   1
     com    0 0.15 0
     RT 0 0 0 xyz 0 0 0
@@ -17,21 +18,36 @@ segment finger
 	  0 1 0
 	  0 0 1
 	com 0 0 0
-	ranges -0.1 0.5
-	externalforceindex 0
+	ranges   -10 10
+		     -10 10
 endsegment
 
-// touche de piano
+// touche de piano 1
 segment square
     mesh 0 0.1 0
     mesh 0 0.1 -0.1
-    mesh 0 0.2 0
-    mesh 0 0.2 -0.1
-    mesh 0 0.1 0
-    mesh 0 0.2 0
     mesh 0 0.1 -0.1
     mesh 0 0.2 -0.1
+    mesh 0 0.2 0
+    mesh 0 0.2 -0.1
 endsegment
+
+
+segment ligne
+    mesh 0 0 0
+    mesh 0 0.1 0
+endsegment
+
+segment ligne2
+    mesh 0 0.2 0
+    mesh 0 0.1+0.7 0
+endsegment
+
+segment ligne3
+    mesh 0 0.2+0.7 0
+    mesh 0 0.2+1 0
+endsegment
+
 
 // markers
 marker finger_marker
@@ -40,19 +56,52 @@ marker finger_marker
     endmarker
 
 marker high_square
-    parent square
+    parent ground
 	    position 0 0.15 0.0
 	endmarker
 
 marker low_square
-	    parent square
+	    parent ground
 	    position 0  0.15 -0.1
 	endmarker
 
 // Contact
-    contact    Seg1_contact2
-        parent finger_marker
-        position    0 0.15 0
-        axis    z
+    contact    contact
+        parent finger
+        position 0 0.15 0
+        axis    yz
     endcontact
+
+
+//// Touche de piano 2 ////
+
+segment square2
+    mesh 0 0.1+0.7 0
+    mesh 0 0.1+0.7 -0.1
+    mesh 0 0.1+0.7 -0.1
+    mesh 0 0.2+0.7 -0.1
+    mesh 0 0.2+0.7 0
+    mesh 0 0.2+0.7 -0.1
+
+
+endsegment
+
+marker high_square2
+    parent ground
+	    position 0 0.15+0.7 0.0
+	endmarker
+
+marker low_square2
+	    parent ground
+	    position 0  0.15+0.7 -0.1
+	endmarker
+
+// Obstacles for the key //
+
+marker key_left
+	    parent ground
+	  //  position 0  0.15+0.7 -0.1
+	    mesh 0 1 0.54
+        mesh 0 1 0
+	endmarker
 
