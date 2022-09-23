@@ -338,7 +338,8 @@ def prepare_ocp(
     # Bounds = limit
 
     constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_0, min_bound=-stdev_vel_z_0,
-                    max_bound=stdev_vel_z_0, node=Node.MID, phase=0, axes=Axis.Z, marker_index=0)
+                    max_bound=stdev_vel_z_0,
+                    node=Node.MID, phase=0, axes=Axis.Z, marker_index=0)
     constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_1, min_bound=-stdev_vel_z_1,
                     max_bound=stdev_vel_z_1,
                     node=Node.MID, phase=2, axes=Axis.Z, marker_index=0)
