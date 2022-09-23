@@ -19,6 +19,8 @@ from bioptim import (
     Node,
     Solver,
     CostType,
+    PhaseTransitionList,
+    PhaseTransition
 )
 
 # # Data Points
@@ -38,13 +40,12 @@ def prepare_ocp(
 
     # Average of N frames by phase and the phases time, both measured with the motion capture datas.
     # Name of the datas file : MotionCaptureDatas_Frames.xlsx
-    n_shooting = (12.05, 7.65)
+    n_shooting = (12, 7)
     phase_time = (0.0803, 0.051)
 
     # Add objective functions
     objective_functions = ObjectiveList()
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=-1)
-    objective_functions.add(PhaseTransitionFcn.IMPACT, key="qdot", phase=1)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=0, weight=-1)
 
     # Dynamics
     dynamics = DynamicsList()
@@ -54,7 +55,10 @@ def prepare_ocp(
     # Constraints
     constraints = ConstraintList()
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.START, first_marker="finger_marker", second_marker="high_square", phase=0)
-    constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES, node=Node.ALL_SHOOTING, contact_index=1, phase=1)
+    constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES, node=Node.ALL, contact_index=0, min_bound=0, phase=1) #contact index : axe du contact
+
+    phase_transition = PhaseTransitionList()
+    phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=0)
 
     # Path constraint
     x_bounds = BoundsList()
@@ -72,8 +76,9 @@ def prepare_ocp(
         n_shooting,
         phase_time,
         x_init,
-        objective_functions,
-        constraints,
+        objective_functions=objective_functions,
+        constraints=constraints,
+        phase_transitions=phase_transition,
         ode_solver=ode_solver,
     )
 
