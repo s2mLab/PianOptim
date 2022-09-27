@@ -108,6 +108,7 @@ mean_time_phase_4_bis = mean_time_phase_4-phase_appui
 def minimize_difference(all_pn: PenaltyNode):
     return all_pn[0].nlp.controls.cx_end - all_pn[1].nlp.controls.cx
 
+
 def prepare_ocp(
         biorbd_model_path: str = "../Piano.bioMod",
         ode_solver: OdeSolver = OdeSolver.RK8(),

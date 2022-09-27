@@ -2,7 +2,7 @@ import pickle
 import numpy as np
 
 # Import results with pelvis rotZ
-with open("Results/Piano_results.pckl", 'rb') as file:new_dict = pickle.load(file)
+with open("Results_DoF_with_keys/Piano_results.pckl", 'rb') as file:new_dict = pickle.load(file)
 with open("Piano_minimisation_1_humerus.pckl", 'rb') as file: new_dict2 = pickle.load(file)
 
 # Print the dic ###########################################

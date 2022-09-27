@@ -2,10 +2,9 @@
 
 import sys
 sys.path.append("/home/lim/Documents/Stage_mathilde/programation/bioptim")
-import time
 import biorbd_casadi as biorbd
 import numpy as np
-
+import time
 from bioptim import (
     PenaltyNode,
     OptimalControlProgram,
@@ -108,8 +107,9 @@ mean_time_phase_4_bis = mean_time_phase_4-phase_appui
 def minimize_difference(all_pn: PenaltyNode):
     return all_pn[0].nlp.controls.cx_end - all_pn[1].nlp.controls.cx
 
+
 def prepare_ocp(
-        biorbd_model_path: str = "../Piano.bioMod",
+        biorbd_model_path: str = "Piano.bioMod",
         ode_solver: OdeSolver = OdeSolver.RK8(),
 ) -> OptimalControlProgram:
     """
@@ -132,11 +132,17 @@ def prepare_ocp(
     biorbd_model = (biorbd.Model(biorbd_model_path),
                     biorbd.Model(biorbd_model_path),
                     biorbd.Model(biorbd_model_path),
-                    )
+                    biorbd.Model(biorbd_model_path),
+                    biorbd.Model(biorbd_model_path),
+                    biorbd.Model(biorbd_model_path),
+                    biorbd.Model(biorbd_model_path),
+                    biorbd.Model(biorbd_model_path),
+                    biorbd.Model(biorbd_model_path),
+                    biorbd.Model(biorbd_model_path))
 
 
     # Problem parameters, each phase time is divided by 20 or 16
-    n_shooting = (20, 16, 20)    # arbitrary choices
+    n_shooting = (20, 16, 20, 16, 20, 16, 20, 16, 20, 16)    # arbitrary choices
     # final_time = (0.08, 0.33, 0.08, 0.08, 0.08, 0.37, 0.08, 0.08, 0.08, 1)    # TODO recheck time phases, use mean_time and phase_appui
     final_time = (mean_time_phase_0, mean_time_phase_0_bis, mean_time_phase_1, mean_time_phase_1_bis, mean_time_phase_2, mean_time_phase_2_bis, mean_time_phase_3, mean_time_phase_3_bis, mean_time_phase_4, mean_time_phase_4_bis)
     tau_min, tau_max, tau_init = -1000, 1000, 0
@@ -148,9 +154,23 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=100, phase=0)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q", weight=100, phase=0)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=100, phase=1)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q", weight=100, phase=1)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q", weight=1000, phase=1)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=100, phase=2)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q", weight=1000, phase=2)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=100, phase=3)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q", weight=1000, phase=3)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=100, phase=4)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q", weight=1000, phase=4)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=100, phase=5)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q", weight=1000, phase=5)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=100, phase=6)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q", weight=1000, phase=6)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=100, phase=7)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q", weight=1000, phase=7)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=100, phase=8)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q", weight=1000, phase=8)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=100, phase=9)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q", weight=1000, phase=9)
 
     # minimize the difference between phases
     objective_functions.add( # To minimize the difference between phases
@@ -162,6 +182,13 @@ def prepare_ocp(
     )
 
     # The following objective functions are all SUPERIMPOSE_MARKERS and aim at leading the hand to 'play' the 3 chords
+    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+                            custom_type=ObjectiveFcn.Mayer,
+                            node=Node.START,
+                            first_marker="middle_hand",
+                            second_marker="accord_1_haut",
+                            weight=10000, phase=9
+                            )
     objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
                             custom_type=ObjectiveFcn.Mayer,
                             node=Node.MID,
@@ -176,6 +203,7 @@ def prepare_ocp(
                             second_marker="accord_1_haut",
                             weight=10000, phase=0
                             )
+
     objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
                             custom_type=ObjectiveFcn.Mayer,
                             node=Node.END,
@@ -198,6 +226,71 @@ def prepare_ocp(
                             second_marker="accord_2_haut",
                             weight=10000, phase=2
                             )
+    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+                            custom_type=ObjectiveFcn.Mayer,
+                            node=Node.END,
+                            first_marker="middle_hand",
+                            second_marker="accord_2_haut",
+                            weight=10000, phase=3
+                            )
+    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+                            custom_type=ObjectiveFcn.Mayer,
+                            node=Node.END,
+                            first_marker="middle_hand",
+                            second_marker="accord_2_bas",
+                            weight=10000, phase=4
+                            )
+    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+                            custom_type=ObjectiveFcn.Mayer,
+                            node=Node.MID,
+                            first_marker="middle_hand",
+                            second_marker="accord_2_haut",
+                            weight=10000, phase=4
+                            )
+    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+                            custom_type=ObjectiveFcn.Mayer,
+                            node=Node.MID,
+                            first_marker="middle_hand",
+                            second_marker="accord_3_haut",
+                            weight=10000, phase=5
+                            )
+    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+                            custom_type=ObjectiveFcn.Mayer,
+                            node=Node.MID,
+                            first_marker="middle_hand",
+                            second_marker="accord_3_bas",
+                            weight=10000, phase=6
+                            )
+    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+                            custom_type=ObjectiveFcn.Mayer,
+                            node=Node.END,
+                            first_marker="middle_hand",
+                            second_marker="accord_3_haut",
+                            weight=10000, phase=6
+                            )
+
+    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+                            custom_type=ObjectiveFcn.Mayer,
+                            node=Node.END,
+                            first_marker="middle_hand",
+                            second_marker="accord_3_haut",
+                            weight=10000, phase=7
+                            )
+    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+                            custom_type=ObjectiveFcn.Mayer,
+                            node=Node.MID,
+                            first_marker="middle_hand",
+                            second_marker="accord_3_bas",
+                            weight=10000, phase=8
+                            )
+    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+                            custom_type=ObjectiveFcn.Mayer,
+                            node=Node.END,
+                            first_marker="middle_hand",
+                            second_marker="accord_3_haut",
+                            weight=10000, phase=8
+                            )
+
 
     # Dynamics
     dynamics = DynamicsList()
@@ -207,6 +300,8 @@ def prepare_ocp(
     # Constraints
     constraints = ConstraintList()
     # Superimpositions
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+                    second_marker="accord_1_haut", phase=9)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.MID, first_marker="middle_hand",
                     second_marker="accord_1_bas", phase=0)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
@@ -217,6 +312,24 @@ def prepare_ocp(
                     second_marker="accord_2_bas", phase=2)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
                     second_marker="accord_2_haut", phase=2)
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+                    second_marker="accord_2_haut", phase=3)
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.MID, first_marker="middle_hand",
+                    second_marker="accord_2_bas", phase=4)
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+                    second_marker="accord_2_haut", phase=4)
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+                    second_marker="accord_3_haut", phase=5)
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.MID, first_marker="middle_hand",
+                    second_marker="accord_3_bas", phase=6)
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+                    second_marker="accord_3_haut", phase=6)
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+                    second_marker="accord_3_haut", phase=7)
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.MID, first_marker="middle_hand",
+                    second_marker="accord_3_bas", phase=8)
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+                    second_marker="accord_3_haut", phase=8)
 
     constraints.add(ConstraintFcn.TRACK_MARKERS, min_bound=0, node=Node.ALL, axes=Axis.Z, marker_index=0)
 
@@ -225,10 +338,23 @@ def prepare_ocp(
     # Bounds = limit
 
     constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_0, min_bound=-stdev_vel_z_0,
-                    max_bound=stdev_vel_z_0, node=Node.MID, phase=0, axes=Axis.Z, marker_index=0)
+                    max_bound=stdev_vel_z_0,
+                    node=Node.MID, phase=0, axes=Axis.Z, marker_index=0)
     constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_1, min_bound=-stdev_vel_z_1,
                     max_bound=stdev_vel_z_1,
                     node=Node.MID, phase=2, axes=Axis.Z, marker_index=0)
+    constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_2, min_bound=-stdev_vel_z_2,
+                    max_bound=stdev_vel_z_2,
+                    node=Node.MID, phase=4, axes=Axis.Z, marker_index=0)
+    constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_3, min_bound=-stdev_vel_z_3,
+                    max_bound=stdev_vel_z_3,
+                    node=Node.MID, phase=6, axes=Axis.Z, marker_index=0)
+    constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_4, min_bound=-stdev_vel_z_4,
+                    max_bound=stdev_vel_z_4,
+                    node=Node.MID, phase=8, axes=Axis.Z, marker_index=0)
+    constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_5, min_bound=-stdev_vel_z_5,
+                    max_bound=stdev_vel_z_5,
+                    node=Node.END, phase=9, axes=Axis.Z, marker_index=0)
 
     # External forces
     # External forces  ( a chord played fortissimo can lead to a maximal force of 30N )
@@ -236,6 +362,7 @@ def prepare_ocp(
     f0 = np.array([0, 0, 0, 0, 0, 0])
     f1 = np.array([0, -5.1, 0, 0, 0, 30])
     f2 = np.array([-4.47, -5.1, 0, 0, 0, 30])
+    f3 = np.array([-8.7, -5.1, 0, 0, 0, 30])
 
     fnulle = np.array([0, 0, 0, 0, 0, 0])
 
@@ -251,13 +378,11 @@ def prepare_ocp(
     flindown2 = np.linspace(f2[:, np.newaxis], f0[:, np.newaxis], 10, axis=2)
     ftotale2 = np.concatenate((flinup2, flindown2), axis=2)
 
-    # Example #
-    # flinup2 : [0 ... -4.47] [0 ... -5.1] ...
-    # flindown2 : [-4.47 ... 0] [-5.1 ... 0] ...
-    # ftotale2 : [0 ... -4.47 -4.47 ... 0] ...
+    flinup3 = np.linspace(f0[:, np.newaxis], f3[:, np.newaxis], 10, axis=2)
+    flindown3 = np.linspace(f3[:, np.newaxis], f0[:, np.newaxis], 10, axis=2)
+    ftotale3 = np.concatenate((flinup3, flindown3), axis=2)
 
-    # All phases : force applied by the first chord force, intermediate, force applied by the second chord ...
-    fext = [ftotale1, fvide, ftotale2, fvide, ftotale2, fvide]
+    fext = [ftotale1, fvide, ftotale2, fvide, ftotale2, fvide, ftotale3, fvide, ftotale3, fvide]
 
     # Path constraint # x_bounds = limit conditions
     x_bounds = BoundsList()
@@ -292,9 +417,7 @@ def prepare_ocp(
         constraints=constraints,
         ode_solver=ode_solver,
         external_forces=fext,
-        n_threads=8
     )
-# n_threads = realising calculation in parallel
 
 
 def main():
@@ -311,8 +434,8 @@ def main():
     ocp.print(to_console=False, to_graph=False)
 
     # --- Show results --- #
-    sol.animate()
-    sol.print()
+    # sol.animate()
+    # sol.print()
 
     # --- Save results --- #
     # data = dict(
