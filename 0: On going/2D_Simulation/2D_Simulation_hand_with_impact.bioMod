@@ -1,0 +1,172 @@
+version 4
+
+gravity 0 0 -9.81
+
+segment ground
+endsegment
+
+////// Hand //////
+
+segment hand_right
+   parent ground
+   RT 0 0 0 xyz -0.14411060333251952 0.009923019409179681 0.047
+    translations xyz
+    rotations xyz
+	ranges
+	   -1 1
+	   -1 1
+	   -1 1
+	   -pi/2 pi/2
+	   -pi/2 pi/2
+	   -pi/2 pi/2
+    mass 0.4575
+    inertia
+        0.000892 0 0
+        0 0.000547 0
+        0 0 0.00134
+    com 0.04940496158599853 -0.0075604076385498015 0.0017851371765136717
+
+    mesh 0.09361060333251953 0.011576980590820317 -0.009257064819335938
+    mesh 0 0 0
+
+    mesh 0 0 0
+    mesh 0.015898544311523433 -0.019521423339843746 0.01782612609863281
+
+    mesh 0.015898544311523433 -0.019521423339843746 0.01782612609863281
+    mesh 0.08811069869995117 -0.022297187805175776 -0.001428512573242188
+
+    mesh 0.08811069869995117 -0.022297187805175776 -0.001428512573242188
+    mesh 0.09361060333251953 0.011576980590820317 -0.009257064819335938
+
+ /* mesh 0.1214944458007812 -0.13877955627441406 0.1687252655029297
+    mesh 0.07537100219726562 -0.12288101196289062 0.15089913940429688
+
+    mesh 0.07537100219726562 -0.12288101196289062 0.15089913940429688
+    mesh 0.07814676666259766 -0.05066885757446289 0.17015377807617188
+
+    mesh 0.07814676666259766 -0.05066885757446289 0.17015377807617188
+    mesh 0.11202093505859375 -0.04516895294189453 0.17798233032226562
+
+    mesh 0.11202093505859375 -0.04516895294189453 0.17798233032226562
+    mesh 0.12914944458007812 -0.13877955627441406 0.1687252655029297 */
+
+endsegment
+
+marker meta2_marker
+        parent hand_right
+	    position 0.09361060333251953 0.011576980590820317 -0.009257064819335938
+    endmarker
+
+marker meta5_marker
+        parent hand_right
+	    position 0.08811069869995117 -0.022297187805175776 -0.001428512573242188
+    endmarker
+
+marker STYLulna_marker
+        parent hand_right
+	    position 0.015898544311523433 -0.019521423339843746 0.01782612609863281
+    endmarker
+
+marker STYLrad_marker
+        parent hand_right
+	    position 0 0 0
+    endmarker
+
+
+////// finger //////
+
+segment finger
+    parent hand_right
+    RT 0 0 0 xyz 0.09361060333251953 0.011576980590820317 -0.009257064819335938
+    rotations y
+    ranges
+	    -pi/2 pi/2
+    mass   0.038125 // 1/6 du poid de la main ?
+	inertia
+	  0.0190625 0 0
+	  0 0.009543859843749999 0
+	  0 0 0.009543859843749999
+	com 0.0315 0 0
+
+	mesh 0 0 0
+    mesh 0.063 0 0
+endsegment
+
+marker finger_marker
+        parent finger
+	    position 0.063 0 0
+    endmarker
+
+
+contact    contact_finger
+        parent finger
+        position 0.063 0 0
+        axis    yz
+    endcontact
+
+////// Piano //////
+
+// début : 0.01
+// touche 1 : 0.023
+// 6 touches et 7 écarts de touche : 6*0.023 + 7*0.001
+// touche 2 : 0.023
+// fin : 0.01
+
+// touche 1 //
+segment square
+    mesh 0 0.01 0
+    mesh 0 0.01 -0.01
+    mesh 0 0.01 -0.01
+    mesh 0 0.033 -0.01
+    mesh 0 0.033 -0.01
+    mesh 0 0.033 0
+endsegment
+
+// Touche 2 //
+segment square2
+    mesh 0 0.178 0
+    mesh 0 0.178 -0.01
+    mesh 0 0.178 -0.01
+    mesh 0 0.201 -0.01
+    mesh 0 0.201 -0.01
+    mesh 0 0.201 0
+endsegment
+
+// Structure //
+segment ligne
+    mesh 0 0 0
+    mesh 0 0.01 0
+endsegment
+
+segment ligne2
+    mesh 0 0.033 0
+    mesh 0 0.178 0
+endsegment
+
+segment ligne3
+    mesh 0 0.201 0
+    mesh 0 0.211 0
+endsegment
+
+// Marker attacks //
+marker high_square
+    parent ground
+	    position 0 0.0215 0.0
+	endmarker
+
+marker low_square
+	    parent ground
+	    position 0  0.0215 -0.01
+	endmarker
+
+marker high_square2
+    parent ground
+	    position 0 0.1895 0.0
+	endmarker
+
+marker low_square2
+	    parent ground
+	    position 0  0.1895 -0.01
+	endmarker
+
+

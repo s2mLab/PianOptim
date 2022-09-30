@@ -1,38 +1,21 @@
-import c3d
 from casadi import MX, sqrt, if_else, sin
-# from casadi import *
 import biorbd_casadi as biorbd
-import numpy as np
-from matplotlib import pyplot as plt
 from bioptim import (
     ObjectiveList,
-    ObjectiveFcn,
     PhaseTransitionFcn,
-    PenaltyNodeList,
-    OptimalControlProgram,
     DynamicsList,
-    DynamicsFcn,
-    ConstraintList,
     ConstraintFcn,
     BoundsList,
-    QAndQDotBounds,
     InitialGuessList,
-    OdeSolver,
-    Node,
-    Solver,
     CostType,
     PhaseTransitionList,
     Node,
     OptimalControlProgram,
-    Dynamics,
     DynamicsFcn,
-    Objective,
     ObjectiveFcn,
     ConstraintList,
     PenaltyNodeList,
-    Bounds,
     QAndQDotBounds,
-    InitialGuess,
     OdeSolver,
     BiorbdInterface,
     Solver,
@@ -40,8 +23,7 @@ from bioptim import (
 )
 
 
-# PAR DEFAULT : M et S
-def custom_func_track_markers(all_pn: PenaltyNodeList, marker: str) -> MX:
+def custom_func_track_markers_phase2(all_pn: PenaltyNodeList, marker: str) -> MX:
     finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, marker)
     markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
     finger_marker = markers[:, finger_marker_idx]
@@ -60,7 +42,27 @@ def custom_func_track_markers(all_pn: PenaltyNodeList, marker: str) -> MX:
     return markers_diff_key
 
 
-def prepare_ocp(biorbd_model_path: str = "2: FINAL_2D_Simulation_Finger_Key_with_impact.bioMod", ode_solver: OdeSolver = OdeSolver.RK4()
+def custom_func_track_markers_phase3(all_pn: PenaltyNodeList, marker: str) -> MX:
+    finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, marker)
+    markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
+    finger_marker = markers[:, finger_marker_idx]
+    key = ((0.005 * sin(314.2 * (finger_marker[1] + 0.2))) / (
+        sqrt(0.0001 ** 2 + sin(314.2 * (finger_marker[1] + 0.2)) ** 2)) - 0.005)
+
+    # if_else( condition, si c'est vrai fait ca',  sinon fait ca)
+    markers_diff_key3 = if_else(
+        finger_marker[0.02:0.09],
+        finger_marker[2] - 0,
+        if_else(
+            finger_marker[1] < 0.10,  # condition
+            finger_marker[2] - key,  # True
+            finger_marker[2]-0,  # False
+        )
+    )
+    return markers_diff_key3
+
+
+def prepare_ocp(biorbd_model_path: str = "/home/mickaelbegon/Documents/Stage_Mathilde/programation/PianOptim/0: On going/2D_Simulation/with_key_constraints.bioMod", ode_solver: OdeSolver = OdeSolver.RK4()
 ) -> OptimalControlProgram:
     biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
                     biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path))
@@ -108,8 +110,10 @@ def prepare_ocp(biorbd_model_path: str = "2: FINAL_2D_Simulation_Finger_Key_with
     constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
                     node=Node.ALL, contact_index=0, min_bound=0, phase=4)
 
-    constraints.add(custom_func_track_markers,
+    constraints.add(custom_func_track_markers_phase2,
                     node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=2)
+    constraints.add(custom_func_track_markers_phase3,
+                    node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=3)
 
     phase_transition = PhaseTransitionList()
     phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=0)
@@ -180,7 +184,7 @@ def main():
 
     # --- Show results --- #
     sol.animate(markers_size=0.0010, contacts_size=0.0010, show_floor=False,
-                show_segments_center_of_mass=False, show_global_ref_frame=True,
+                show_segments_center_of_mass=True, show_global_ref_frame=True,
                 show_local_ref_frame=False,),
     # show_segments_center_of_mass : origin du marker
     sol.graphs(show_bounds=True)
