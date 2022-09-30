@@ -58,7 +58,7 @@ def custom_func_track_markers2(all_pn: PenaltyNodeList, marker: str) -> MX:
     return markers_diff_key2
 
 
-def prepare_ocp(biorbd_model_path: str = "1D_Simulation_hand_with_impact.bioMod", ode_solver: OdeSolver = OdeSolver.RK4()
+def prepare_ocp(biorbd_model_path: str = "1_key_Simulation_hand_with_impact.bioMod", ode_solver: OdeSolver = OdeSolver.RK4()
 ) -> OptimalControlProgram:
     biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
                     biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path))
