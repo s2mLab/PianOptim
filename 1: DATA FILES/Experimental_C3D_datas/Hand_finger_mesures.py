@@ -11,15 +11,36 @@ STYLrad = []
 meta2 = []
 meta5 = []
 STYLulna = []
-
+STYLrad_up = []
+STYLulna_up = []
 for i in range(3):
     meta2.append(c['data']['points'][i][41][200])
     meta5.append(c['data']['points'][i][47][200])
     STYLrad.append(c['data']['points'][i][30][200])
+    STYLrad_up.append(c['data']['points'][i][31][200])
     STYLulna.append(c['data']['points'][i][33][200])
+    STYLulna_up.append(c['data']['points'][i][32][200])
 
 print("Hand vectors far away from the origin : ", "\n", STYLrad, "\n", meta2, "\n", meta5, "\n", STYLulna, "\n")
+####
 
+milieuxxxx = (STYLrad_up[0]-STYLrad[0])
+milieuyyyy = (STYLrad_up[1]-STYLrad[1])
+milieuzzzz = (STYLrad_up[2]-STYLrad[2])
+milieu_rad_radup = ((milieuxxxx**2+milieuyyyy**2+milieuzzzz**2)**(1/2))
+print("Le vecteur de Rad et Rad_up ramené a l'origine : ", milieuxxxx, milieuyyyy, milieuzzzz)
+print("La moitié de la norme du vecteur : ", milieu_rad_radup/2)
+
+milieuxxx = (STYLulna_up[0]-STYLulna[0])
+milieuyyy = (STYLulna_up[1]-STYLulna[1])
+milieuzzz = (STYLulna_up[2]-STYLulna[2])
+milieu_ulna_ulnaup = ((milieuxxx**2+milieuyyy**2+milieuzzz**2)**(1/2))
+print("Le vecteur de Ulna et Ulna_up ramené a l'origine : ", milieuxxx, milieuyyy, milieuzzz)
+print("La moitié de la norme du vecteur : ", milieu_ulna_ulnaup/2)
+
+print("Norme de la distance origin / centre de l'arriere de la main : ", ((milieu_rad_radup/2 + milieu_ulna_ulnaup/2)/2))
+
+####
 ## Rapproché a l'origine avec STYLrad a l'origine
 
 STYLrad_new = [0, 0, 0]
