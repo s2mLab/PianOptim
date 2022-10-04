@@ -234,7 +234,7 @@ segment hand_right
    externalforceindex 1
 endsegment
 
-marker middle_hand
+marker middle_finger
 	    parent hand_right
 	    position 0 -0.04 0
 	    markerindex 0

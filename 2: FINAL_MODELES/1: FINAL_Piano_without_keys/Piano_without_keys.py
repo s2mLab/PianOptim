@@ -199,7 +199,7 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
                             custom_type=ObjectiveFcn.Mayer,
                             node=Node.START,
-                            first_marker="middle_hand",
+                            first_marker="middle_finger",
                             second_marker="accord_1_haut",
                             weight=10000, phase=0
                             )
@@ -207,7 +207,7 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
                             custom_type=ObjectiveFcn.Mayer,
                             node=Node.END,
-                            first_marker="middle_hand",
+                            first_marker="middle_finger",
                             second_marker="accord_2_haut",
                             weight=10000, phase=0
                             )
@@ -215,7 +215,7 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
                             custom_type=ObjectiveFcn.Mayer,
                             node=Node.END,
-                            first_marker="middle_hand",
+                            first_marker="middle_finger",
                             second_marker="accord_2_haut",
                             weight=10000, phase=1
                             )
@@ -223,7 +223,7 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
                             custom_type=ObjectiveFcn.Mayer,
                             node=Node.END,
-                            first_marker="middle_hand",
+                            first_marker="middle_finger",
                             second_marker="accord_3_haut",
                             weight=10000, phase=2
                             )
@@ -231,7 +231,7 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
                             custom_type=ObjectiveFcn.Mayer,
                             node=Node.END,
-                            first_marker="middle_hand",
+                            first_marker="middle_finger",
                             second_marker="accord_3_haut",
                             weight=10000, phase=3
                             )
@@ -239,7 +239,7 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
                             custom_type=ObjectiveFcn.Mayer,
                             node=Node.END,
-                            first_marker="middle_hand",
+                            first_marker="middle_finger",
                             second_marker="accord_1_haut",
                             weight=10000, phase=4
                             )
@@ -256,17 +256,17 @@ def prepare_ocp(
     # Constraints
     constraints = ConstraintList()
     # Super impositions
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.START, first_marker="middle_hand",
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.START, first_marker="middle_finger",
                     second_marker="accord_1_haut", phase=0)
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_finger",
                     second_marker="accord_2_haut", phase=0)
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_finger",
                     second_marker="accord_2_haut", phase=1)
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_finger",
                     second_marker="accord_3_haut", phase=2)
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_finger",
                     second_marker="accord_3_haut", phase=3)
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_hand",
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_finger",
                     second_marker="accord_1_haut", phase=4)
 
     # Target velocity z , with min bound = mean vel z - stdev and max bound = mean vel z + stdev
