@@ -79,7 +79,7 @@ segment finger
     RT 0 0 0 xyz 0.08291137886047363 0.0044006080627441435 -0.014255851745605473
     rotations y
     ranges
-	    -pi/12 pi/2
+	    0 pi/2
     mass   0.038125 // 1/6 du poids de la main ?
 	inertia
 	  0.0190625 0 0
