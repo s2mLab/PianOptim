@@ -67,7 +67,7 @@ def prepare_ocp(biorbd_model_path: str = "1_key_Simulation_hand_with_impact.bioM
     # Name of the datas file : MotionCaptureDatas_Frames.xlsx
     n_shooting = (7*2, 7*2, 30*2, 7*2, 7*2)
     phase_time = (0.044*2, 0.051*2, 0.2*2, 0.044*2, 0.051*2)
-    tau_min, tau_max, tau_init = -100, 100, 0
+    tau_min, tau_max, tau_init = -150, 150, 0
     vel_pushing = 0.00372
 
     # Add objective functions
@@ -93,7 +93,7 @@ def prepare_ocp(biorbd_model_path: str = "1_key_Simulation_hand_with_impact.bioM
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="low_square", phase=0)
     constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY,
-                    target=0, node=Node.START, phase=0, marker_index=1)
+                    target=0, node=Node.START, phase=0, marker_index=4)
     constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
                     node=Node.ALL, contact_index=0, min_bound=0, phase=1)  # contact index : axe du contact
 
@@ -102,18 +102,17 @@ def prepare_ocp(biorbd_model_path: str = "1_key_Simulation_hand_with_impact.bioM
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="low_square", phase=3)
     constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY,
-                    target=0, node=Node.START, phase=3, marker_index=1)
+                    target=0, node=Node.START, phase=3, marker_index=4)
     constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
                     node=Node.ALL, contact_index=0, min_bound=0, phase=4)
 
     constraints.add(custom_func_track_markers,
-                    node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=2)
+                    node=Node.ALL, marker="finger_marker", min_bound=-0.00001, max_bound=10000, phase=2)
+
     constraints.add(custom_func_track_markers2,
-                    node=Node.ALL, marker="finger_marker", min_bound=-10000, max_bound=0, phase=0)
+                    node=Node.ALL, marker="finger_marker", min_bound=-0.00001, max_bound=0, phase=1)
     constraints.add(custom_func_track_markers2,
-                    node=Node.ALL, marker="finger_marker", min_bound=-10000, max_bound=0, phase=2)
-    constraints.add(custom_func_track_markers2,
-                    node=Node.ALL, marker="finger_marker", min_bound=-10000, max_bound=0, phase=3)
+                    node=Node.ALL, marker="finger_marker", min_bound=-0.00001, max_bound=0, phase=4)
 
     phase_transition = PhaseTransitionList()
     phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=0)
@@ -122,8 +121,9 @@ def prepare_ocp(biorbd_model_path: str = "1_key_Simulation_hand_with_impact.bioM
     # Path constraint
     x_bounds = BoundsList()
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
-    # [ phase 0 ] [indice du ddl (0 et 1 position y z, 2 et 3 vitesse y z), time]
-    # (0 =» 1st point, 1 =» all middle points, 2 =» last point)
+    # [ phase 0 ]
+    # [indice du ddl (0 et 1 position y z, 2 et 3 vitesse y z),
+    # time] (0 =» 1st point, 1 =» all middle points, 2 =» last point)
     x_bounds[0][3, 0] = vel_pushing
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
