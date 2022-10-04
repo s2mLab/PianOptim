@@ -80,6 +80,23 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=1)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=4, weight=1)
 
+    # EXPLANATION 1 on EXPLANATIONS_FILE
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=0, weight=0.0001)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=1, weight=0.0001)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=2, weight=0.0001)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=3, weight=0.0001)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=4, weight=0.0001)
+
+    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
+                            target=[0, 0, 0], node=Node.START, phase=0, marker_index=4)
+    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
+                            target=[0, 0, 0], node=Node.START, phase=3, marker_index=4)
+
+    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
+                            target=vel_push_array, axes=Axis.Z, node=Node.INTERMEDIATES, phase=0, marker_index=4)
+    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
+                            target=vel_push_array, axes=Axis.Z, node=Node.INTERMEDIATES, phase=3, marker_index=4)
+
     # Dynamics
     dynamics = DynamicsList()
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=0)
