@@ -217,7 +217,7 @@ segment radius_right
     meshfile mesh_files/radius.vtp
 endsegment
 
-
+/*
 segment hand_right
    parent radius_right
     RT 0 0 0 xyz 0.023770687891017 -0.230100258785044 0.0171148952815322
@@ -233,434 +233,151 @@ segment hand_right
         0 0 0.00134
    externalforceindex 1
 endsegment
-
-marker middle_hand
-	    parent hand_right
-	    position 0 -0.04 0
-	    markerindex 0
-	endmarker
-
-    marker thumb
-	    parent hand_right
-	    position 0.035 -0.04 0
-	endmarker
-
-	marker littleFinger
-	    parent hand_right
-	    position -0.035 -0.04 0
-	endmarker
-
-
-
-
-
-
-
- // keyboard
-segment seg_front
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 0.5 0.06
-    mesh 0.15+0.3938 -0.5 0.06
-endsegment
-
-
-
-
-segment seg_arr
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.25+0.3938 0.5 0.06
-    mesh 0.25+0.3938 -0.5 0.06
-endsegment
-
-
-segment seg_Lat_droit
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 0.5 0.06
-    mesh 0.25+0.3938 0.5 0.06
-endsegment
-
-segment seg_Lat_gauche
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 -0.5 0.06
-    mesh 0.25+0.3938 -0.5 0.06
-endsegment
-
-segment seg_t0
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-   mesh 0.15+0.3938 0.45 0.06
-    mesh 0.25+0.3938 0.45 0.06
-endsegment
-
-segment seg_t1
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 0.40 0.06
-    mesh 0.25+0.3938 0.40 0.06
-endsegment
-
-segment seg_t2
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 0.35 0.06
-    mesh 0.25+0.3938  0.35 0.06
-endsegment
-
-segment seg_t3
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 0.30 0.06
-    mesh 0.25+0.3938 0.30 0.06
-endsegment
-
-segment seg_t4
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 0.25 0.06
-    mesh 0.25+0.3938 0.25 0.06
-endsegment
-
-segment seg_t5
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 0.20 0.06
-    mesh 0.25+0.3938 0.20 0.06
-endsegment
-
-segment seg_t6
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 0.15 0.06
-    mesh 0.25+0.3938 0.15 0.06
-endsegment
-
-segment seg_t7
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 0.10 0.06
-    mesh 0.25+0.3938 0.10 0.06
-endsegment
-
-segment seg_t8
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 0.05 0.06
-    mesh 0.25+0.3938 0.05 0.06
-endsegment
-
-segment seg_t9
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 0 0.06
-    mesh 0.25+0.3938 0 0.06
-endsegment
-
-segment seg_t10
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 -0.05 0.06
-    mesh 0.25+0.3938 -0.05 0.06
-endsegment
-
-segment seg_t11
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 -0.1 0.06
-    mesh 0.25+0.3938 -0.1 0.06
-endsegment
-
-segment seg_t12
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 -0.15 0.06
-    mesh 0.25+0.3938 -0.15 0.06
-endsegment
-
-segment seg_t13
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 -0.2 0.06
-    mesh 0.25+0.3938 -0.2 0.06
-endsegment
-
-segment seg_t14
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 -0.25 0.06
-    mesh 0.25+0.3938 -0.25 0.06
-endsegment
-
-segment seg_t15
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 -0.3 0.06
-    mesh 0.25+0.3938 -0.3 0.06
-endsegment
-
-segment seg_t16
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 -0.35 0.06
-    mesh 0.25+0.3938 -0.35 0.06
-endsegment
-
-segment seg_t17
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 -0.4 0.06
-    mesh 0.25+0.3938 -0.4 0.06
-endsegment
-
-segment seg_t18
-
-    mass 1
-	inertia
-	  1 0 0
-	  0 1 0
-	  0 0 1
-	com 0 0.1 0
-    mesh 0.15+0.3938 -0.45 0.06
-    mesh 0.25+0.3938 -0.45 0.06
-endsegment
-
-
-/////// use this if thumb and little finger are used ///////
-
-marker accord_1_haut
-    parent ground
-	    position 0.17+0.3938 0 0.07
-	endmarker
-
-/*
-marker accord_1_haut_a
-    parent ground
-	    position 0.17+0.3938 0.035 0.07
-	endmarker
-
-marker accord_1_haut_b
-	    parent ground
-	    position 0.17+0.3938  -0.035 0.07
-	endmarker
 */
+////// Hand //////
 
-marker accord_1_bas
-    parent ground
-	    position 0.17+0.3938 0 0.06
-	endmarker
-/*
-marker accord_1_bas_a
-    parent ground
-	    position 0.17+0.3938 0.035 0.06
-	endmarker
+segment hand_right
+   parent radius_right
+   RT 0 0 0 xyz  0.023770687891017 -0.2441446429536382 0.0171148952815322
+    rotations xyz
+	ranges
+	   -pi/4 pi/4
+	   -pi/2 pi/2
+	   -pi/4 pi/4
+    mass 0.4575
+    inertia
+        0.000892 0 0
+        0 0.000547 0
+        0 0 0.00134
+    com 0.0022003040313720718 -0.041455689430236815 -0.007127925872802732
 
-marker accord_1_bas_b
-	    parent ground
-	    position 0.17+0.3938  -0.035 0.06
-	endmarker
-*/
+    mesh 0.02133769226074219 -0.08566133117675781  -0.018170127868652342
+    mesh 0.009760711669921873 0.007949272155761716 -0.008913063049316404
 
+    mesh 0.009760711669921873 0.007949272155761716 -0.008913063049316404
+    mesh -0.009760711669921873 -0.007949272155761716 0.008913063049316407
 
-marker accord_2_haut
-    parent ground
-	    position 0.17+0.3938 -0.149 0.07
-	endmarker
+    mesh -0.009760711669921873 -0.007949272155761716 0.008913063049316407
+    mesh -0.012536476135253903 -0.08016142654418945 -0.010341575622558592
 
-/*
-marker accord_2_haut_a
-    parent ground
-	    position 0.17+0.3938 -0.113 0.07
-	endmarker
+    mesh -0.012536476135253903 -0.08016142654418945 -0.010341575622558592
+    mesh  0.02133769226074219 -0.08566133117675781  -0.018170127868652342
 
-marker accord_2_haut_b
-	    parent ground
-	    position 0.17+0.3938  -0.184 0.07
-	endmarker
-*/
+endsegment
 
-marker accord_2_bas
-    parent ground
-	    position 0.17+0.3938 -0.149 0.06
-	endmarker
-
-/*
-marker accord_2_bas_a
-    parent ground
-	    position 0.17+0.3938 -0.113 0.06
-	endmarker
-
-marker accord_2_bas_b
-	    parent ground
-	    position 0.17+0.3938  -0.184 0.06
-	endmarker
-*/
-
-marker accord_3_haut
-    parent ground
-	    position 0.17+0.3938  -0.29 0.07
-	endmarker
-/*
-marker accord_3_haut_a
-    parent ground
-	    position 0.17+0.3938 -0.25 0.07
-	endmarker
-
-marker accord_3_haut_b
-	    parent ground
-	    position 0.17+0.3938  -0.33 0.07
-	endmarker
-*/
-marker accord_3_bas
-    parent ground
-	    position 0.17+0.3938 -0.29 0.06
-	endmarker
-
-/*
-marker accord_3_bas_a
-    parent ground
-	    position 0.17+0.3938 -0.25 0.06
-	endmarker
-
-marker accord_3_bas_b
-	    parent ground
-	    position 0.17+0.3938  -0.33 0.06
-	endmarker
-*/
-
-///// Use this if you want to use high intermediate markers /////
-
-/*
-marker m_inter0
-    parent ground
-    position 0.17+0.25 -0.075 0.16
+marker meta2_marker
+        parent hand_right
+	    position 0.02133769226074219 -0.08566133117675781  -0.018170127868652342
     endmarker
 
-
-marker m_inter1
-    parent ground
-    position 0.17+0.25 -0.149 0.16
+marker meta5_marker
+        parent hand_right
+	    position -0.012536476135253903 -0.08016142654418945 -0.010341575622558592
     endmarker
 
-marker m_inter2
-    parent ground
-    position 0.17+0.25 -0.225 0.16
+marker STYLulna_marker
+        parent hand_right
+	    position -0.009760711669921873 -0.007949272155761716 0.008913063049316407
     endmarker
 
+marker STYLrad_marker
+        parent hand_right
+	    position 0.009760711669921873 0.007949272155761716 -0.008913063049316404
+    endmarker
 
-marker m_inter3
+////// finger //////
+
+segment middle_finger
+    parent hand_right
+    RT 0 0 0 xyz 0.0044006080627441435 -0.08291137886047363 -0.014255851745605473
+    rotations x
+    ranges
+	    -pi/12 pi/2
+    mass   0.038125 // 1/6 du poids de la main ?
+	inertia
+	  0.0190625 0 0
+	  0 0.009543859843749999 0
+	  0 0 0.009543859843749999
+	com 0 -0.0315 0
+
+	mesh 0 0 0
+    mesh 0 -0.063 0
+endsegment
+
+marker finger_marker
+        parent middle_finger
+	    position 0 -0.063 0
+    endmarker
+
+contact    contact_finger
+        parent middle_finger
+        position 0 -0.063 0
+        axis    yz
+    endcontact
+
+//////
+
+////// Piano //////
+
+// début : 0.01
+// touche 1 : 0.023
+// 6 touches et 7 écarts de touche : 6*0.023 + 7*0.001
+// touche 2 : 0.023
+// fin : 0.01
+
+// touche 1 //
+segment square
+    mesh 0.5638 -0.0115 0.07-0.01
+    mesh 0.5638 -0.0115 -0.01+0.07-0.01
+    mesh 0.5638 -0.0115 -0.01+0.07-0.01
+    mesh 0.5638 0.0115 -0.01+0.07-0.01
+    mesh 0.5638 0.0115 -0.01+0.07-0.01
+    mesh 0.5638 0.0115 0+0.07-0.01
+endsegment
+
+// Touche 2 //
+segment square2
+    mesh 0.5638 -0.1565 0.07-0.01
+    mesh 0.5638 -0.1565 -0.01+0.07-0.01
+    mesh 0.5638 -0.1565 -0.01+0.07-0.01
+    mesh 0.5638 -0.1795 -0.01+0.07-0.01
+    mesh 0.5638 -0.1795 -0.01+0.07-0.01
+    mesh 0.5638 -0.1795 0+0.07-0.01
+endsegment
+
+// Structure //
+segment ligne
+    mesh 0.5638 0.615 0.07-0.01
+    mesh 0.5638 0.0115 0.07-0.01
+endsegment
+
+segment ligne2
+    mesh 0.5638 -0.0115 0.07-0.01
+    mesh 0.5638 -0.1565 0.07-0.01
+endsegment
+
+segment ligne3
+    mesh 0.5638 -0.1795 0.07-0.01
+    mesh 0.5638 -0.615 0.07-0.01
+endsegment
+
+// Marker attacks //
+marker high_square
     parent ground
-    position 0.17+0.25 -0.29 0.16
-endmarker
-*/
+	    position 0.5638  0 0.07-0.01
+	endmarker
+
+marker low_square
+	    parent ground
+	    position 0.5638  0 0.07-0.02
+	endmarker
+
+marker high_square2
+    parent ground
+	    position 0.5638 -0.168 0.07-0.01
+	endmarker
+
+marker low_square2
+	    parent ground
+	    position 0.5638 -0.168 0.07-0.02
+	endmarker
