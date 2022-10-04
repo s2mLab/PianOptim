@@ -52,7 +52,7 @@ def custom_func_track_markers_phase3(all_pn: PenaltyNodeList, marker: str) -> MX
     # if_else( condition, si c'est vrai fait ca',  sinon fait ca)
     markers_diff_key3 = if_else(
         finger_marker[1] < 0.09,
-       # finger_marker[1] > 0.02 & finger_marker[1] < 0.09,
+######## J'aimerai mettre finger_marker dans une intervalle entre 0.02 et 0.09 ########
         finger_marker[2] - 0,
         if_else(
             finger_marker[1] < 0.10,  # condition
@@ -114,7 +114,7 @@ def prepare_ocp(biorbd_model_path: str = "/home/mickaelbegon/Documents/Stage_Mat
     constraints.add(custom_func_track_markers_phase2,
                     node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=2)
     constraints.add(custom_func_track_markers_phase3,
-                    node=, marker="finger_marker", min_bound=0, max_bound=10000, phase=3)
+                    node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=3)
 
     phase_transition = PhaseTransitionList()
     phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=0)
