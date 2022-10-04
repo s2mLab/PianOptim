@@ -54,22 +54,22 @@ endsegment
 
 marker meta2_marker
         parent hand_right
-	    position 0.09361060333251953 0.011576980590820317 -0.009257064819335938
+	    position 0.08566133117675781 0.02133769226074219 -0.018170127868652342
     endmarker
 
 marker meta5_marker
         parent hand_right
-	    position 0.08811069869995117 -0.022297187805175776 -0.001428512573242188
+	    position -0.007949272155761716 0.009760711669921873 -0.008913063049316404
     endmarker
 
 marker STYLulna_marker
         parent hand_right
-	    position 0.015898544311523433 -0.019521423339843746 0.01782612609863281
+	    position -0.007949272155761716 0.009760711669921873 -0.008913063049316404
     endmarker
 
 marker STYLrad_marker
         parent hand_right
-	    position 0 0 0
+	    position 0.08016142654418945 -0.012536476135253903 -0.010341575622558592
     endmarker
 
 
@@ -80,8 +80,8 @@ segment finger
     RT 0 0 0 xyz 0.08291137886047363 0.0044006080627441435 -0.014255851745605473
     rotations y
     ranges
-	    -pi/2 pi/2
-    mass   0.038125 // 1/6 du poid de la main ?
+	    0 pi/2
+    mass   0.038125 // 1/6 du poids de la main ?
 	inertia
 	  0.0190625 0 0
 	  0 0.009543859843749999 0
