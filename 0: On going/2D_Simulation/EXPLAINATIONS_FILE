@@ -1,0 +1,8 @@
+#### EXPLANATIONS ####
+
+EXPLANATION 1
+    of : objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="qdot", phase=0, weight=0.0001)
+We want to minimize TAU : PHI = min tau². In our case, we obtain a concave curve.
+But, the problem is that down to the curve, we obtain multiples tangents equal to 0, so we can't find the minimum point.
+To solve this, we also minimize QDOT. So, PHI = min (tau² + qdot²) to obtain a concave curve but with waves,
+wich permits to find easily the minimum point of the curve.
