@@ -44,7 +44,23 @@ def custom_func_track_markers(all_pn: PenaltyNodeList, marker: str) -> MX:
     return markers_diff_key
 
 
-def prepare_ocp(biorbd_model_path: str = "2_keys_Simulation_hand_with_impact.bioMod", ode_solver: OdeSolver = OdeSolver.RK4()
+def custom_func_track_markers2(all_pn: PenaltyNodeList, marker: str) -> MX:
+    finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, marker)
+    markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
+    finger_marker = markers[:, finger_marker_idx]
+
+    # if_else( condition, si c'est vrai fait ca',  sinon fait ca)
+    markers_diff_key2 = if_else(
+        finger_marker[0] < 0,  # condition
+        finger_marker[0] - 0,  # True
+        finger_marker[0] - 0,  # False
+        )
+    return markers_diff_key2
+
+
+def prepare_ocp(
+        biorbd_model_path: str = "/home/mickaelbegon/Documents/Stage_Mathilde/programation/PianOptim/0: On going/2D_Simulation/2_keys_Simulation_hand_with_impact.bioMod",
+        ode_solver: OdeSolver = OdeSolver.COLLOCATION()
 ) -> OptimalControlProgram:
     biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
                     biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path))
@@ -78,38 +94,35 @@ def prepare_ocp(biorbd_model_path: str = "2_keys_Simulation_hand_with_impact.bio
                     node=Node.START, first_marker="finger_marker", second_marker="high_square", phase=0)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="low_square", phase=0)
-    constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY,
-                    target=0, node=Node.START, phase=0, marker_index=1)
     constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
-                    node=Node.ALL, contact_index=0, min_bound=0, phase=1)  # contact index : axe du contact
+                    node=Node.ALL, contact_index=0, min_bound=0, phase=1)
 
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="high_square2", phase=2)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="low_square2", phase=3)
-    constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY,
-                    target=0, node=Node.START, phase=3, marker_index=1)
     constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
                     node=Node.ALL, contact_index=0, min_bound=0, phase=4)
 
     constraints.add(custom_func_track_markers,
                     node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=2)
+    constraints.add(custom_func_track_markers2,
+                    node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=0, phase=1)
+    constraints.add(custom_func_track_markers2,
+                    node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=0, phase=4)
 
     phase_transition = PhaseTransitionList()
     phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=0)
     phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=3)
 
     # Path constraint
-    x_bounds = BoundsList()
-    x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     # [ phase 0 ] [indice du ddl (0 et 1 position y z, 2 et 3 vitesse y z), time]
     # (0 =» 1st point, 1 =» all middle points, 2 =» last point)
-    x_bounds[0][3, 0] = vel_pushing
+    x_bounds = BoundsList()
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
-    x_bounds[2][2, 2] = 0
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
-    x_bounds[3][3, 0] = vel_pushing
+    x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
 
     # Initial guess
