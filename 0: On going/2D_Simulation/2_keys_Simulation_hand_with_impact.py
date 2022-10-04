@@ -1,5 +1,6 @@
 from casadi import MX, sqrt, if_else, sin
 import biorbd_casadi as biorbd
+import numpy as np
 from bioptim import (
     ObjectiveList,
     PhaseTransitionFcn,
@@ -19,6 +20,7 @@ from bioptim import (
     OdeSolver,
     BiorbdInterface,
     Solver,
+    Axis
 
 )
 
@@ -68,9 +70,13 @@ def prepare_ocp(
     # Average of N frames by phase and the phases time, both measured with the motion capture datas.
     # Name of the datas file : MotionCaptureDatas_Frames.xlsx
     n_shooting = (7*2, 7*2, 30*2, 7*2, 7*2)
-    phase_time = (0.044*2, 0.051*2, 0.2*2, 0.044*2, 0.051*2)
+    phase_time = (0.044, 0.051, 0.2, 0.044, 0.051)
     tau_min, tau_max, tau_init = -100, 100, 0
+   # vel_pushing = [0.00372]*(7*2)
     vel_pushing = 0.00372
+
+    vel_push_array = np.zeros((1, 12))
+    vel_push_array[0, :] = vel_pushing
 
     # Add objective functions
     objective_functions = ObjectiveList()
@@ -190,13 +196,14 @@ def main():
     ocp.add_plot_penalty(CostType.ALL)
 
     # --- Solve the program --- #
-    sol = ocp.solve(Solver.IPOPT(show_online_optim=True))
+    solver = Solver.IPOPT(show_online_optim=True)
+    solver.set_linear_solver("ma57")
+    sol = ocp.solve(solver)
 
     # --- Show results --- #
     sol.animate(markers_size=0.0010, contacts_size=0.0010, show_floor=False,
                 show_segments_center_of_mass=True, show_global_ref_frame=True,
                 show_local_ref_frame=False,),
-    # show_segments_center_of_mass : origin du marker
     sol.graphs(show_bounds=True)
 
 
