@@ -24,6 +24,7 @@ from bioptim import (
 
 )
 
+
 # PAR DEFAULT : M et S
 
 
