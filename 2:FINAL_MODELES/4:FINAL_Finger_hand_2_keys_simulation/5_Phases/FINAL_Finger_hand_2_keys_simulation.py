@@ -1,4 +1,7 @@
+
+import math
 from casadi import MX, sqrt, if_else, sin
+from math import ceil
 import biorbd_casadi as biorbd
 import numpy as np
 from bioptim import (
@@ -59,8 +62,13 @@ def prepare_ocp(
     tau_min, tau_max, tau_init = -200, 200, 0
     vel_pushing = 0.00372
 
-    vel_push_array = np.zeros((1, 12))
+    # Find the number of the node at 75 % of the phase 0 and 3 in order to apply the vel_pushing at this node
+    three_quarter_node_phase_0 = ceil(0.75 * n_shooting[0])
+    three_quarter_node_phase_3 = ceil(0.75 * n_shooting[3])
+
+    # Multiples vel_pushing for apply this velocity on multiples nodes.
     # 14 : -1 because Node.INTERMEDIATES doesn't count the last node, and -1 bc the first point can't have a velocity
+    vel_push_array = np.zeros((1, 12))
     vel_push_array[0, :] = vel_pushing
 
     # Add objective functions
@@ -86,12 +94,11 @@ def prepare_ocp(
                             weight=1000)
 
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=vel_push_array, axes=Axis.Z, node=Node.INTERMEDIATES, phase=0, marker_index=4,
+                            target=vel_pushing, node=three_quarter_node_phase_0, phase=0, marker_index=4,
                             weight=1000)
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=vel_push_array, axes=Axis.Z, node=Node.INTERMEDIATES, phase=3, marker_index=4,
+                            target=vel_pushing, node=three_quarter_node_phase_3, phase=3, marker_index=4,
                             weight=1000)
-
     # Dynamics
     dynamics = DynamicsList()
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=0)
