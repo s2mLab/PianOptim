@@ -4,9 +4,9 @@ import pickle
 import numpy as np
 
 # Import results with pelvis rotZ
-with open("../../1: DATA FILES/Results_DoF_with_keys/Piano_results.pckl", 'rb') as file:new_dict = pickle.load(file)
-with open("../../1: DATA FILES/Results_DoF_with_keys/Piano_results_without_pelvis_rotZ.pckl", 'rb') as file: new_dict2 = pickle.load(file)
-with open("../../1: DATA FILES/Results_DoF_with_keys/Piano_results_without_pelvis_rotZ_and_thorax.pckl", 'rb') as file: new_dict3 = pickle.load(file)
+with open("../../1:DATA FILES - CALCULATIONS/Results_DoF_with_keys/Piano_results.pckl", 'rb') as file:new_dict = pickle.load(file)
+with open("../../1:DATA FILES - CALCULATIONS/Results_DoF_with_keys/Piano_results_without_pelvis_rotZ.pckl", 'rb') as file: new_dict2 = pickle.load(file)
+with open("../../1:DATA FILES - CALCULATIONS/Results_DoF_with_keys/Piano_results_without_pelvis_rotZ_and_thorax.pckl", 'rb') as file: new_dict3 = pickle.load(file)
 
 # Print the dic ###########################################
 # print(new_dict)
