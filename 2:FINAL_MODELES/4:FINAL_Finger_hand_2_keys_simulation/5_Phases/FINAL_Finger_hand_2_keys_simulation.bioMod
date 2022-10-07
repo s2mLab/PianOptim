@@ -151,7 +151,7 @@ endsegment
 // Marker attacks //
 marker high_square
     parent ground
-	    position 0 0.0215 0.0
+	    position 0 0.0215 0
 	endmarker
 
 marker low_square

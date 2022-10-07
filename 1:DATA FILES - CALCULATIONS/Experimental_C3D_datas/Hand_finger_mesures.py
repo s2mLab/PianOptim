@@ -4,7 +4,7 @@ import numpy
 from numpy import linalg as la
 from matplotlib import pyplot as plt
 
-c = c3d('BasPreStaA.c3d')
+c3d = c3d('BasPreStaA.c3d')
 
 ## Hand vectors far away from the origin
 STYLrad = []
@@ -14,12 +14,12 @@ STYLulna = []
 STYLrad_up = []
 STYLulna_up = []
 for i in range(3):
-    meta2.append(c['data']['points'][i][41][200])
-    meta5.append(c['data']['points'][i][47][200])
-    STYLrad.append(c['data']['points'][i][30][200])
-    STYLrad_up.append(c['data']['points'][i][31][200])
-    STYLulna.append(c['data']['points'][i][33][200])
-    STYLulna_up.append(c['data']['points'][i][32][200])
+    meta2.append(c3d['data']['points'][i][41][200])
+    meta5.append(c3d['data']['points'][i][47][200])
+    STYLrad.append(c3d['data']['points'][i][30][200])
+    STYLrad_up.append(c3d['data']['points'][i][31][200])
+    STYLulna.append(c3d['data']['points'][i][33][200])
+    STYLulna_up.append(c3d['data']['points'][i][32][200])
 
 print("Hand vectors far away from the origin : ", "\n", STYLrad, "\n", meta2, "\n", meta5, "\n", STYLulna, "\n")
 ####
@@ -134,3 +134,4 @@ print("Milieu du segment meta2 et meta5", milieuxx, milieuyy, milieuzz)
 print((a2-a5)/2)
 print((b2-b5)/2)
 print((c2-c5)/2)
+

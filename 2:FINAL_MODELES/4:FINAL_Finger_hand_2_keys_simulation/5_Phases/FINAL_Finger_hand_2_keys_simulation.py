@@ -49,7 +49,7 @@ def custom_func_track_finger_marker_key(all_pn: PenaltyNodeList, marker: str) ->
     return markers_diff_key
 
 def prepare_ocp(
-        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/2: FINAL_MODELES/4: FINAL_Finger_hand_2_keys_simulation/FINAL_Finger_hand_2_keys_simulation.bioMod",
+        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/2:FINAL_MODELES/4:FINAL_Finger_hand_2_keys_simulation/5_Phases/FINAL_Finger_hand_2_keys_simulation.bioMod",
         ode_solver: OdeSolver = OdeSolver.COLLOCATION()
 ) -> OptimalControlProgram:
     biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
@@ -57,7 +57,7 @@ def prepare_ocp(
 
     # Average of N frames by phase and the phases time, both measured with the motion capture datas.
     # Name of the datas file : MotionCaptureDatas_Frames.xlsx
-    n_shooting = (7*2, 7*2, 30*2, 7*2, 7*2)
+    n_shooting = (7, 7, 30, 7, 7)
     phase_time = (0.044, 0.051, 0.36574653, 0.044, 0.051)
     tau_min, tau_max, tau_init = -200, 200, 0
     vel_pushing = 0.00372
@@ -193,7 +193,7 @@ def main():
     # --- Show results --- #
     sol.animate(markers_size=0.0010, contacts_size=0.0010, show_floor=False,
                 show_segments_center_of_mass=True, show_global_ref_frame=True,
-                show_local_ref_frame=False,),
+                show_local_ref_frame=False),
     sol.graphs(show_bounds=True)
 
 

@@ -15,7 +15,7 @@ for i in range(2, len(POS)-1):
    vel = ((POS[i+1] - POS[i-1]) / (2/150))
    velocity.append(vel)
 velocity = [abs(ele) for ele in velocity]
-# Explenations :
+# Explanations :
 # 2/150 bc we want the velocity between i+1 et i-1 frame
 # We take the absolute velocity values
 
