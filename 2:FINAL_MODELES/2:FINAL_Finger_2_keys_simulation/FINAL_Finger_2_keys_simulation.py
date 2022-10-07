@@ -43,22 +43,22 @@ def custom_func_track_finger_marker_key(all_pn: PenaltyNodeList, marker: str) ->
     finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, marker)
     markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
     finger_marker = markers[:, finger_marker_idx]
-    key = ((0.005*sin(314.2*(finger_marker[1]+0.2))) / (sqrt(0.0001**2 + sin(314.2*(finger_marker[1] + 0.2))**2))-0.005)
+    key = ((0.005*sin(137*(finger_marker[1]+0.0129))) / (sqrt(0.001**2 + sin(137*(finger_marker[1] + 0.0129))**2))-0.005)
 
     # if_else( condition, si c'est vrai fait ca',  sinon fait ca)
     markers_diff_key = if_else(
         finger_marker[1] < 0.01,
         finger_marker[2] - 0,
         if_else(
-            finger_marker[1] < 0.02,  # condition
+            finger_marker[1] < 0.033,  # condition
             finger_marker[2] - key,  # True
-            finger_marker[2]-0,  # False
+            finger_marker[2] - 0,  # False
         )
     )
     return markers_diff_key
 
 
-def prepare_ocp(biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/2: FINAL_MODELES/2: FINAL_Finger_2_keys_simulation/FINAL_Finger_2_keys_simulation.bioMod",
+def prepare_ocp(biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/2:FINAL_MODELES/2:FINAL_Finger_2_keys_simulation/FINAL_Finger_2_keys_simulation.bioMod",
                 ode_solver: OdeSolver = OdeSolver.COLLOCATION()
 ) -> OptimalControlProgram:
     biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
@@ -199,8 +199,10 @@ def main():
     sol = ocp.solve(solver)
 
     # --- Show results --- #
-    sol.animate(),
     # show_segments_center_of_mass : origin du marker
+    sol.animate(markers_size=0.0010, contacts_size=0.0010, show_floor=False,
+                show_segments_center_of_mass=True, show_global_ref_frame=True,
+                show_local_ref_frame=False),
     sol.graphs(show_bounds=True)
 
 
