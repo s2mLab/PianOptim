@@ -4,6 +4,7 @@
  """
 from casadi import MX, sqrt, if_else, sin
 import time
+import numpy as np
 import biorbd_casadi as biorbd
 from bioptim import (
     PenaltyNode,
@@ -38,6 +39,7 @@ from bioptim import (
     OdeSolver,
     BiorbdInterface,
     Solver,
+    Axis
 )
 
 # Constants from data collect
@@ -121,7 +123,7 @@ def minimize_difference(all_pn: PenaltyNode):
 #   return markers_diff
 
 
-def custom_func_track_markers(all_pn: PenaltyNodeList, marker: str) -> MX:
+def custom_func_track_finger_marker_key(all_pn: PenaltyNodeList, marker: str) -> MX:
     finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, marker)
     markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
     finger_marker = markers[:, finger_marker_idx]
@@ -140,23 +142,9 @@ def custom_func_track_markers(all_pn: PenaltyNodeList, marker: str) -> MX:
     return markers_diff_key
 
 
-# def custom_func_track_markers2(all_pn: PenaltyNodeList, marker: str) -> MX:
-#     finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, marker)
-#     markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
-#     finger_marker = markers[:, finger_marker_idx]
-#
-#     # if_else( condition, si c'est vrai fait ca',  sinon fait ca)
-#     markers_diff_key2 = if_else(
-#         finger_marker[0] < 0,  # condition
-#         finger_marker[0] - 0,  # True
-#         finger_marker[0] - 0,  # False
-#         )
-#     return markers_diff_key2
-
-
 def prepare_ocp(
-        biorbd_model_path: str = "/home/mickaelbegon/Documents/Stage_Mathilde/programation/PianOptim/0: On going/Piano_with_hand_and_key/Piano_with_hand_and_keys.bioMod",
-        ode_solver: OdeSolver = OdeSolver.RK4(),
+        biorbd_model_path: str = "Piano_with_hand_and_keys.bioMod",
+        ode_solver: OdeSolver = OdeSolver.COLLOCATION(),
         long_optim: bool = False,
 ) -> OptimalControlProgram:
 
@@ -183,9 +171,12 @@ def prepare_ocp(
     # Average of N frames by phase and the phases time, both measured with the motion capture datas.
     # Name of the datas file : MotionCaptureDatas_Frames.xlsx
     n_shooting = (7*2, 7*2, 30*2, 7*2, 7*2)
-    final_time = (0.044*2, 0.051*2, 0.2*2, 0.044*2, 0.051*2)
+    final_time = (0.044, 0.051, 0.2, 0.044, 0.051)
     tau_min, tau_max, tau_init = -100, 100, 0
     vel_pushing = 0.00372
+    vel_push_array = np.zeros((1, 12))
+    # 14 : -1 because Node.INTERMEDIATES doesn't count the last node, and -1 bc the first point can't have a velocity
+    vel_push_array[0, :] = vel_pushing
 
     # Add objective functions # Torques generated into articulations
     objective_functions = ObjectiveList()
@@ -195,6 +186,22 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1, phase=3)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1, phase=4)
 
+    # EXPLANATION 1 on EXPLANATIONS_FILE
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=0, weight=0.0001)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=1, weight=0.0001)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=2, weight=0.0001)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=3, weight=0.0001)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=4, weight=0.0001)
+
+    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
+                            target=[0, 0, 0], node=Node.START, phase=0, marker_index=4)
+    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
+                            target=[0, 0, 0], node=Node.START, phase=3, marker_index=4)
+
+    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
+                            target=vel_push_array, axes=Axis.Z, node=Node.INTERMEDIATES, phase=0, marker_index=4)
+    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
+                            target=vel_push_array, axes=Axis.Z, node=Node.INTERMEDIATES, phase=3, marker_index=4)
 
     # Objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q",weight=100)
 
@@ -263,26 +270,16 @@ def prepare_ocp(
                     target=0, node=Node.START, phase=3, marker_index=4)
     constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
                     node=Node.ALL, contact_index=0, min_bound=0, phase=4)
-    constraints.add(custom_func_track_markers,
+
+    constraints.add(custom_func_track_finger_marker_key,
                     node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=2)
 
-    # constraints.add(custom_func_track_markers2,
-    #                 node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=0, phase=1)
-    # constraints.add(custom_func_track_markers2,
-    #                 node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=0, phase=4)
-
-
     # Path constraint # x_bounds = limit conditions
-    # [ phase 0 ] [indice du ddl (0 et 1 position y z, 2 et 3 vitesse y z), time]
-    # (0 =» 1st point, 1 =» all middle points, 2 =» last point)
     x_bounds = BoundsList()
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
-    x_bounds[0][5, 0] = vel_pushing
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
-    x_bounds[2][4, 2] = 0
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
-    x_bounds[3][5, 0] = vel_pushing
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
 
     # Initial guess
@@ -334,6 +331,7 @@ def main():
 
     # --- Solve the program --- #
     solv = Solver.IPOPT(show_online_optim=True)
+    solv.set_maximum_iterations(1000)
     solv.set_linear_solver("ma57")
     tic = time.time()
     sol = ocp.solve(solv)

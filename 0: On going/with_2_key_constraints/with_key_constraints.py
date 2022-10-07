@@ -63,7 +63,7 @@ def custom_func_track_markers_phase3(all_pn: PenaltyNodeList, marker: str) -> MX
     return markers_diff_key3
 
 
-def prepare_ocp(biorbd_model_path: str = "/home/mickaelbegon/Documents/Stage_Mathilde/programation/PianOptim/0: On going/with_2_key_constraints/with_key_constraints.bioMod", ode_solver: OdeSolver = OdeSolver.RK4()
+def prepare_ocp(biorbd_model_path: str = "with_key_constraints.bioMod", ode_solver: OdeSolver = OdeSolver.RK4()
 ) -> OptimalControlProgram:
     biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
                     biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path))
@@ -100,7 +100,7 @@ def prepare_ocp(biorbd_model_path: str = "/home/mickaelbegon/Documents/Stage_Mat
     constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY,
                     target=0, node=Node.START, phase=0, marker_index=1)
     constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
-                    node=Node.ALL, contact_index=0, min_bound=0, phase=1)  # contact index : axe du contact
+                    node=Node.ALL, contact_index=0, min_bound=0, phase=1)
 
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="high_square2", phase=2)

@@ -312,7 +312,7 @@ marker finger_marker
 contact    contact_finger
         parent middle_finger
         position 0 -0.063 0
-        axis    yz
+        axis    xyz
     endcontact
 
 //////

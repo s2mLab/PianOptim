@@ -73,6 +73,7 @@ vel_z_3 = 0.3468823
 vel_z_4 = -0.03609537
 vel_z_5 = 0.38915613
 
+# Standard deviation
 stdev_vel_x_0 = 0.12266391
 stdev_vel_x_1 = 0.05459328
 stdev_vel_x_2 = 0.08348852
@@ -146,12 +147,15 @@ def prepare_ocp(
     # weight : you want to minimize a lot = 10000, to minimize less = 50
     # index : you just want to minimize pelvis ddl, add : index=0 or pelvis and humerus ddl, add : index=[0, 4]
     objective_functions = ObjectiveList()
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=0, index=[0, 1, 2, 3, 7, 8, 9, 10])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1, phase=0, index=[4, 5, 6])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=1, index=[0, 1, 2, 3, 7, 8, 9, 10])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1, phase=1, index=[4, 5, 6])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=2, index=[0, 1, 2, 3, 7, 8, 9, 10])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1, phase=2, index=[4, 5, 6])
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=0,
+                            index=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1, phase=0, index=[4, 5, 6])
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=1,
+                            index=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1, phase=1, index=[4, 5, 6])
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=2,
+                            index=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1, phase=2, index=[4, 5, 6])
 
     # Objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q",weight=100)
 

@@ -101,7 +101,7 @@ marker finger_marker
 contact    contact_finger
         parent finger
         position 0.063 0 0
-        axis    yz
+        axis    xyz
     endcontact
 
 ////// Piano //////
