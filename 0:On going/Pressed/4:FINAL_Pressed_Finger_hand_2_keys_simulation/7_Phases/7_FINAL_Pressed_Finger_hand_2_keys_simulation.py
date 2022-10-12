@@ -58,16 +58,16 @@ def prepare_ocp(
 
     # Average of N frames by phase and the phases time, both measured with the motion capture datas.
     # Name of the datas file : MotionCaptureDatas_Frames.xlsx
-    n_shooting = (15, 7, 7, 30, 15, 7, 7)
-    phase_time = (0.2, 0.044, 0.051, 0.36574653, 0.2, 0.044, 0.051)
+    n_shooting = (15, 7, 7, 20, 15, 7, 7)
+    phase_time = (0.2, 0.044, 0.051, 0.5, 0.2, 0.044, 0.051)
     tau_min, tau_max, tau_init = -200, 200, 0
-    vel_pushing = 0.00372
+    vel_pushing = 0.372
 
     # Find the number of the node at 75 % of the phase 0 and 3 in order to apply the vel_pushing at this node
     three_quarter_node_phase_1 = ceil(0.75 * n_shooting[1])
-    three_quarter_node_phase_4 = ceil(0.75 * n_shooting[5])
+    three_quarter_node_phase_5 = ceil(0.75 * n_shooting[5])
 
-    # Multiples vel_pushing for apply this velocity on multiples nodes.
+    # Multiples vel_pushing to apply this velocity on multiples nodes. No USED here.
     # 14 : -1 because Node.INTERMEDIATES doesn't count the last node, and -1 bc the first point can't have a velocity
     vel_push_array = np.zeros((1, 12))
     vel_push_array[0, :] = vel_pushing
@@ -95,14 +95,14 @@ def prepare_ocp(
                             target=[0, 0, 0], node=Node.START, phase=1, marker_index=4,
                             weight=1000)
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=[0, 0, 0], node=Node.START, phase=4, marker_index=4,
+                            target=[0, 0, 0], node=Node.START, phase=5, marker_index=4,
                             weight=1000)
 
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
                             target=vel_pushing, node=three_quarter_node_phase_1, phase=1, marker_index=4,
                             weight=1000)
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=vel_pushing, node=three_quarter_node_phase_4, phase=5, marker_index=4,
+                            target=vel_pushing, node=three_quarter_node_phase_5, phase=5, marker_index=4,
                             weight=1000)
     # Dynamics
     dynamics = DynamicsList()

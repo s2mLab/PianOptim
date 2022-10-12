@@ -57,16 +57,16 @@ def prepare_ocp(
 
     # Average of N frames by phase and the phases time, both measured with the motion capture datas.
     # Name of the datas file : MotionCaptureDatas_Frames.xlsx
-    n_shooting = (7, 7, 30, 7, 7)
-    phase_time = (0.044, 0.051, 0.36574653, 0.044, 0.051)
+    n_shooting = (7, 7, 20, 7, 7)
+    phase_time = (0.044, 0.051, 0.5, 0.044, 0.051)
     tau_min, tau_max, tau_init = -200, 200, 0
-    vel_pushing = 0.00372
+    vel_pushing = 0.372
 
     # Find the number of the node at 75 % of the phase 0 and 3 in order to apply the vel_pushing at this node
     three_quarter_node_phase_0 = ceil(0.75 * n_shooting[0])
     three_quarter_node_phase_3 = ceil(0.75 * n_shooting[3])
 
-    # Multiples vel_pushing for apply this velocity on multiples nodes.
+    # Multiples vel_pushing to apply this velocity on multiples nodes.
     # 14 : -1 because Node.INTERMEDIATES doesn't count the last node, and -1 bc the first point can't have a velocity
     vel_push_array = np.zeros((1, 12))
     vel_push_array[0, :] = vel_pushing
