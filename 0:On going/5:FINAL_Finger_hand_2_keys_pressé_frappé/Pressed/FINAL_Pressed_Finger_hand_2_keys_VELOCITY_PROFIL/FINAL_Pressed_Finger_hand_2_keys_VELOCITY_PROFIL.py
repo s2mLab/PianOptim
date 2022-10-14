@@ -49,7 +49,7 @@ def custom_func_track_finger_marker_key(all_pn: PenaltyNodeList, marker: str) ->
     return markers_diff_key
 
 def prepare_ocp(
-        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On going/Pressed/4:FINAL_Pressed_Finger_hand_2_keys_simulation/7_Phases/7_FINAL_Pressed_Finger_hand_2_keys_simulation.bioMod",
+        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On going/4:FINAL_Finger_hand_2_keys/Pressed/FINAL_Pressed_Finger_hand_2_keys_VELOCITY_PROFIL/FINAL_Pressed_Finger_hand_2_keys_VELOCITY_PROFIL.bioMod",
         ode_solver: OdeSolver = OdeSolver.COLLOCATION()
 ) -> OptimalControlProgram:
     biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
@@ -58,19 +58,15 @@ def prepare_ocp(
 
     # Average of N frames by phase and the phases time, both measured with the motion capture datas.
     # Name of the datas file : MotionCaptureDatas_Frames.xlsx
-    n_shooting = (15, 7, 7, 20, 15, 7, 7)
+    n_shooting = (20, 7, 7, 20, 20, 7, 7)
     phase_time = (0.2, 0.044, 0.051, 0.5, 0.2, 0.044, 0.051)
     tau_min, tau_max, tau_init = -200, 200, 0
-    vel_pushing = 0.372
 
-    # Find the number of the node at 75 % of the phase 0 and 3 in order to apply the vel_pushing at this node
-    three_quarter_node_phase_1 = ceil(0.75 * n_shooting[1])
-    three_quarter_node_phase_5 = ceil(0.75 * n_shooting[5])
-
-    # Multiples vel_pushing to apply this velocity on multiples nodes. No USED here.
-    # 14 : -1 because Node.INTERMEDIATES doesn't count the last node, and -1 bc the first point can't have a velocity
-    vel_push_array = np.zeros((1, 12))
-    vel_push_array[0, :] = vel_pushing
+    vel_push_array = [[-35.06704330444336, -23.361932854903376, -11.16777420043945, -1.2673849808542343,
+                       8.037519956889906, 18.463277314838614, 28.329743837055407, 32.98960936696905,
+                       31.613532618472448, 23.622918379934198, 11.880765212209592, -2.5198113290887223,
+                       -23.625845658151754, -53.60208109805467, -96.1894647698654, -152.24099711367958,
+                       -222.57760499653068, -293.9359504298161, -337.82440687480727, -368.66283416748047]]
 
     # Add objective functions
     objective_functions = ObjectiveList()
@@ -99,10 +95,10 @@ def prepare_ocp(
                             weight=1000)
 
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=vel_pushing, node=three_quarter_node_phase_1, phase=1, marker_index=4,
+                            target=vel_push_array, node=Node.ALL, phase=1, marker_index=4,
                             weight=1000)
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=vel_pushing, node=three_quarter_node_phase_5, phase=5, marker_index=4,
+                            target=vel_push_array, node=Node.ALL, phase=5, marker_index=4,
                             weight=1000)
     # Dynamics
     dynamics = DynamicsList()
