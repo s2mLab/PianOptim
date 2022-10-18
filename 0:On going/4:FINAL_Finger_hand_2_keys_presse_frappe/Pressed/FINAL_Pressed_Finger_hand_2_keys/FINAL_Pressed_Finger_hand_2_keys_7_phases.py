@@ -49,17 +49,17 @@ def custom_func_track_finger_marker_key(all_pn: PenaltyNodeList, marker: str) ->
     return markers_diff_key
 
 def prepare_ocp(
-        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On going/4:FINAL_Finger_hand_2_keys/Pressed/FINAL_Pressed_Finger_hand_2_keys/7_Phases/FINAL_Pressed_Finger_hand_2_keys.bioMod",
+        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On going/4:FINAL_Finger_hand_2_keys_pressé_frappé/Pressed/FINAL_Pressed_Finger_hand_2_keys/FINAL_Pressed_Finger_hand_2_keys_7_phases.bioMod",
         ode_solver: OdeSolver = OdeSolver.COLLOCATION()
 ) -> OptimalControlProgram:
     biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
                     biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
-                    biorbd.Model(biorbd_model_path))
+                    biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path))
 
     # Average of N frames by phase and the phases time, both measured with the motion capture datas.
     # Name of the datas file : MotionCaptureDatas_Frames.xlsx
-    n_shooting = (15, 7, 7, 20, 15, 7, 7)
-    phase_time = (0.2, 0.044, 0.051, 0.5, 0.2, 0.044, 0.051)
+    n_shooting = (150, 7, 7, 60, 15, 7, 7, 75)
+    phase_time = (1, 0.044, 0.051, 0.4, 0.1, 0.044, 0.051, 0.5)
     tau_min, tau_max, tau_init = -200, 200, 0
     vel_pushing = 0.372
 
@@ -81,6 +81,8 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=4, weight=1)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=5, weight=1)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=6, weight=1)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=7, weight=1)
+
 
     # EXPLANATION 1 on EXPLANATIONS_FILE
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=0, weight=0.0001)
@@ -90,6 +92,7 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=4, weight=0.0001)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=5, weight=0.0001)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=6, weight=0.0001)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=7, weight=0.0001)
 
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
                             target=[0, 0, 0], node=Node.START, phase=1, marker_index=4,
@@ -113,6 +116,8 @@ def prepare_ocp(
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, with_contact=True, phase=4)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=5)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, with_contact=True, phase=6)
+    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=7)
+
 
     # Constraints
     constraints = ConstraintList()
@@ -137,12 +142,16 @@ def prepare_ocp(
     constraints.add(custom_func_track_finger_marker_key,
                     node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=3)
 
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
+                    node=Node.END, first_marker="finger_marker", second_marker="high_square", phase=7)
+
     phase_transition = PhaseTransitionList()
     phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=1)
     phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=5)
 
     # Path constraint
     x_bounds = BoundsList()
+    x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
@@ -160,6 +169,7 @@ def prepare_ocp(
     x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
     x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
     x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
+    x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
 
     # Define control path constraint
     u_bounds = BoundsList()
@@ -170,8 +180,10 @@ def prepare_ocp(
     u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
     u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
     u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
+    u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
 
     u_init = InitialGuessList()
+    u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
     u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
     u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
     u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())

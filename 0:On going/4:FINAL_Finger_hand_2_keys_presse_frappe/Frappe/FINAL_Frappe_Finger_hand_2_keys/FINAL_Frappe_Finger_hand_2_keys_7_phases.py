@@ -48,25 +48,26 @@ def custom_func_track_finger_marker_key(all_pn: PenaltyNodeList, marker: str) ->
     )
     return markers_diff_key
 
+
 def prepare_ocp(
-        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On going/4:FINAL_Finger_hand_2_keys/Pressed/FINAL_Pressed_Finger_hand_2_keys_VELOCITY_PROFIL/FINAL_Pressed_Finger_hand_2_keys_VELOCITY_PROFIL.bioMod",
+        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On going/4:FINAL_Finger_hand_2_keys_pressé_frappé/Frappe/FINAL_Frappe_Finger_hand_2_keys/FINAL_Frappe_Finger_hand_2_keys_7_phases.bioMod",
         ode_solver: OdeSolver = OdeSolver.COLLOCATION()
 ) -> OptimalControlProgram:
     biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
                     biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
-                    biorbd.Model(biorbd_model_path))
+                    biorbd.Model(biorbd_model_path)
+                    )
 
     # Average of N frames by phase and the phases time, both measured with the motion capture datas.
     # Name of the datas file : MotionCaptureDatas_Frames.xlsx
-    n_shooting = (20, 7, 7, 20, 20, 7, 7)
-    phase_time = (0.2, 0.044, 0.051, 0.5, 0.2, 0.044, 0.051)
+    n_shooting = (150, 4, 9, 75, 4, 9, 75)
+    phase_time = (1, 0.027, 0.058, 0.5, 0.027, 0.058, 0.5)
     tau_min, tau_max, tau_init = -200, 200, 0
+    vel_pushing = 0.412
 
-    vel_push_array = [[-35.06704330444336, -23.361932854903376, -11.16777420043945, -1.2673849808542343,
-                       8.037519956889906, 18.463277314838614, 28.329743837055407, 32.98960936696905,
-                       31.613532618472448, 23.622918379934198, 11.880765212209592, -2.5198113290887223,
-                       -23.625845658151754, -53.60208109805467, -96.1894647698654, -152.24099711367958,
-                       -222.57760499653068, -293.9359504298161, -337.82440687480727, -368.66283416748047]]
+    # Find the number of the node at 75 % of the phase 0 and 3 in order to apply the vel_pushing at this node
+    three_quarter_node_phase_1 = ceil(0.75 * n_shooting[1])
+    three_quarter_node_phase_5 = ceil(0.75 * n_shooting[4])
 
     # Add objective functions
     objective_functions = ObjectiveList()
@@ -88,34 +89,28 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=6, weight=0.0001)
 
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=[0, 0, 0], node=Node.START, phase=1, marker_index=4,
+                            target=vel_pushing, node=three_quarter_node_phase_1, phase=1, marker_index=4,
                             weight=1000)
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=[0, 0, 0], node=Node.START, phase=5, marker_index=4,
-                            weight=1000)
-
-    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=vel_push_array, node=Node.ALL, phase=1, marker_index=4,
-                            weight=1000)
-    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=vel_push_array, node=Node.ALL, phase=5, marker_index=4,
+                            target=vel_pushing, node=three_quarter_node_phase_5, phase=4, marker_index=4,
                             weight=1000)
     # Dynamics
     dynamics = DynamicsList()
-    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, with_contact=True, phase=0)
+    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=0)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=1)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, with_contact=True, phase=2)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=3)
-    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, with_contact=True, phase=4)
-    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=5)
-    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, with_contact=True, phase=6)
+    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=4)
+    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, with_contact=True, phase=5)
+    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=6)
 
     # Constraints
     constraints = ConstraintList()
+
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.START, first_marker="finger_marker", second_marker="high_square", phase=0)
-    constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
-                    node=Node.ALL, contact_index=0, min_bound=0, phase=0)
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
+                    node=Node.END, first_marker="finger_marker", second_marker="high_square", phase=0)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="low_square", phase=1)
     constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
@@ -123,19 +118,20 @@ def prepare_ocp(
 
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="high_square2", phase=3)
-    constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
-                    node=Node.ALL, contact_index=0, min_bound=0, phase=4)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
-                    node=Node.END, first_marker="finger_marker", second_marker="low_square2", phase=5)
+                    node=Node.END, first_marker="finger_marker", second_marker="low_square2", phase=4)
     constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
-                    node=Node.ALL, contact_index=0, min_bound=0, phase=6)
+                    node=Node.ALL, contact_index=0, min_bound=0, phase=5)
 
     constraints.add(custom_func_track_finger_marker_key,
                     node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=3)
 
+    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
+                    node=Node.END, first_marker="finger_marker", second_marker="high_square", phase=6)
+
     phase_transition = PhaseTransitionList()
     phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=1)
-    phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=5)
+    phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=4)
 
     # Path constraint
     x_bounds = BoundsList()
