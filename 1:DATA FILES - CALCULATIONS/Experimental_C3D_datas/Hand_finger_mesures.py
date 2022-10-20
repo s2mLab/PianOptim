@@ -4,7 +4,7 @@ import numpy
 from numpy import linalg as la
 from matplotlib import pyplot as plt
 
-c3d = c3d('BasPreStaA.c3d')
+c3d = c3d('004_BasPreStaA.c3d')
 
 ## Hand vectors far away from the origin
 STYLrad = []

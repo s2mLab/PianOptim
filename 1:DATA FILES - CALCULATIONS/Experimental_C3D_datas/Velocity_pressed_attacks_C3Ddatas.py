@@ -9,7 +9,7 @@ from scipy import interpolate
 # Data Points
 #     # So each frame of the animation is printed, each frame has 75 datapoints (3 xyz, residual value, cameras value)
 
-c = c3d('../BasPreStaA.c3d')
+c = c3d('004_BasPreStaA.c3d')
 
 # General velocity vector
 POS = c['data']['points'][2][46][:]

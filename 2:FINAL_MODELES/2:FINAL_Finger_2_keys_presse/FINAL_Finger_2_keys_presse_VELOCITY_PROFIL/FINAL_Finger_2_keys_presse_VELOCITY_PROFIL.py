@@ -59,7 +59,7 @@ def custom_func_track_finger_marker_key(all_pn: PenaltyNodeList, marker: str) ->
     return markers_diff_key
 
 
-def prepare_ocp(biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/2:FINAL_MODELES/2:FINAL_Finger_2_keys_simulation/FINAL_Finger_2_keys_simulation.bioMod",
+def prepare_ocp(biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/2:FINAL_MODELES/2:FINAL_Finger_2_keys_presse/FINAL_Finger_2_keys_presse_VELOCITY_PROFIL/FINAL_Finger_2_keys_presse_VELOCITY_PROFIL.bioMod",
                 ode_solver: OdeSolver = OdeSolver.COLLOCATION()
 ) -> OptimalControlProgram:
     biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
