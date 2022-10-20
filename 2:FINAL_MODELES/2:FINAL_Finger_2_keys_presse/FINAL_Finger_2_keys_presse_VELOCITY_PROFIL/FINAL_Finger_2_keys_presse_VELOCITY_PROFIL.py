@@ -67,19 +67,12 @@ def prepare_ocp(biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/Pia
 
     # Average of N frames by phase and the phases time, both measured with the motion capture datas.
     # Name of the datas file : MotionCaptureDatas_Frames.xlsx
-    n_shooting = (7*2, 7*2, 20*2, 7*2, 7*2)
+    n_shooting = (7, 7, 20, 7, 7)
     phase_time = (0.044, 0.051, 0.5, 0.044, 0.051)
     tau_min, tau_max, tau_init = -200, 200, 0
-    vel_pushing = 0.372
 
-    # Find the number of the node at 75 % of the phase 0 and 3 in order to apply the vel_pushing at this node
-    three_quarter_node_phase_0 = ceil(0.75 * n_shooting[0])
-    three_quarter_node_phase_3 = ceil(0.75 * n_shooting[3])
-
-    # Multiples vel_pushing to apply this velocity on multiples nodes.
-    # 14 : -1 because Node.INTERMEDIATES doesn't count the last node, and -1 bc the first point can't have a velocity
-    vel_push_array = np.zeros((1, 12))
-    vel_push_array[0, :] = vel_pushing
+    vel_push_array = [[-0.0876676082611084, -0.009917981284005307, 0.05772005489894323, 0.07722724505833216,
+                       -0.00027126584734237325, -0.19082199505397259, -0.6090696471078056, -0.9216570854187012]]
 
     # Add objective functions
     objective_functions = ObjectiveList()
@@ -104,10 +97,10 @@ def prepare_ocp(biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/Pia
                             weight=1000)
 
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=vel_pushing, node=three_quarter_node_phase_0, phase=0, marker_index=0
+                            target=vel_push_array, node=Node.ALL, axes=Axis.Z, phase=0, marker_index=0
                             , weight=1000)
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=vel_pushing, node=three_quarter_node_phase_3, phase=3, marker_index=0
+                            target=vel_push_array, node=Node.ALL, axes=Axis.Z, phase=3, marker_index=0
                             , weight=1000)
     # Dynamics
     dynamics = DynamicsList()

@@ -59,11 +59,10 @@ def prepare_ocp(
                     )
 
     # Average of N frames by phase and the phases time, both measured with the motion capture datas.
-    # Name of the datas file : MotionCaptureDatas_Frames.xlsx
-    n_shooting = (150, 4, 9, 75, 4, 9, 75)
+    n_shooting = (100, 6, 9, 50, 6, 9, 50)
     phase_time = (1, 0.027, 0.058, 0.5, 0.027, 0.058, 0.5)
     tau_min, tau_max, tau_init = -200, 200, 0
-    vel_pushing = 0.412
+    vel_pushing = -0.32298261
 
     # Find the number of the node at 75 % of the phase 0 and 3 in order to apply the vel_pushing at this node
     three_quarter_node_phase_1 = ceil(0.75 * n_shooting[1])
@@ -109,7 +108,6 @@ def prepare_ocp(
 
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.START, first_marker="finger_marker", second_marker="high_square", phase=0)
-
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="high_square", phase=0)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,

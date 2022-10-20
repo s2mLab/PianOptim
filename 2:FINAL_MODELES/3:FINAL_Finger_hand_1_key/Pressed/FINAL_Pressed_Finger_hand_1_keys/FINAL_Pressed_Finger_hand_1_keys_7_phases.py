@@ -58,10 +58,10 @@ def prepare_ocp(
 
     # Average of N frames by phase and the phases time, both measured with the motion capture datas.
     # Name of the datas file : MotionCaptureDatas_Frames.xlsx
-    n_shooting = (150, 7, 7, 60, 15, 7, 7, 75)
-    phase_time = (1, 0.044, 0.051, 0.4, 0.1, 0.044, 0.051, 0.5)
+    n_shooting = (100, 7, 7, 35, 15, 7, 7, 50)
+    phase_time = (1, 0.044, 0.051, 0.35, 0.15, 0.044, 0.051, 0.5)
     tau_min, tau_max, tau_init = -200, 200, 0
-    vel_pushing = 0.372
+    vel_pushing = -0.24285093
 
     # Find the number of the node at 75 % of the phase 0 and 3 in order to apply the vel_pushing at this node
     three_quarter_node_phase_1 = ceil(0.75 * n_shooting[1])
@@ -95,13 +95,6 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=7, weight=0.0001)
 
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=[0, 0, 0], node=Node.START, phase=1, marker_index=4,
-                            weight=1000)
-    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=[0, 0, 0], node=Node.START, phase=5, marker_index=4,
-                            weight=1000)
-
-    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
                             target=vel_pushing, node=three_quarter_node_phase_1, phase=1, marker_index=4,
                             weight=1000)
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
@@ -109,11 +102,11 @@ def prepare_ocp(
                             weight=1000)
     # Dynamics
     dynamics = DynamicsList()
-    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, with_contact=True, phase=0)
+    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=0)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=1)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, with_contact=True, phase=2)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=3)
-    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, with_contact=True, phase=4)
+    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=4)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=5)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, with_contact=True, phase=6)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=7)
@@ -122,18 +115,14 @@ def prepare_ocp(
     # Constraints
     constraints = ConstraintList()
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
-                    node=Node.START, first_marker="finger_marker", second_marker="high_square", phase=0)
-    constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
-                    node=Node.ALL, contact_index=0, min_bound=0, phase=0)
+                    node=Node.ALL, first_marker="finger_marker", second_marker="high_square", phase=0)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="low_square", phase=1)
     constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
                     node=Node.ALL, contact_index=0, min_bound=0, phase=2)
 
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
-                    node=Node.END, first_marker="finger_marker", second_marker="high_square", phase=3)
-    constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
-                    node=Node.ALL, contact_index=0, min_bound=0, phase=4)
+                    node=Node.ALL, first_marker="finger_marker", second_marker="high_square", phase=4)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="low_square", phase=5)
     constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,

@@ -280,9 +280,9 @@ def prepare_ocp(
                     node=Node.ALL, contact_index=0, min_bound=0, phase=2)
 
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
-                    node=Node.END, first_marker="finger_marker", second_marker="high_square2", phase=3)
+                    node=Node.END, first_marker="finger_marker", second_marker="high_square", phase=3)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
-                    node=Node.END, first_marker="finger_marker", second_marker="low_square2", phase=4)
+                    node=Node.END, first_marker="finger_marker", second_marker="low_square", phase=4)
     constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
                     node=Node.ALL, contact_index=0, min_bound=0, phase=5)
 
