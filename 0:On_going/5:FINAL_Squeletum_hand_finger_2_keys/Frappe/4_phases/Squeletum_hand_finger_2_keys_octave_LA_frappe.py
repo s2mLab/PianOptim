@@ -2,26 +2,14 @@
  !! Les axes du modèle ne sont pas les mêmes que ceux généralement utilisés en biomécanique : x axe de flexion, y supination/pronation, z vertical
  ici on a : Y -» X , Z-» Y et X -» Z
  """
-from casadi import MX, sqrt, if_else, sin
+from casadi import MX, sqrt, if_else, sin, vertcat
 import time
 from math import ceil
 import numpy as np
+from numpy import ndarray
 import biorbd_casadi as biorbd
 from bioptim import (
     PenaltyNode,
-    Axis,
-    ObjectiveList,
-    DynamicsList,
-    ConstraintFcn,
-    BoundsList,
-    Node,
-    OptimalControlProgram,
-    DynamicsFcn,
-    ObjectiveFcn,
-    ConstraintList,
-    QAndQDotBounds,
-    OdeSolver,
-    Solver,
     ObjectiveList,
     PhaseTransitionFcn,
     DynamicsList,
@@ -120,31 +108,76 @@ mean_time_phase_4 = 1.00338542  # phase 4 is from last marker to first marker
 def minimize_difference(all_pn: PenaltyNode):
     return all_pn[0].nlp.controls.cx_end - all_pn[1].nlp.controls.cx
 
-# def custom_func_track_markers():
-#   return markers_diff
+
+# def custom_func_track_finger_marker_key(all_pn: PenaltyNodeList, marker: str) -> MX:
+#     finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, marker)
+#     markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
+#     finger_marker = markers[:, finger_marker_idx]
+#     key = ((0.005*sin(137*(finger_marker[1]+0.0129)))
+#       / (sqrt(0.001**2 + sin(137*(finger_marker[1] + 0.0129))**2))-0.005)
+#
+#     # if_else( condition, si c'est vrai fait ca',  sinon fait ca)
+#     markers_diff_key = if_else(
+#         finger_marker[1] < 0.01,
+#         finger_marker[2] - 0,
+#         if_else(
+#             finger_marker[1] < 0.033,  # condition
+#             finger_marker[2] - key,  # True
+#             finger_marker[2]-0,  # False
+#         )
+#     )
+#     return markers_diff_key
+
+# def custom_func_track_line_finger_5(all_pn: PenaltyNodeList, marker: str) -> MX:
+#     finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, marker)
+#     markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
+#     finger_marker = markers[:, finger_marker_idx]
+#
+#     # if_else( condition, si c'est vrai fait ca',  sinon fait ca)
+#     markers_diff_key2 = if_else(
+#         finger_marker[2] < -0.01,
+#         finger_marker[2] - -0.01,
+#         finger_marker[2] - -0.01
+#     )
+#     return markers_diff_key2
 
 
-def custom_func_track_finger_marker_key(all_pn: PenaltyNodeList, marker: str) -> MX:
-    finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, marker)
-    markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
-    finger_marker = markers[:, finger_marker_idx]
-    key = ((0.005*sin(137*(finger_marker[1]+0.0129))) / (sqrt(0.001**2 + sin(137*(finger_marker[1] + 0.0129))**2))-0.005)
+def custom_func_track_rotx_finger_2(all_pn: PenaltyNodeList) -> MX:
 
-    # if_else( condition, si c'est vrai fait ca',  sinon fait ca)
-    markers_diff_key = if_else(
-        finger_marker[1] < 0.01,
-        finger_marker[2] - 0,
-        if_else(
-            finger_marker[1] < 0.033,  # condition
-            finger_marker[2] - key,  # True
-            finger_marker[2]-0,  # False
-        )
-    )
-    return markers_diff_key
+    model = all_pn.nlp.model
+    rotation_matrix_index = biorbd.segment_index(model, "2proxph_2mcp_flexion")
+
+    q = all_pn.nlp.states["q"].mx
+    rotation_matrix = all_pn.nlp.model.globalJCS(q, rotation_matrix_index).to_mx()
+
+    output = vertcat(rotation_matrix[0, 1],
+            rotation_matrix[0, 2],
+            rotation_matrix[1, 0],
+            rotation_matrix[2, 0],
+            rotation_matrix[0, 0] - MX(1)
+                     )
+
+    rotation_matrix = BiorbdInterface.mx_to_cx("rot_mat", output, all_pn.nlp.states["q"])
+
+    # Q0 = np.zeros((biorbd_model[0].nbQ()))
+    # rotation_matrix = biorbd_model[0].globalJCS(Q0, biorbd_model[0].nbSegment() - 51).rot()
+
+
+    # rot_matrix_list = [
+    #     rotation_matrix[[0, 1], rotation_matrix_index],
+    #     rotation_matrix[[0, 2], rotation_matrix_index],
+    #     rotation_matrix[[1, 0], rotation_matrix_index],
+    #     rotation_matrix[[2, 0], rotation_matrix_index],
+    #     rotation_matrix[[0, 0], rotation_matrix_index],
+    # ]
+    # for i in range(4):
+    #     rotation_matrix[[0, 1], rotation_matrix_index]
+
+    return rotation_matrix
 
 
 def prepare_ocp(
-        biorbd_model_path: str = "Piano_with_hand_and_keys.bioMod",
+        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On going/5:FINAL_Squeletum_hand_finger_2_keys/Frappe/4 phases/Squeletum_hand_finger_3D_2_keys_octave_LA_frappe.bioMod",
         ode_solver: OdeSolver = OdeSolver.COLLOCATION(),
         long_optim: bool = False,
 ) -> OptimalControlProgram:
@@ -167,23 +200,16 @@ def prepare_ocp(
     """
 
     biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
-                    biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
                     biorbd.Model(biorbd_model_path))
 
     # Average of N frames by phase and the phases time, both measured with the motion capture datas.
-    n_shooting = (100, 6, 9, 50, 6, 9, 50)
-    phase_time = (1, 0.027, 0.058, 0.5, 0.027, 0.058, 0.5)
+    n_shooting = (30, 6, 9, 50)
+    phase_time = (0.3, 0.027, 0.058, 0.5)
     tau_min, tau_max, tau_init = -200, 200, 0
     vel_pushing = -0.32298261
 
     # Find the number of the node at 75 % of the phase 0 and 3 in order to apply the vel_pushing at this node
     three_quarter_node_phase_1 = ceil(0.75 * n_shooting[1])
-    three_quarter_node_phase_5 = ceil(0.75 * n_shooting[4])
-
-    # Multiples vel_pushing to apply this velocity on multiples nodes. No USED here.
-    # 14 : -1 because Node.INTERMEDIATES doesn't count the last node, and -1 bc the first point can't have a velocity
-    vel_push_array = np.zeros((1, 12))
-    vel_push_array[0, :] = vel_pushing
 
     # Add objective functions # Torques generated into articulations
     objective_functions = ObjectiveList()
@@ -191,34 +217,26 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=1, weight=1)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=2, weight=1)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=1)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=4, weight=1)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=5, weight=1)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=6, weight=1)
 
     # EXPLANATION 1 on EXPLANATIONS_FILE
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=0, weight=0.0001)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=1, weight=0.0001)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=2, weight=0.0001)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=3, weight=0.0001)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=4, weight=0.0001)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=5, weight=0.0001)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=6, weight=0.0001)
-
-    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=[0, 0, 0], node=Node.START, phase=1, marker_index=4,
-                            weight=1000)
-    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=[0, 0, 0], node=Node.START, phase=5, marker_index=4,
-                            weight=1000)
 
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
                             target=vel_pushing, node=three_quarter_node_phase_1, phase=1, marker_index=4,
                             weight=1000)
-    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=vel_pushing, node=three_quarter_node_phase_5, phase=4, marker_index=4,
-                            weight=1000)
 
-    # Objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q",weight=100)
+    # objective_functions.add(custom_func_track_line_finger_5,
+    #                         custom_type=ObjectiveFcn.Lagrange,
+    #                         node=Node.ALL, marker="finger_marker_5", min_bound=0,
+    #                         max_bound=10000,  phase=0)
+
+    objective_functions.add(custom_func_track_rotx_finger_2,
+                            custom_type=ObjectiveFcn.Lagrange,
+                            node=Node.ALL
+                            , phase=0, weight=10)
 
     # objective_functions.add( # To minimize the difference between 0 and 1
     #     minimize_difference,
@@ -263,9 +281,6 @@ def prepare_ocp(
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=1)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, with_contact=True, phase=2)
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=3)
-    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=4)
-    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, with_contact=True, phase=5)
-    dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=6)
 
     # Constraints
     constraints = ConstraintList()
@@ -281,26 +296,26 @@ def prepare_ocp(
 
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="high_square", phase=3)
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
-                    node=Node.END, first_marker="finger_marker", second_marker="low_square", phase=4)
-    constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
-                    node=Node.ALL, contact_index=0, min_bound=0, phase=5)
-
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
-                    node=Node.END, first_marker="finger_marker", second_marker="high_square", phase=6)
 
     # constraints.add(custom_func_track_finger_marker_key,
-    #                 node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=3)
+    #                 node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=2)
+
+## A enlever si ca marche ##
+    # constraints.add(custom_func_track_hand_line_key, node=Node.ALL, marker="finger_marker_thumb",
+    #                         min_bound=0, max_bound=1000, phase=0)
+    # constraints.add(custom_func_track_hand_line_key, node=Node.ALL, marker="finger_marker_thumb",
+    #                         min_bound=0, max_bound=1000, phase=1)
+    # constraints.add(custom_func_track_hand_line_key, node=Node.ALL, marker="finger_marker_thumb",
+    #                         min_bound=0, max_bound=1000, phase=2)
+    # constraints.add(custom_func_track_hand_line_key, node=Node.ALL, marker="finger_marker_thumb",
+    #                         min_bound=0, max_bound=1000, phase=3)
+
 
     phase_transition = PhaseTransitionList()
     phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=1)
-    phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=4)
 
     # Path constraint
     x_bounds = BoundsList()
-    x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
-    x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
-    x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
@@ -312,9 +327,6 @@ def prepare_ocp(
     x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
     x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
     x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
-    x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
-    x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
-    x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
 
     # Define control path constraint
     u_bounds = BoundsList()
@@ -322,14 +334,8 @@ def prepare_ocp(
     u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
     u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
     u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
-    u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
-    u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
-    u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
 
     u_init = InitialGuessList()
-    u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
-    u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
-    u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
     u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
     u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
     u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
