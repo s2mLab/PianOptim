@@ -6,8 +6,10 @@ from casadi import MX, sqrt, if_else, sin, vertcat
 import time
 from math import ceil
 import numpy as np
+from matplotlib import pyplot as plt
 from numpy import ndarray
 import biorbd_casadi as biorbd
+import pickle
 from bioptim import (
     PenaltyNode,
     ObjectiveList,
@@ -17,6 +19,7 @@ from bioptim import (
     BoundsList,
     InitialGuessList,
     CostType,
+    PlotType,
     PhaseTransitionList,
     Node,
     OptimalControlProgram,
@@ -174,34 +177,19 @@ def custom_func_track_roty_principal_finger(all_pn: PenaltyNodeList) -> MX:
     q = all_pn.nlp.states["q"].mx
     rotation_matrix = all_pn.nlp.model.globalJCS(q, rotation_matrix_index).to_mx()
 
-    output = vertcat(rotation_matrix[0, 1],
-            rotation_matrix[0, 2],
-            rotation_matrix[1, 0],
-            rotation_matrix[2, 0],
-            rotation_matrix[0, 0] - MX(1)
-                     )
+    output = vertcat(rotation_matrix[1, 0], rotation_matrix[1, 2], rotation_matrix[0, 1], rotation_matrix[2, 1],
+                     rotation_matrix[1, 1] - MX(1))
 
     rotation_matrix = BiorbdInterface.mx_to_cx("rot_mat", output, all_pn.nlp.states["q"])
 
-    # Q0 = np.zeros((biorbd_model[0].nbQ()))
-    # rotation_matrix = biorbd_model[0].globalJCS(Q0, biorbd_model[0].nbSegment() - 51).rot()
 
 
-    # rot_matrix_list = [
-    #     rotation_matrix[[0, 1], rotation_matrix_index],
-    #     rotation_matrix[[0, 2], rotation_matrix_index],
-    #     rotation_matrix[[1, 0], rotation_matrix_index],
-    #     rotation_matrix[[2, 0], rotation_matrix_index],
-    #     rotation_matrix[[0, 0], rotation_matrix_index],
-    # ]
-    # for i in range(4):
-    #     rotation_matrix[[0, 1], rotation_matrix_index]
 
     return rotation_matrix
 
 
 def prepare_ocp(
-        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On going/5:FINAL_Squeletum_hand_finger_2_keys/Frappe/4 phases/Squeletum_hand_finger_3D_2_keys_octave_LA_frappe.bioMod",
+        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/Frappe/4_phases/Squeletum_hand_finger_3D_2_keys_octave_LA_frappe.bioMod",
         ode_solver: OdeSolver = OdeSolver.COLLOCATION(),
         long_optim: bool = False,
 ) -> OptimalControlProgram:
@@ -237,10 +225,10 @@ def prepare_ocp(
 
     # Add objective functions # Torques generated into articulations
     objective_functions = ObjectiveList()
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=0, weight=1)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=1, weight=1)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=2, weight=1)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=1)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=0, weight=100)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=1, weight=100)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=2, weight=100)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=100)
 
     # EXPLANATION 1 on EXPLANATIONS_FILE
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=0, weight=0.0001)
@@ -406,36 +394,122 @@ def main():
     ocp = prepare_ocp()
     ocp.add_plot_penalty(CostType.ALL)
 
-    # --- Solve the program --- #
+    # # --- Solve the program --- # #
+
     solv = Solver.IPOPT(show_online_optim=True)
-    solv.set_maximum_iterations(100000)
+    solv.set_maximum_iterations(1000)
     solv.set_linear_solver("ma57")
     tic = time.time()
     sol = ocp.solve(solv)
 
-    print('temps de resolution : ', time.time() - tic)
+    print('temps de resolution : ', time.time() - tic, 's')
     ocp.print(to_console=False, to_graph=False)
 
+    # # --- Show important markers states --- # #
 
-    # # --- Show results --- #
-    sol.animate(markers_size=0.0010, contacts_size=0.0010, show_floor=False,
-                show_segments_center_of_mass=True, show_global_ref_frame=True,
-                show_local_ref_frame=False,)
+    # All state for each phase
+    q0 = sol.states[0]["q"]
+    q1 = sol.states[1]["q"]
+    q2 = sol.states[2]["q"]
+    q3 = sol.states[3]["q"]
+
+    # States q for Finger_Marker_5 and Finger_marker
+    q_finger_marker_5_idx_1 = []
+    q_finger_marker_idx_5 = []
+    phase_shape = []
+    phase_time = []
+    for k in [1, 5]:
+        for i in range(4):
+            # Number of nodes per phase : 0=151, 1=31, 2=46, 3=251 (bc COLLOCATION)
+            for j in range(sol.states[i]["q"].shape[1]):
+                q_all_markers = BiorbdInterface.mx_to_cx("markers", sol.ocp.nlp[i].model.markers, sol.states[i]["q"][:, j])  # q_markers = 3 * 10
+                q_marker = q_all_markers["o0"][:, k]  # q_marker_1_one_node = 3 * 1
+                if k == 1:
+                    q_finger_marker_5_idx_1.append(q_marker)
+                elif k == 5:
+                    q_finger_marker_idx_5.append(q_marker)
+            if k == 1:
+                phase_time.append(ocp.nlp[i].tf)
+                phase_shape.append(sol.states[i]["q"].shape[1])
+
+    q_finger_marker_5_idx_1 = np.array(q_finger_marker_5_idx_1)
+    q_finger_marker_5_idx_1 = q_finger_marker_5_idx_1.reshape((479, 3))
+
+    q_finger_marker_idx_5 = np.array(q_finger_marker_idx_5)
+    q_finger_marker_idx_5 = q_finger_marker_idx_5.reshape((479, 3))
+
+    # Plot curves
+    t = np.linspace(0, sum(phase_time), sum(phase_shape))
+    figQ, axs = plt.subplots(2, 3)
+
+    axs[0, 0].set_title("X\n", color='green')
+    axs[0, 0].set(ylabel="Position (m)")
+    axs[0, 0].plot(t, q_finger_marker_5_idx_1[:, 0], color='green')
+    axs[0, 0].plot(t, q_finger_marker_idx_5[:, 0], color='r', linestyle='--',
+                   label="C1 : Finger 5 at the top right of the principal finger\n"
+                         "- in y : Finger 5 ⩽ Principal finger\n"
+                         "- in z : Finger 5 ⩾ Principal finger")
+
+    axs[0, 1].set_title("SMALL ONE Finger_Marker_5\nY", color='green')
+    axs[0, 1].plot(t, q_finger_marker_5_idx_1[:, 1], color='green')
+    axs[0, 1].plot(t, q_finger_marker_idx_5[:, 1], color='r', linestyle='--')  # "C1 : Finger 5 at the top right of the principal finger"
+
+    axs[0, 2].set_title("Z\n", color='green')
+    axs[0, 2].plot(t, q_finger_marker_5_idx_1[:, 2], color='green')
+    axs[0, 2].plot(t, q_finger_marker_idx_5[:, 2], color='r', linestyle='--')  # "C1 : Finger 5 at the top right of the principal finger"
+    axs[0, 2].axhline(y=0.07808863830566405-0.01, color='b', linestyle='--',
+                      label="C2 : Finger 5 and principal finger above the bed key\n"
+                            "- bed Key")
+
+    axs[1, 0].set_title("X\n", color='red')
+    axs[1, 0].set(ylabel='Position (m)')
+    axs[1, 0].plot(t, q_finger_marker_idx_5[:, 0], color='red')
+
+    axs[1, 1].set_title("PRINCIPAL Finger_Marker\nY", color='red')
+    axs[1, 1].set(xlabel='Time (s) \n')
+    axs[1, 1].plot(t, q_finger_marker_idx_5[:, 1], color='red')
+    axs[1, 1].axhline(y=0, color='m', linestyle='--',
+                      label="Obj : Principal Finger just in rotation around y \n"
+                            "- no translation in y")
+
+    axs[1, 2].set_title("Z\n", color='red')
+    axs[1, 2].plot(t, q_finger_marker_idx_5[:, 2], color='red')
+    axs[1, 2].axhline(y=0.07808863830566405-0.01, color='b', linestyle='--')  # "C2 : Finger 5 and principal finger above the bed key"
+
+    figQ.suptitle('State translations q for important markers', fontsize=16)
+    figQ.legend(loc="upper right", borderaxespad=0, prop={"size": 8}, title="Spacial constraints and objectives for Markers :")
+    for i in range(0, 2):
+        for j in range(0, 3):
+            axs[i, j].axvline(x=0.30, color='gray', linestyle='--')
+            axs[i, j].axvline(x=0.30+0.027, color='gray', linestyle='--')
+            axs[i, j].axvline(x=0.30+0.027+0.058, color='gray', linestyle='--')
+            axs[i, j].axvline(x=0.30+0.027+0.058+0.5 , color='gray', linestyle='--')
+
+    # # --- Download datas --- #
+
+    data = dict(
+        states=sol.states, controls=sol.controls, parameters=sol.parameters,
+        iterations=sol.iterations,
+        cost=np.array(sol.cost)[0][0], detailed_cost=sol.detailed_cost,
+        real_time_to_optimize=sol.real_time_to_optimize,
+        param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp]
+    )
+
+    with open("results_download/piano_results_4_phases_9_no_CandO", "wb") as file:
+        pickle.dump(data, file)
+
+    # # --- Show results --- # #
+
     sol.print_cost()
     sol.graphs(show_bounds=True)
+    plt.show()
 
-
-    # data = dict(
-    #     states=sol.states, controls=sol.controls, parameters=sol.parameters,
-    #     iterations=sol.iterations,
-    #     cost=np.array(sol.cost)[0][0], detailed_cost=sol.detailed_cost,
-    #     real_time_to_optimize=sol.real_time_to_optimize,
-    #     param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp]
-    # )
-    #
-    # with open("Piano_results_3_phases_without_pelvis_rotZ_and_thorax.pckl", "wb") as file:
-    #     pickle.dump(data, file)
+    # sol.animate(markers_size=0.0010, contacts_size=0.0010, show_floor=False,
+    #             show_segments_center_of_mass=True, show_global_ref_frame=True,
+    #             show_local_ref_frame=False, )
 
 
 if __name__ == "__main__":
     main()
+
+
