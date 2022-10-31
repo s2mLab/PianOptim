@@ -13,3 +13,28 @@ EXPLANATION 2
     # [indice du ddl (0 et 1 position y z, 2 et 3 vitesse y z),
     # time] (0 =» 1st point, 1 =» all middle points, 2 =» last point)
     # ex : x_bounds[0][3, 0] = vel_pushing
+
+EXPLANATION 3
+    of : custom constraints/custom objectif
+
+def custom_func_track_rotx_finger_2(all_pn: PenaltyNodeList) -> MX:
+            # recover my modele
+    model = all_pn.nlp.model
+            # recover the index of the segment which has the matrix I want
+    rotation_matrix_index = biorbd.segment_index(model, "2proxph_2mcp_flexion")
+            # recover all the position
+    q = all_pn.nlp.states["q"].mx
+            # take the global axis of my model (position, index of my matrice)
+    rotation_matrix = all_pn.nlp.model.globalJCS(q, rotation_matrix_index).to_mx()
+
+            # I concatenate my matrice (with vertcat) to put all the values in a vertical vector.
+    output = vertcat(rotation_matrix[0, 1], rotation_matrix[0, 2], rotation_matrix[1, 0], rotation_matrix[2, 0],
+            rotation_matrix[0, 0] - MX(1))
+
+            # I convert from mx to cx the states q of the vector values of my matrix ("rot_mat" = random name)
+    rotation_matrix = BiorbdInterface.mx_to_cx("rot_mat", output, all_pn.nlp.states["q"])
+
+    return rotation_matrix
+
+TIPS
+    # alt ctrl E
