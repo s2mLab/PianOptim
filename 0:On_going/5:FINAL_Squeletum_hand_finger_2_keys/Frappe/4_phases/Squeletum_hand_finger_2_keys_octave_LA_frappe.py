@@ -128,21 +128,45 @@ def minimize_difference(all_pn: PenaltyNode):
 #     )
 #     return markers_diff_key
 
-# def custom_func_track_line_finger_5(all_pn: PenaltyNodeList, marker: str) -> MX:
-#     finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, marker)
-#     markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
-#     finger_marker = markers[:, finger_marker_idx]
-#
-#     # if_else( condition, si c'est vrai fait ca',  sinon fait ca)
-#     markers_diff_key2 = if_else(
-#         finger_marker[2] < -0.01,
-#         finger_marker[2] - -0.01,
-#         finger_marker[2] - -0.01
-#     )
-#     return markers_diff_key2
+def custom_func_track_finger_5_above_principal_finger(all_pn: PenaltyNodeList) -> MX:
+    finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, "finger_marker")
+    markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
+    finger_marker = markers[:, finger_marker_idx]
+
+    finger_marker_5_idx = biorbd.marker_index(all_pn.nlp.model, "finger_marker_5")
+    markers_5 = BiorbdInterface.mx_to_cx("markers_5", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
+    finger_marker_5 = markers_5[:, finger_marker_5_idx]
+
+    markers_diff_key1 = finger_marker_5[2] - finger_marker[2]
+
+    return markers_diff_key1
 
 
-def custom_func_track_rotx_finger_2(all_pn: PenaltyNodeList) -> MX:
+def custom_func_track_finger_5_on_the_right_of_principal_finger(all_pn: PenaltyNodeList) -> MX:
+    finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, "finger_marker")
+    markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
+    finger_marker = markers[:, finger_marker_idx]
+
+    finger_marker_5_idx = biorbd.marker_index(all_pn.nlp.model, "finger_marker_5")
+    markers_5 = BiorbdInterface.mx_to_cx("markers_5", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
+    finger_marker_5 = markers_5[:, finger_marker_5_idx]
+
+    markers_diff_key2 = finger_marker[1] - finger_marker_5[1]
+
+    return markers_diff_key2
+
+
+def custom_func_track_principal_finger_and_finger5_above_bed_key(all_pn: PenaltyNodeList, marker: str) -> MX:
+    finger_marker_idx3 = biorbd.marker_index(all_pn.nlp.model, marker)
+    markers3 = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
+    finger_marker3 = markers3[:, finger_marker_idx3]
+
+    markers_diff_key3 = finger_marker3[2] - -0.01
+
+    return markers_diff_key3
+
+
+def custom_func_track_roty_principal_finger(all_pn: PenaltyNodeList) -> MX:
 
     model = all_pn.nlp.model
     rotation_matrix_index = biorbd.segment_index(model, "2proxph_2mcp_flexion")
@@ -228,48 +252,40 @@ def prepare_ocp(
                             target=vel_pushing, node=three_quarter_node_phase_1, phase=1, marker_index=4,
                             weight=1000)
 
-    # objective_functions.add(custom_func_track_line_finger_5,
-    #                         custom_type=ObjectiveFcn.Lagrange,
-    #                         node=Node.ALL, marker="finger_marker_5", min_bound=0,
-    #                         max_bound=10000,  phase=0)
+    # objective_functions.add(custom_func_track_roty_principal_finger, custom_type=ObjectiveFcn.Lagrange, node=Node.ALL,
+    #                         phase=0, weight=10)
+    # objective_functions.add(custom_func_track_roty_principal_finger, custom_type=ObjectiveFcn.Lagrange, node=Node.ALL,
+    #                         phase=1, weight=10)
+    # objective_functions.add(custom_func_track_roty_principal_finger, custom_type=ObjectiveFcn.Lagrange, node=Node.ALL,
+    #                         phase=2, weight=10)
+    # objective_functions.add(custom_func_track_roty_principal_finger, custom_type=ObjectiveFcn.Lagrange, node=Node.ALL,
+    #                         phase=3, weight=10)
 
-    objective_functions.add(custom_func_track_rotx_finger_2,
-                            custom_type=ObjectiveFcn.Lagrange,
-                            node=Node.ALL
-                            , phase=0, weight=10)
+    objective_functions.add( # To minimize the difference between 0 and 1
+        minimize_difference,
+        custom_type=ObjectiveFcn.Mayer,
+        node=Node.TRANSITION,
+        weight=1000,
+        phase=1,
+        quadratic=True,
+    )
+    objective_functions.add( # To minimize the difference between 1 and 2
+        minimize_difference,
+        custom_type=ObjectiveFcn.Mayer,
+        node=Node.TRANSITION,
+        weight=1000,
+        phase=2,
+        quadratic=True,
+    )
+    objective_functions.add( # To minimize the difference between 2 and 3
+        minimize_difference,
+        custom_type=ObjectiveFcn.Mayer,
+        node=Node.TRANSITION,
+        weight=1000,
+        phase=3,
+        quadratic=True,
+    )
 
-    # objective_functions.add( # To minimize the difference between 0 and 1
-    #     minimize_difference,
-    #     custom_type=ObjectiveFcn.Mayer,
-    #     node=Node.TRANSITION,
-    #     weight=1000,
-    #     phase=1,
-    #     quadratic=True,
-    # )
-    # objective_functions.add( # To minimize the difference between 1 and 2
-    #     minimize_difference,
-    #     custom_type=ObjectiveFcn.Mayer,
-    #     node=Node.TRANSITION,
-    #     weight=1000,
-    #     phase=2,
-    #     quadratic=True,
-    # )
-    # objective_functions.add( # To minimize the difference between 2 and 3
-    #     minimize_difference,
-    #     custom_type=ObjectiveFcn.Mayer,
-    #     node=Node.TRANSITION,
-    #     weight=1000,
-    #     phase=3,
-    #     quadratic=True,
-    # )
-    # objective_functions.add( # To minimize the difference between 3 and 4
-    #     minimize_difference,
-    #     custom_type=ObjectiveFcn.Mayer,
-    #     node=Node.TRANSITION,
-    #     weight=1000,
-    #     phase=4,
-    #     quadratic=True,
-    # )
 
     # Dynamics
     dynamics = DynamicsList()
@@ -297,19 +313,44 @@ def prepare_ocp(
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="high_square", phase=3)
 
+    # constraints.add(custom_func_track_principal_finger_and_finger5_above_bed_key,
+    #                 node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=0)
+    # constraints.add(custom_func_track_principal_finger_and_finger5_above_bed_key,
+    #                 node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=1)
+    # constraints.add(custom_func_track_principal_finger_and_finger5_above_bed_key,
+    #                 node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=2)
+    # constraints.add(custom_func_track_principal_finger_and_finger5_above_bed_key,
+    #                 node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=3)
+    #
+    # constraints.add(custom_func_track_principal_finger_and_finger5_above_bed_key,
+    #                 node=Node.ALL, marker="finger_marker_5", min_bound=0, max_bound=10000, phase=0)
+    # constraints.add(custom_func_track_principal_finger_and_finger5_above_bed_key,
+    #                 node=Node.ALL, marker="finger_marker_5", min_bound=0, max_bound=10000, phase=1)
+    # constraints.add(custom_func_track_principal_finger_and_finger5_above_bed_key,
+    #                 node=Node.ALL, marker="finger_marker_5", min_bound=0, max_bound=10000, phase=2)
+    # constraints.add(custom_func_track_principal_finger_and_finger5_above_bed_key,
+    #                 node=Node.ALL, marker="finger_marker_5", min_bound=0, max_bound=10000, phase=3)
+    #
+    # constraints.add(custom_func_track_finger_5_on_the_right_of_principal_finger,
+    #                 node=Node.ALL, min_bound=0, max_bound=10000, phase=0)
+    # constraints.add(custom_func_track_finger_5_on_the_right_of_principal_finger,
+    #                 node=Node.ALL, min_bound=0, max_bound=10000, phase=1)
+    # constraints.add(custom_func_track_finger_5_on_the_right_of_principal_finger,
+    #                 node=Node.ALL, min_bound=0, max_bound=10000, phase=2)
+    # constraints.add(custom_func_track_finger_5_on_the_right_of_principal_finger,
+    #                 node=Node.ALL, min_bound=0, max_bound=10000, phase=3)
+    #
+    # constraints.add(custom_func_track_finger_5_above_principal_finger,
+    #                 node=Node.ALL, min_bound=0, max_bound=10000, phase=0)
+    # constraints.add(custom_func_track_finger_5_above_principal_finger,
+    #                 node=Node.ALL, min_bound=0, max_bound=10000, phase=1)
+    # constraints.add(custom_func_track_finger_5_above_principal_finger,
+    #                 node=Node.ALL, min_bound=0, max_bound=10000, phase=2)
+    # constraints.add(custom_func_track_finger_5_above_principal_finger,
+    #                 node=Node.ALL, min_bound=0, max_bound=10000, phase=3)
+
     # constraints.add(custom_func_track_finger_marker_key,
     #                 node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=2)
-
-## A enlever si ca marche ##
-    # constraints.add(custom_func_track_hand_line_key, node=Node.ALL, marker="finger_marker_thumb",
-    #                         min_bound=0, max_bound=1000, phase=0)
-    # constraints.add(custom_func_track_hand_line_key, node=Node.ALL, marker="finger_marker_thumb",
-    #                         min_bound=0, max_bound=1000, phase=1)
-    # constraints.add(custom_func_track_hand_line_key, node=Node.ALL, marker="finger_marker_thumb",
-    #                         min_bound=0, max_bound=1000, phase=2)
-    # constraints.add(custom_func_track_hand_line_key, node=Node.ALL, marker="finger_marker_thumb",
-    #                         min_bound=0, max_bound=1000, phase=3)
-
 
     phase_transition = PhaseTransitionList()
     phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=1)
