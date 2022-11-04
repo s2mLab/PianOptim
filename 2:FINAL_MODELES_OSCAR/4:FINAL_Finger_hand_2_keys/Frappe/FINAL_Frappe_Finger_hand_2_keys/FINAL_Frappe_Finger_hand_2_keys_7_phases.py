@@ -3,6 +3,7 @@ import math
 from casadi import MX, sqrt, if_else, sin
 from math import ceil
 import biorbd_casadi as biorbd
+import pickle
 import numpy as np
 from bioptim import (
     ObjectiveList,
@@ -50,7 +51,7 @@ def custom_func_track_finger_marker_key(all_pn: PenaltyNodeList, marker: str) ->
 
 
 def prepare_ocp(
-        biorbd_model_path: str = "inger_hand_2_keys/FINAL_Frappe_Finger_hand_2_keys_7_phases.bioMod",
+        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/2:FINAL_MODELES/4:FINAL_Finger_hand_2_keys/Frappe/FINAL_Frappe_Finger_hand_2_keys/FINAL_Frappe_Finger_hand_2_keys_7_phases.bioMod",
         ode_solver: OdeSolver = OdeSolver.COLLOCATION()
 ) -> OptimalControlProgram:
     biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
@@ -200,10 +201,23 @@ def main():
     solver.set_linear_solver("ma57")
     sol = ocp.solve(solver)
 
+    # # --- Download datas --- #
+
+    data = dict(
+        states=sol.states, controls=sol.controls, parameters=sol.parameters,
+        iterations=sol.iterations,
+        cost=np.array(sol.cost)[0][0], detailed_cost=sol.detailed_cost,
+        real_time_to_optimize=sol.real_time_to_optimize,
+        param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp]
+    )
+
+    with open("results_download/results_1.pckl", "wb") as file:
+        pickle.dump(data, file)
+
     # --- Show results --- #
-    sol.animate(markers_size=0.0010, contacts_size=0.0010, show_floor=False,
-                show_segments_center_of_mass=True, show_global_ref_frame=True,
-                show_local_ref_frame=False,),
+    #sol.animate(markers_size=0.0010, contacts_size=0.0010, show_floor=False,
+    #            show_segments_center_of_mass=True, show_global_ref_frame=True,
+    #            show_local_ref_frame=False,),
     sol.graphs(show_bounds=True)
 
 
