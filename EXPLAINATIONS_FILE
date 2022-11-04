@@ -24,7 +24,8 @@ def custom_func_track_rotx_finger_2(all_pn: PenaltyNodeList) -> MX:
     rotation_matrix_index = biorbd.segment_index(model, "2proxph_2mcp_flexion")
             # recover all the position
     q = all_pn.nlp.states["q"].mx
-            # take the global axis of my model (position, index of my matrice)
+            # global JCS gives the local matrix according to the global matrix
+ (position, index of my matrice)
     rotation_matrix = all_pn.nlp.model.globalJCS(q, rotation_matrix_index).to_mx()
 
             # I concatenate my matrice (with vertcat) to put all the values in a vertical vector.
