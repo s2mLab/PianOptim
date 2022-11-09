@@ -68,7 +68,7 @@ segment thorax_3D
      // translations xz
      // rotations zy
     RT 0 0 0 xyz 0.035 0.23 0
-    //ranges
+    ranges
     //  -0.1 0.1
     //  -0.1 0.1
     mass	20
@@ -90,7 +90,7 @@ segment clavicle_effector_right
     parent thorax_3D
     // rotations xyz  // This correspond to a YXZ sequence
    // rotations xy
-    // ranges
+    ranges
     //    -0.1 0.1
     //    -0.15 0.3
     RTinmatrix 1
@@ -120,7 +120,7 @@ segment scapula_effector_right
       parent clavicle_right
     // rotations xyz  // This correspond to a ZYX sequence
     // rotations xz
-    //ranges
+    ranges
      // -0.5  0.1
      // -0.05 0.5
     RT -0.52 0.52 0 xyz -0.01433 0.02007 0.135535
@@ -251,9 +251,9 @@ segment lunate_deviation
 		0		0		0		1
 	rotations x
 	ranges
-			// -pi/5 pi/4
+			-pi/5 pi/4
 
-			-1.22173 1.22173
+			//-1.22173 1.22173
 endsegment
 
 // Segment

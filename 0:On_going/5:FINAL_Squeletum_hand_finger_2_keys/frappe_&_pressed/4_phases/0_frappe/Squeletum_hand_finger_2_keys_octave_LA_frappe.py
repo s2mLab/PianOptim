@@ -156,19 +156,19 @@ def custom_func_track_principal_finger_and_finger5_above_bed_key(all_pn: Penalty
     return markers_diff_key3
 
 
-def custom_func_track_roty_principal_finger(all_pn: PenaltyNodeList, ) -> MX:
-
-    model = all_pn.nlp.model
-    rotation_matrix_index = biorbd.segment_index(model, "2proxph_2mcp_flexion")
-    q = all_pn.nlp.states["q"].mx
-
-    rotation_matrix = all_pn.nlp.model.globalJCS(q, rotation_matrix_index).to_mx()
-
-    output = vertcat(rotation_matrix[1, 0], rotation_matrix[1, 2], rotation_matrix[0, 1], rotation_matrix[2, 1],
-                     rotation_matrix[1, 1] - MX(1))
-    rotation_matrix_output = BiorbdInterface.mx_to_cx("rot_mat", output, all_pn.nlp.states["q"])
-
-    return rotation_matrix_output
+# def custom_func_track_roty_principal_finger(all_pn: PenaltyNodeList, ) -> MX:
+#
+#     model = all_pn.nlp.model
+#     rotation_matrix_index = biorbd.segment_index(model, "2proxph_2mcp_flexion")
+#     q = all_pn.nlp.states["q"].mx
+#
+#     rotation_matrix = all_pn.nlp.model.globalJCS(q, rotation_matrix_index).to_mx()
+#
+#     output = vertcat(rotation_matrix[1, 0], rotation_matrix[1, 2], rotation_matrix[0, 1], rotation_matrix[2, 1],
+#                      rotation_matrix[1, 1] - MX(1))
+#     rotation_matrix_output = BiorbdInterface.mx_to_cx("rot_mat", output, all_pn.nlp.states["q"])
+#
+#     return rotation_matrix_output
 
 
 def custom_func_track_principal_finger_pi_in_two_global_axis(all_pn: PenaltyNodeList, segment: str) -> MX:
@@ -239,25 +239,28 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=100)
 
     # EXPLANATION 1 on EXPLANATIONS_FILE
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=0.0001,
-                            index=[0, 1, 2, 3, 4, 5, 6, 8])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=1, weight=0.0001,
-                            index=[0, 1, 2, 3, 4, 5, 6, 8])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=2, weight=0.0001,
-                            index=[0, 1, 2, 3, 4, 5, 6, 8])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=0.0001,
-                            index=[0, 1, 2, 3, 4, 5, 6, 8])
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=0, weight=0.0001)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=1, weight=0.0001)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=2, weight=0.0001)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=3, weight=0.0001)
 
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=10,
-                            index=[9, 10], derivation=True)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=1, weight=10,
-                            index=[9, 10], derivation=True)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=2, weight=10,
-                            index=[9, 10], derivation=True)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=10,
-                            index=[9, 10], derivation=True)
-
-
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=0.0001,
+    #                         index=[0, 1, 2, 3, 4, 5, 6, 8])
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=1, weight=0.0001,
+    #                         index=[0, 1, 2, 3, 4, 5, 6, 8])
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=2, weight=0.0001,
+    #                         index=[0, 1, 2, 3, 4, 5, 6, 8])
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=0.0001,
+    #                         index=[0, 1, 2, 3, 4, 5, 6, 8])
+    #
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=0.0001,
+    #                         index=[9, 10], derivative=True)
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=1, weight=0.0001,
+    #                         index=[9, 10], derivative=True)
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=2, weight=0.0001,
+    #                         index=[9, 10], derivative=True)
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=0.0001,
+    #                         index=[9, 10], derivative=True)
 
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
                             target=vel_push_array2, node=Node.ALL, phase=1, marker_index=4,
@@ -428,7 +431,7 @@ def main():
     # # --- Solve the program --- # #
 
     solv = Solver.IPOPT(show_online_optim=True)
-    solv.set_maximum_iterations(1)
+    solv.set_maximum_iterations(100000)
     solv.set_linear_solver("ma57")
     tic = time.time()
     sol = ocp.solve(solv)
@@ -493,30 +496,31 @@ def main():
 
     # # --- Download datas --- #
 
-    # data = dict(
-    #     states=sol.states, controls=sol.controls, parameters=sol.parameters,
-    #     iterations=sol.iterations,
-    #     cost=np.array(sol.cost)[0][0], detailed_cost=sol.detailed_cost,
-    #     real_time_to_optimize=sol.real_time_to_optimize,
-    #     param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
-    #     # graphs=sol.graphs,
-    #     phase_time=phase_time, phase_shape=phase_shape,
-    #     phase_time_tau=phase_time_tau, phase_shape_tau=phase_shape_tau,
-    #     q_finger_marker_5_idx_1=q_finger_marker_5_idx_1,
-    #     q_finger_marker_idx_4=q_finger_marker_idx_4,
-    #     tau_finger_marker_idx_4=tau_finger_marker_idx_4
-    # )
-    #
-    # with open(
-    #         "results_download/6_pi_on_two_finger_ph0&3_10_ph1&2_100000_hand_10_100000_with_5_cm.pckl", "wb") as file:
-    #     pickle.dump(data, file)
+    data = dict(
+        states=sol.states, controls=sol.controls, parameters=sol.parameters,
+        iterations=sol.iterations,
+        cost=np.array(sol.cost)[0][0], detailed_cost=sol.detailed_cost,
+        real_time_to_optimize=sol.real_time_to_optimize,
+        param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
+        # graphs=sol.graphs,
+        phase_time=phase_time, phase_shape=phase_shape,
+        phase_time_tau=phase_time_tau, phase_shape_tau=phase_shape_tau,
+        q_finger_marker_5_idx_1=q_finger_marker_5_idx_1,
+        q_finger_marker_idx_4=q_finger_marker_idx_4,
+        tau_finger_marker_idx_4=tau_finger_marker_idx_4
+    )
 
-    print("Results saved")
+    with open(
+            "testt.pckl", "wb") as file:
+        pickle.dump(data, file)
+
+    print("results saved")
     print('temps de resolution : ', time.time() - tic, 's')
     ocp.print(to_console=False, to_graph=False)
     sol.graphs(show_bounds=True)
     ocp.print(to_console=False, to_graph=False)
     sol.print_cost()
+
 
 if __name__ == "__main__":
     main()
