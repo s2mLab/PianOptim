@@ -85,13 +85,6 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=6, weight=0.0001)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=7, weight=0.0001)
 
-    # objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-    #                         target=[0, 0, 0], node=Node.START, phase=1, marker_index=4,
-    #                         weight=1000)
-    # objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-    #                         target=[0, 0, 0], node=Node.START, phase=5, marker_index=4,
-    #                         weight=1000)
-
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
                             target=vel_push_array, node=Node.ALL, phase=1, marker_index=4,
                             weight=1000)
