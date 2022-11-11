@@ -5,11 +5,8 @@
 from casadi import MX, acos, vertcat, dot, pi
 import time
 import numpy as np
-from matplotlib import pyplot as plt
-from numpy import ndarray
 import biorbd_casadi as biorbd
 import pickle
-from pickle import dump
 from bioptim import (
     PenaltyNode,
     ObjectiveList,
@@ -19,7 +16,6 @@ from bioptim import (
     BoundsList,
     InitialGuessList,
     CostType,
-    PlotType,
     PhaseTransitionList,
     Node,
     OptimalControlProgram,
@@ -31,81 +27,7 @@ from bioptim import (
     OdeSolver,
     BiorbdInterface,
     Solver,
-    Axis
 )
-
-# Constants from data collect
-# velocities (vel) and standards deviations (stdev) of the right hand of subject 134
-
-pos_x_0 = 0.10665989
-pos_x_1 = 0.25553592
-pos_x_2 = 0.26675006
-pos_x_3 = 0.39711206
-pos_x_4 = 0.38712035
-pos_x_5 = 0.9867809
-
-pos_y_0 = 0.40344472
-pos_y_1 = 0.37350889
-pos_y_2 = 0.38965598
-pos_y_3 = 0.34155492
-pos_y_4 = 0.33750396
-pos_y_5 = 0.39703432
-
-pos_z_0 = 2.76551207
-pos_z_1 = 2.74265983
-pos_z_2 = 2.76575107
-pos_z_3 = 2.73511557
-pos_z_4 = 2.72985087
-pos_z_5 = 2.75654283
-
-vel_x_0 = 0.52489776
-vel_x_1 = -0.00321311
-vel_x_2 = 0.64569518
-vel_x_3 = 0.04628122
-vel_x_4 = -0.01133422
-vel_x_5 = 0.31271958
-
-vel_y_0 = 0.54408214
-vel_y_1 = 0.01283999
-vel_y_2 = 0.28540601
-vel_y_3 = 0.02580192
-vel_y_4 = 0.09021791
-vel_y_5 = 0.42298668
-
-vel_z_0 = 0.7477114
-vel_z_1 = 0.17580993
-vel_z_2 = 0.6360936
-vel_z_3 = 0.3468823
-vel_z_4 = -0.03609537
-vel_z_5 = 0.38915613
-
-stdev_vel_x_0 = 0.12266391
-stdev_vel_x_1 = 0.05459328
-stdev_vel_x_2 = 0.08348852
-stdev_vel_x_3 = 0.06236412
-stdev_vel_x_4 = 0.06251115
-stdev_vel_x_5 = 0.10486219
-
-# stdev_vel_y_0 = 0.06590577
-# stdev_vel_y_1 = 0.04433499
-# stdev_vel_y_2 = 0.08251966
-# stdev_vel_y_3 = 0.03813032
-# stdev_vel_y_4 = 0.07607116
-# stdev_vel_y_5 = 0.0713205
-
-stdev_vel_z_0 = 0.11591871
-stdev_vel_z_1 = 0.10771169
-stdev_vel_z_2 = 0.081717
-stdev_vel_z_3 = 0.09894744
-stdev_vel_z_4 = 0.11820802
-stdev_vel_z_5 = 0.1479469
-
-mean_time_phase_0 = 0.36574653  # phase 0 is from first marker to second marker
-mean_time_phase_1 = 0.10555556
-mean_time_phase_2 = 0.40625
-mean_time_phase_3 = 0.10387153
-mean_time_phase_4 = 1.00338542  # phase 4 is from last marker to first marker
-
 
 # Function to minimize the difference between transitions
 def minimize_difference(all_pn: PenaltyNode):
@@ -239,17 +161,32 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=100)
 
     # EXPLANATION 1 on EXPLANATIONS_FILE
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=0, weight=0.0001)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=1, weight=0.0001)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=2, weight=0.0001)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=3, weight=0.0001)
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=0, weight=0.0001)
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=1, weight=0.0001)
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=2, weight=0.0001)
+    # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=3, weight=0.0001)
+
+    # # 2 et 3 # #
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=0.0001,
+                            index=[0, 1, 2, 3, 4, 5, 6, 8])
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=1, weight=0.0001,
+                            index=[0, 1, 2, 3, 4, 5, 6, 8, 9, 10])
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=2, weight=0.0001,
+                            index=[0, 1, 2, 3, 4, 5, 6, 8, 9, 10])
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=0.0001,
+                            index=[0, 1, 2, 3, 4, 5, 6, 8])
+
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=100,
+                            index=[9, 10], derivative=True)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=100,
+                            index=[9, 10], derivative=True)
 
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
                             target=vel_push_array2, node=Node.ALL, phase=1, marker_index=4,
                             weight=10000)
 
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
-                            node=Node.ALL, phase=0, weight=100, quadratic=True, target=pi_sur_2_phase_0,
+                            node=Node.ALL, phase=0, weight=1000, quadratic=True, target=pi_sur_2_phase_0,
                             segment="2proxph_2mcp_flexion")
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
                             node=Node.ALL, phase=1, weight=100000, quadratic=True, target=pi_sur_2_phase_1,
@@ -258,11 +195,11 @@ def prepare_ocp(
                             node=Node.ALL, phase=2, weight=100000, quadratic=True, target=pi_sur_2_phase_2,
                             segment="2proxph_2mcp_flexion")
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
-                            node=Node.ALL, phase=3, weight=100, quadratic=True, target=pi_sur_2_phase_3,
+                            node=Node.ALL, phase=3, weight=1000, quadratic=True, target=pi_sur_2_phase_3,
                             segment="2proxph_2mcp_flexion")
 
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
-                            node=Node.ALL, phase=0, weight=100, quadratic=True, target=pi_sur_2_phase_0,
+                            node=Node.ALL, phase=0, weight=1000, quadratic=True, target=pi_sur_2_phase_0,
                             segment="secondmc")
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
                             node=Node.ALL, phase=1, weight=100000, quadratic=True, target=pi_sur_2_phase_1,
@@ -271,7 +208,7 @@ def prepare_ocp(
                             node=Node.ALL, phase=2, weight=100000, quadratic=True, target=pi_sur_2_phase_2,
                             segment="secondmc")
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
-                            node=Node.ALL, phase=3, weight=100, quadratic=True, target=pi_sur_2_phase_3,
+                            node=Node.ALL, phase=3, weight=1000, quadratic=True, target=pi_sur_2_phase_3,
                             segment="secondmc")
 
     objective_functions.add( # To minimize the difference between 0 and 1
@@ -410,20 +347,13 @@ def main():
     # # --- Solve the program --- # #
 
     solv = Solver.IPOPT(show_online_optim=True)
-    solv.set_maximum_iterations(100000)
+    solv.set_maximum_iterations(10000)
     solv.set_linear_solver("ma57")
     tic = time.time()
     sol = ocp.solve(solv)
 
-    # # --- Take important markers states --- # #
+    # # --- Take important states for Finger_Marker_5 and Finger_marker --- # #
 
-    # All state for each phase
-    q0 = sol.states[0]["q"]
-    q1 = sol.states[1]["q"]
-    q2 = sol.states[2]["q"]
-    q3 = sol.states[3]["q"]
-
-    # States q for Finger_Marker_5 and Finger_marker
     q_finger_marker_5_idx_1 = []
     q_finger_marker_idx_4 = []
     phase_shape = []
@@ -448,31 +378,6 @@ def main():
     q_finger_marker_idx_4 = np.array(q_finger_marker_idx_4)
     q_finger_marker_idx_4 = q_finger_marker_idx_4.reshape((399, 3))
 
-    # # --- Take principal finger marker controls --- # #
-
-    # All controls for each phase
-    u0 = sol.controls[0]["tau"]
-    u1 = sol.controls[1]["tau"]
-    u2 = sol.controls[2]["tau"]
-    u3 = sol.controls[3]["tau"]
-
-    # Control tau for Principal Finger_marker
-    tau_finger_marker_idx_4 = []
-    phase_shape_tau = []
-    phase_time_tau = []
-    for i in range(4):
-        # Number of nodes per phase : 0=31, 1=8, 2=8, 3=36 (83) (bc COLLOCATION)
-        for j in range(sol.controls[i]["tau"].shape[1]):
-            tau_all_markers = BiorbdInterface.mx_to_cx("markers", sol.ocp.nlp[i].model.markers,
-                                                       sol.controls[i]["tau"][:, j])
-            tau_marker = tau_all_markers["o0"][:, k]
-            tau_finger_marker_idx_4.append(tau_marker)
-        phase_time_tau.append(ocp.nlp[i].tf)
-        phase_shape_tau.append(sol.controls[i]["tau"].shape[1])
-
-    tau_finger_marker_idx_4 = np.array(tau_finger_marker_idx_4)
-    tau_finger_marker_idx_4 = tau_finger_marker_idx_4.reshape((83, 3))
-
     # # --- Download datas --- #
 
     data = dict(
@@ -483,13 +388,11 @@ def main():
         param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
         # graphs=sol.graphs,
         phase_time=phase_time, phase_shape=phase_shape,
-        phase_time_tau=phase_time_tau, phase_shape_tau=phase_shape_tau,
         q_finger_marker_5_idx_1=q_finger_marker_5_idx_1,
         q_finger_marker_idx_4=q_finger_marker_idx_4,
-        tau_finger_marker_idx_4=tau_finger_marker_idx_4
     )
     with open(
-            "results/1_pressed_pi_on_two_finger_0&3_100_1&2_100000_hand_100_100000_with_5_cm/1_pressed_pi_on_two_finger_ph0&3_100_ph1&2_100000_hand_100_100000_with_5_cm.pckl", "wb") as file:
+            "/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/0_pressed/results/FINAL_4_pi_in_two_1000_minimize_qdot_9&10_100/results2.pckl", "wb") as file:
         pickle.dump(data, file)
 
     # # --- Print results --- # #
