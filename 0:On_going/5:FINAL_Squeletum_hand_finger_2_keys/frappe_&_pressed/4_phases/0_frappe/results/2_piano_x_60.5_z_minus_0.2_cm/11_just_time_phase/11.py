@@ -127,7 +127,7 @@ def custom_func_track_principal_finger_pi_in_two_global_axis(all_pn: PenaltyNode
 
 
 def prepare_ocp(
-        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/Squeletum_hand_finger_3D_2_keys_octave_LA_frappe.bioMod",
+        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/Squeletum_hand_finger_3D_2_keys_octave_LA_frappe_11_ddl.bioMod",
         ode_solver: OdeSolver = OdeSolver.COLLOCATION(polynomial_degree=4),
         long_optim: bool = False,
 ) -> OptimalControlProgram:
@@ -436,7 +436,7 @@ def main():
     )
 
     with open(
-            "/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/0_frappe/results/archive_bc_piano_badly_positionate/9_with_front_key/test9.pckl", "wb") as file:
+            "/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/0_frappe/results/test.pckl", "wb") as file:
         pickle.dump(data, file)
 
     print("results saved")

@@ -18,7 +18,6 @@ EXPLANATION 2
     # [ phase 0 ]
     # [indice du ddl (0 et 1 position y z, 2 et 3 vitesse y z),
     # time] (0 =» 1st point, 1 =» all middle points, 2 =» last point)
-    # ex : x_bounds[0][3, 0] = vel_pushing
 
 EXPLANATION 3
     of : custom constraints/custom objectif
