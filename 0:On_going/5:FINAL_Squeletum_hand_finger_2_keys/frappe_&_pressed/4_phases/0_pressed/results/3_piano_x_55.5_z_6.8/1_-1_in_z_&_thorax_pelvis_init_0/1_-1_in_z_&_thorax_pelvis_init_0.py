@@ -73,7 +73,7 @@ def custom_func_track_principal_finger_and_finger5_above_bed_key(all_pn: Penalty
     markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
     finger_marker = markers[:, finger_marker_idx]
 
-    markers_diff_key3 = finger_marker[2] - (0.07808863830566405-0.01-0.01)
+    markers_diff_key3 = finger_marker[2] - (0.07808863830566405-0.02)
 
     return markers_diff_key3
 
@@ -116,7 +116,7 @@ def custom_func_track_principal_finger_pi_in_two_global_axis(all_pn: PenaltyNode
 
 
 def prepare_ocp(
-        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/Squeletum_hand_finger_3D_2_keys_octave_LA_frappe.bioMod",
+        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/Squeletum_hand_finger_3D_2_keys_octave_LA_frappe_11_ddl.bioMod",
         ode_solver: OdeSolver = OdeSolver.COLLOCATION(polynomial_degree=4),
         long_optim: bool = False,
 ) -> OptimalControlProgram:
@@ -169,13 +169,13 @@ def prepare_ocp(
 
     # # 2 et 3 # #
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=0.0001,
-                            index=[0, 1, 2, 3, 4, 5, 6, 8])
+                            index=[0, 1, 2, 3, 4, 5, 6, 7, 8])
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=1, weight=0.0001,
-                            index=[0, 1, 2, 3, 4, 5, 6, 8, 9, 10])
+                            index=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=2, weight=0.0001,
-                            index=[0, 1, 2, 3, 4, 5, 6, 8, 9, 10])
+                            index=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=0.0001,
-                            index=[0, 1, 2, 3, 4, 5, 6, 8])
+                            index=[0, 1, 2, 3, 4, 5, 6, 7, 8])
 
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=100,
                             index=[9, 10], derivative=True)
@@ -317,6 +317,13 @@ def prepare_ocp(
     x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
     x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
 
+    for i in range(4):
+        x_init[i][5, 0] = 0.0
+        x_init[i][6, 0] = 0.67
+        x_init[i][7, 0] = 1.11
+        x_init[i][8, 0] = 1.48
+        x_init[i][10, 0] = 0.17
+
     # Define control path constraint
     u_bounds = BoundsList()
     u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
@@ -357,7 +364,7 @@ def main():
     # # --- Solve the program --- # #
 
     solv = Solver.IPOPT(show_online_optim=True)
-    solv.set_maximum_iterations(1000)
+    solv.set_maximum_iterations(1000000)
     solv.set_linear_solver("ma57")
     tic = time.time()
     sol = ocp.solve(solv)
@@ -401,7 +408,7 @@ def main():
         q_finger_marker_idx_4=q_finger_marker_idx_4,
     )
     with open(
-            "/home/lim/Documents/Stage Mathilde/PianOptim/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/0_pressed/results/3_piano_x_55.5_z_6.8/2_zpiano_minus1cm_&_thorax_pelvis_init_0_&_ythorax_blocked/1.pckl", "wb") as file:
+            "/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/0_pressed/results/3_piano_x_55.5_z_6.8/1_zpiano_minus1cm_&_thorax_pelvis_init_0/test_2.pckl", "wb") as file:
         pickle.dump(data, file)
 
     # # --- Print results --- # #
