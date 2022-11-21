@@ -73,7 +73,7 @@ def custom_func_track_principal_finger_and_finger5_above_bed_key(all_pn: Penalty
     markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
     finger_marker = markers[:, finger_marker_idx]
 
-    markers_diff_key3 = finger_marker[2] - (0.07808863830566405-0.01)
+    markers_diff_key3 = finger_marker[2] - (0.07808863830566405-0.01-0.01)
 
     return markers_diff_key3
 
@@ -146,7 +146,8 @@ def prepare_ocp(
     phase_time = (0.3, 0.044, 0.051, 0.35)
     tau_min, tau_max, tau_init = -200, 200, 0
 
-    vel_push_array2 = [[0, -0.113772161006927, -0.180575996580578, -0.270097219830468, -0.347421549388341, -0.290588704744975, -0.0996376128423782, 0]]
+    vel_push_array2 = [[0, -0.113772161006927, -0.180575996580578, -0.270097219830468,
+                        -0.347421549388341, -0.290588704744975, -0.0996376128423782, 0]]
 
     pi_sur_2_phase_0 = np.full((1, n_shooting[0]+1), pi/2)
     pi_sur_2_phase_1 = np.full((1, n_shooting[1]+1), pi/2)
@@ -293,12 +294,21 @@ def prepare_ocp(
     phase_transition = PhaseTransitionList()
     phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=1)
 
+    # EXPLANATION
+    # ex : x_bounds[0][3, 0] = vel_pushing
+    # [ phase 0 ]
+    # [indice du ddl (0 et 1 position y z, 2 et 3 vitesse y z),
+    # time] (0 =» 1st point, 1 =» all middle points, 2 =» last point)
+
     # Path constraint
     x_bounds = BoundsList()
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
     x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
+
+    x_bounds[0][[0, 1, 2, 3], 0] = 0
+    x_bounds[3][[0, 1, 2, 3], 2] = 0
 
     # Initial guess
     x_init = InitialGuessList()
@@ -347,7 +357,7 @@ def main():
     # # --- Solve the program --- # #
 
     solv = Solver.IPOPT(show_online_optim=True)
-    solv.set_maximum_iterations(10000)
+    solv.set_maximum_iterations(1000)
     solv.set_linear_solver("ma57")
     tic = time.time()
     sol = ocp.solve(solv)
@@ -386,13 +396,12 @@ def main():
         cost=np.array(sol.cost)[0][0], detailed_cost=sol.detailed_cost,
         real_time_to_optimize=sol.real_time_to_optimize,
         param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
-        # graphs=sol.graphs,
         phase_time=phase_time, phase_shape=phase_shape,
         q_finger_marker_5_idx_1=q_finger_marker_5_idx_1,
         q_finger_marker_idx_4=q_finger_marker_idx_4,
     )
     with open(
-            "/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/0_pressed/results/FINAL_4_pi_in_two_1000_minimize_qdot_9&10_100/results2.pckl", "wb") as file:
+            "/home/lim/Documents/Stage Mathilde/PianOptim/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/0_pressed/results/3_piano_x_55.5_z_6.8/2_zpiano_minus1cm_&_thorax_pelvis_init_0_&_ythorax_blocked/1.pckl", "wb") as file:
         pickle.dump(data, file)
 
     # # --- Print results --- # #
@@ -402,6 +411,7 @@ def main():
     ocp.print(to_console=False, to_graph=False)
     sol.graphs(show_bounds=True)
     sol.print_cost()
+
 
 if __name__ == "__main__":
     main()
