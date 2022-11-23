@@ -756,6 +756,7 @@ segment secondmc
 	meshfile	Geometry/2mc.vtp
 	meshscale	1 1 1
 
+
 endsegment
 
 // Markers
@@ -1017,7 +1018,6 @@ segment 2proxph_parent_offset
 	parent secondmc
 	RTinMatrix	0
 	RT	0 0 0	xyz	0.0035010000000000002 -0.028243000000000001 0.00362
-    meshcolor 0 1 1
 endsegment
 
 // Segments to define transformation axis.
@@ -1044,6 +1044,8 @@ segment 2proxph_2mcp_flexion
 	rotations x
 	ranges
 			-pi/4 pi/4
+	// meshcolor 0 0 1
+
 endsegment
 
 // Segment
@@ -1090,6 +1092,7 @@ segment 2proxph
 	parent 2proxph_reset_axis
 	meshfile	Geometry/2proxph.vtp
 	meshscale	1 1 1
+
 
 endsegment
 

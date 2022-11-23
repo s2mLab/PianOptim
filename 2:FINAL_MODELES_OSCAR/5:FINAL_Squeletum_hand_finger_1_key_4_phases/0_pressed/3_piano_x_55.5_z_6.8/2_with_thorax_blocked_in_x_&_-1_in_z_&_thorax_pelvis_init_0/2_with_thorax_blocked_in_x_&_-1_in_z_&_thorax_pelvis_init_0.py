@@ -409,7 +409,7 @@ def main():
         q_finger_marker_idx_4=q_finger_marker_idx_4,
     )
     with open(
-            "/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/0_pressed/results/3_piano_x_55.5_z_6.8/2_zpiano_minus1cm_&_thorax_pelvis_init_0_&_ythorax_blocked/solution.pckl", "wb") as file:
+            "/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/0_pressed/results/3_piano_x_55.5_z_6.8/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/test.pckl", "wb") as file:
         pickle.dump(data, file)
 
     # # --- Print results --- # #

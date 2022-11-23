@@ -7,12 +7,12 @@ from bioptim import (
     )
 
 with open(
-        "/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/0_frappe/results/3_zpiano_minus1cm_&_thorax_pelvis_init_0/2_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/1.pckl",
+        "/2:FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/0_pressed/results/3_piano_x_55.5_z_6.8/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0.pckl",
           'rb') as file:new_dict = pickle.load(file)
 
 
 
-biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On_going/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/Squeletum_hand_finger_3D_2_keys_octave_LA_frappe_10_ddl.bioMod"
+biorbd_model_path: str = "/2:FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_2_keys/frappe_&_pressed/4_phases/Squeletum_hand_finger_3D_2_keys_octave_LA_frappe_10_ddl.bioMod"
 
 # # --- Animate --- # #
 
