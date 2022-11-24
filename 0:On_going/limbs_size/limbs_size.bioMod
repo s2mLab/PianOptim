@@ -1,0 +1,12 @@
+// The kinematics model originates from (https://simtk.org/projects/wu-shoulder), which is itself based on Holzbaur
+version 4
+
+gravity 0 0 -9.81
+
+segment ground
+endsegment
+
+segment pelvis_r
+    parent ground
+    meshfile mesh_files/clavicle.vtp
+endsegment
