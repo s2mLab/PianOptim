@@ -25,6 +25,6 @@ def convertFile(filepath, outdir):
 
 
 if __name__ == '__main__':
-    convertFile("/home/lim/Documents/Stage Mathilde/PianOptim/4__two_models_of_squeletum/wu_model/mesh_files/clavicle.vtp",
-                outdir="/home/lim/Documents/Stage Mathilde/PianOptim/0__On_going/limbs_size/vpt_to_stl")
+    convertFile("/home/lim/Documents/Stage Mathilde/PianOptim/0__On_going/limbs_size/vpt_files/Geometry/clavicle.vtp",
+                outdir="/home/lim/Documents/Stage Mathilde/PianOptim/0__On_going/limbs_size/stl_files")
 
