@@ -1,0 +1,17 @@
+// The kinematics model originates from (https://simtk.org/projects/wu-shoulder), which is itself based on Holzbaur
+version 4
+
+gravity 0 0 -9.81
+
+segment ground
+endsegment
+
+segment humerus
+    parent ground
+    meshfile Geometry/humerus.vtp
+endsegment
+
+segment humerus2
+    parent ground
+    meshfile mesh_files/humerus.vtp
+endsegment
