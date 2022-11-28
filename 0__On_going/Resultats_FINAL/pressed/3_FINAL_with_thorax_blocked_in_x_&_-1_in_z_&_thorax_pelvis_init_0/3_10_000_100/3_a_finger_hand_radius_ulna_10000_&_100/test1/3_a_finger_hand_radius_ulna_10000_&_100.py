@@ -335,7 +335,7 @@ def prepare_ocp(
     x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
 
     for i in range(4):
-        x_init[i][4, 0] = 0.0
+        x_init[i][4, 0] = 0.08
         x_init[i][5, 0] = 0.67
         x_init[i][6, 0] = 1.11
         x_init[i][7, 0] = 1.48

@@ -117,7 +117,7 @@ def custom_func_track_principal_finger_pi_in_two_global_axis(all_pn: PenaltyNode
 
 
 def prepare_ocp(
-        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0__On_going/Resultats_FINAL/pressed/bioMod/Squeletum_hand_finger_3D_2_keys_octave_LA_frappe_10_ddl.bioMod",
+        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0__On_going/Resultats_FINAL/pressed/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/Squeletum_hand_finger_3D_2_keys_octave_LA_frappe_10_ddl.bioMod",
         ode_solver: OdeSolver = OdeSolver.COLLOCATION(polynomial_degree=4),
         long_optim: bool = False,
 ) -> OptimalControlProgram:
@@ -167,13 +167,13 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=100,
                             index=[0, 1, 2, 3, 4, 5])
 
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=0, weight=100000,
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=0, weight=1000,
                             index=[6, 7, 8, 9])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=1, weight=100000,
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=1, weight=1000,
                             index=[6, 7, 8, 9])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=2, weight=100000,
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=2, weight=1000,
                             index=[6, 7, 8, 9])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=100000,
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=1000,
                             index=[6, 7, 8, 9])
 
     # EXPLANATION 1 on EXPLANATIONS_FILE
@@ -192,48 +192,48 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=0.0001,
                             index=[0, 1, 2, 3, 4, 5, 6, 7])
 
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=10000000,
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=100000,
                             index=[7])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=10000,
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=100,
                             index=[8, 9], derivative=True)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=10000,
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=100,
                             index=[8, 9], derivative=True)
 
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
                             target=vel_push_array2, node=Node.ALL, phase=1, marker_index=4,
-                            weight=1000000)
+                            weight=10000)
 
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
-                            node=Node.ALL, phase=0, weight=100000, quadratic=True, target=pi_sur_2_phase_0,
+                            node=Node.ALL, phase=0, weight=1000, quadratic=True, target=pi_sur_2_phase_0,
                             segment="2proxph_2mcp_flexion")
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
-                            node=Node.ALL, phase=1, weight=10000000, quadratic=True, target=pi_sur_2_phase_1,
+                            node=Node.ALL, phase=1, weight=100000, quadratic=True, target=pi_sur_2_phase_1,
                             segment="2proxph_2mcp_flexion")
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
-                            node=Node.ALL, phase=2, weight=10000000, quadratic=True, target=pi_sur_2_phase_2,
+                            node=Node.ALL, phase=2, weight=100000, quadratic=True, target=pi_sur_2_phase_2,
                             segment="2proxph_2mcp_flexion")
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
-                            node=Node.ALL, phase=3, weight=100000, quadratic=True, target=pi_sur_2_phase_3,
+                            node=Node.ALL, phase=3, weight=1000, quadratic=True, target=pi_sur_2_phase_3,
                             segment="2proxph_2mcp_flexion")
 
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
-                            node=Node.ALL, phase=0, weight=100000, quadratic=True, target=pi_sur_2_phase_0,
+                            node=Node.ALL, phase=0, weight=1000, quadratic=True, target=pi_sur_2_phase_0,
                             segment="secondmc")
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
-                            node=Node.ALL, phase=1, weight=10000000, quadratic=True, target=pi_sur_2_phase_1,
+                            node=Node.ALL, phase=1, weight=100000, quadratic=True, target=pi_sur_2_phase_1,
                             segment="secondmc")
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
-                            node=Node.ALL, phase=2, weight=10000000, quadratic=True, target=pi_sur_2_phase_2,
+                            node=Node.ALL, phase=2, weight=100000, quadratic=True, target=pi_sur_2_phase_2,
                             segment="secondmc")
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
-                            node=Node.ALL, phase=3, weight=100000, quadratic=True, target=pi_sur_2_phase_3,
+                            node=Node.ALL, phase=3, weight=1000, quadratic=True, target=pi_sur_2_phase_3,
                             segment="secondmc")
 
     objective_functions.add( # To minimize the difference between 0 and 1
         minimize_difference,
         custom_type=ObjectiveFcn.Mayer,
         node=Node.TRANSITION,
-        weight=100000,
+        weight=1000,
         phase=1,
         quadratic=True,
     )
@@ -241,7 +241,7 @@ def prepare_ocp(
         minimize_difference,
         custom_type=ObjectiveFcn.Mayer,
         node=Node.TRANSITION,
-        weight=100000,
+        weight=1000,
         phase=2,
         quadratic=True,
     )
@@ -249,7 +249,7 @@ def prepare_ocp(
         minimize_difference,
         custom_type=ObjectiveFcn.Mayer,
         node=Node.TRANSITION,
-        weight=100000,
+        weight=1000,
         phase=3,
         quadratic=True,
     )
@@ -425,7 +425,7 @@ def main():
         q_finger_marker_idx_4=q_finger_marker_idx_4,
     )
     with open(
-            "/home/lim/Documents/Stage Mathilde/PianOptim/0__On_going/Resultats_FINAL/pressed/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/4_100000_100/4_a_finger_hand_radius_ulna_100_000_&_100/Test_changing_obj_weight.pckl", "wb") as file:
+            "/0__On_going/Resultats_FINAL/pressed/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/2_1000_100/2_a_finger_hand_radius_ulna_1000_others_100/2_a_finger_hand_radius_ulna_1000_others_100.pckl", "wb") as file:
         pickle.dump(data, file)
 
     # # --- Print results --- # #

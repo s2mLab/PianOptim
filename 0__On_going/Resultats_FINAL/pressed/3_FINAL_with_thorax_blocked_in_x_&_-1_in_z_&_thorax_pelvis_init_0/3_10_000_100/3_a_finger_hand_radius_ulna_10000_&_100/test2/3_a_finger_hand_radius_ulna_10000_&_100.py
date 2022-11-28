@@ -167,13 +167,13 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=100,
                             index=[0, 1, 2, 3, 4, 5])
 
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=0, weight=100000,
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=0, weight=10000,
                             index=[6, 7, 8, 9])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=1, weight=100000,
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=1, weight=10000,
                             index=[6, 7, 8, 9])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=2, weight=100000,
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=2, weight=10000,
                             index=[6, 7, 8, 9])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=100000,
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=10000,
                             index=[6, 7, 8, 9])
 
     # EXPLANATION 1 on EXPLANATIONS_FILE
@@ -335,7 +335,7 @@ def prepare_ocp(
     x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
 
     for i in range(4):
-        x_init[i][4, 0] = 0.0
+        x_init[i][4, 0] = 0.08
         x_init[i][5, 0] = 0.67
         x_init[i][6, 0] = 1.11
         x_init[i][7, 0] = 1.48
@@ -425,7 +425,7 @@ def main():
         q_finger_marker_idx_4=q_finger_marker_idx_4,
     )
     with open(
-            "/0__On_going/Resultats_FINAL/pressed/4_100000_100/4_a_finger_hand_radius_ulna_100_000_&_100/4_100_000_&_100.pckl", "wb") as file:
+            "/0__On_going/Resultats_FINAL/pressed/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/3_a_finger_hand_radius_ulna_10000_&_100/3_a_finger_hand_radius_ulna_10000_&_100.pckl", "wb") as file:
         pickle.dump(data, file)
 
     # # --- Print results --- # #
