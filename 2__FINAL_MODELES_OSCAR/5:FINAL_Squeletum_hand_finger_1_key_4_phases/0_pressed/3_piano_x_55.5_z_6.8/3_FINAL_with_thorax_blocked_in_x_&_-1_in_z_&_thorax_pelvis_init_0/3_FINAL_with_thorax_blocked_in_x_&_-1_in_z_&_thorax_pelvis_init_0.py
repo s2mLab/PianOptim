@@ -117,7 +117,7 @@ def custom_func_track_principal_finger_pi_in_two_global_axis(all_pn: PenaltyNode
 
 
 def prepare_ocp(
-        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0:On_going/Resultats_FINAL/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/Squeletum_hand_finger_3D_2_keys_octave_LA_frappe_10_ddl.bioMod",
+        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/Squeletum_hand_finger_3D_2_keys_octave_LA_frappe_10_ddl.bioMod",
         ode_solver: OdeSolver = OdeSolver.COLLOCATION(polynomial_degree=4),
         long_optim: bool = False,
 ) -> OptimalControlProgram:
@@ -260,7 +260,7 @@ def prepare_ocp(
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="low_square", phase=1)
     constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
-                    node=Node.ALL, contact_index=0, min_bound=0, phase=2)
+                    node=Node.ALL, contact_index=0, min_bound=0, max_bound=np.inf, phase=2)
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="high_square", phase=3)
 
@@ -321,7 +321,7 @@ def prepare_ocp(
     x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
 
     for i in range(4):
-        x_init[i][4, 0] = 0.0
+        x_init[i][4, 0] = 0.08
         x_init[i][5, 0] = 0.67
         x_init[i][6, 0] = 1.11
         x_init[i][7, 0] = 1.48
@@ -367,7 +367,7 @@ def main():
     # # --- Solve the program --- # #
 
     solv = Solver.IPOPT(show_online_optim=True)
-    solv.set_maximum_iterations(1000000)
+    solv.set_maximum_iterations(10000000)
     solv.set_linear_solver("ma57")
     tic = time.time()
     sol = ocp.solve(solv)
@@ -411,7 +411,7 @@ def main():
         q_finger_marker_idx_4=q_finger_marker_idx_4,
     )
     with open(
-            "/0:On_going/Resultats_FINAL/pressed/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/2_finger_hand_ulna_100_000_ohters_100/results.pckl", "wb") as file:
+            "/home/lim/Documents/Stage Mathilde/PianOptim/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/0_pressed/3_piano_x_55.5_z_6.8/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/contact_with_max_bound_-_inf_2_test.pckl", "wb") as file:
         pickle.dump(data, file)
 
     # # --- Print results --- # #
