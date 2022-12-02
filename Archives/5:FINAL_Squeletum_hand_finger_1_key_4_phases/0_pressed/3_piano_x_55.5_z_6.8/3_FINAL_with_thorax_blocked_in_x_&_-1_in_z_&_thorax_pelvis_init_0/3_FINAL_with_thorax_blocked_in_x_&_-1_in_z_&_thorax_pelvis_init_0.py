@@ -411,7 +411,7 @@ def main():
         q_finger_marker_idx_4=q_finger_marker_idx_4,
     )
     with open(
-            "/home/lim/Documents/Stage Mathilde/PianOptim/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/0_pressed/3_piano_x_55.5_z_6.8/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/contact_with_max_bound_-_inf_2_test.pckl", "wb") as file:
+            "/Archives/5:FINAL_Squeletum_hand_finger_1_key_4_phases/0_pressed/3_piano_x_55.5_z_6.8/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/contact_with_max_bound_-_inf_2_test.pckl", "wb") as file:
         pickle.dump(data, file)
 
     # # --- Print results --- # #
