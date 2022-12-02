@@ -5,9 +5,9 @@ import numpy as np
 
 # Import results with pelvis rotZ
 with open(
-        "/home/lim/Documents/Stage Mathilde/PianOptim/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/strucked/1_every_dof_minimized_at_100/2_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0.pckl", 'rb') as file: new_dict = pickle.load(file)
+        "/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/strucked/1_every_dof_minimized_at_100/1_every_dof_minimized_at_100.pckl", 'rb') as file: new_dict = pickle.load(file)
 with open(
-        "/home/lim/Documents/Stage Mathilde/PianOptim/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/strucked/2_finger_hand_ulna_radius_minimize_at_10_000/4_a_finger_hand_radius_ulna_10_000_&_100/1.pckl", 'rb') as file: new_dict2 = pickle.load(file)
+        "/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/strucked/2_finger_hand_ulna_radius_minimize_at_10_000/4_a_finger_hand_radius_ulna_10_000_&_100/4_a_finger_hand_radius_ulna_10_000_&_100.pckl", 'rb') as file: new_dict2 = pickle.load(file)
 
 # Print the dic ###########################################
 # print(new_dict)
@@ -79,7 +79,7 @@ for ax in axs.flat:
     ax.set(xlabel='Time (s)', ylabel='q (rad)')
 
 
-figQ.suptitle('States (q) of limbs by minimizing more the finger, hand, radius & ulna\nfor a staccato strucked attack for one key.', fontweight="bold")
+figQ.suptitle('States (q) of limbs by minimizing more the finger, hand, radius & ulna\nfor a staccato strucked attack of one key.', fontweight="bold")
 
 figQ.legend(loc="upper right",        # Position of legend
            borderaxespad=0,        # Small spacing around legend box
@@ -146,7 +146,7 @@ for i in range(0, 3):
         axs[i, j].axvline(x=0.3 + 0.044 + 0.051 + 0.35, color='gray', linestyle='--')
 for ax in axs.flat:
     ax.set(xlabel='Time (s)', ylabel='Qdot (rad.s⁻1)')
-figQdot.suptitle('States (qdot) of limbs by minimizing more the finger, hand, radius & ulna\nfor a staccato strucked attack for one key.', fontweight="bold")
+figQdot.suptitle('States (qdot) of limbs by minimizing more the finger, hand, radius & ulna\nfor a staccato strucked attack of one key.', fontweight="bold")
 
 # legends
 figQdot.legend(loc="upper right", borderaxespad=0, title="Weight of minimisation controls for :", prop={"size": 10})
@@ -156,7 +156,7 @@ plt.subplots_adjust(wspace=0.8, hspace=0.8)
 # TAU ######################################################
 figU, axs = plt.subplots(3, 4)
 
-T = np.hstack((np.linspace(0, 0.3, num=20), np.linspace(0.3, 0.3+0.027, num=20), np.linspace(0.3+0.027, 0.3+0.027+0.058, num=20), np.linspace(0.3+0.027+0.058, 0.3+0.027+0.058+0.3, num=20)))
+T2 = np.hstack((np.linspace(0, 0.3, num=19), np.linspace(0.3, 0.3+0.027, num=19), np.linspace(0.3+0.027, 0.3+0.027+0.058, num=19), np.linspace(0.3+0.027+0.058, 0.3+0.027+0.058+0.3, num=19)))
 
 U = np.hstack((new_dict["controls"][i]["tau"][:, :-1] if i < 3 else new_dict["controls"][i]["tau"] for i in range(4)))
 U2 = np.hstack((new_dict2["controls"][i]["tau"][:, :-1] if i < 3 else new_dict2["controls"][i]["tau"] for i in range(4)))
@@ -215,7 +215,7 @@ for i in range(0, 3):
         axs[i, j].axvline(x=0.3+0.044+0.051+0.35, color='gray', linestyle='--')
 for ax in axs.flat:
     ax.set(xlabel='Time (s)', ylabel='Tau (N.m)')
-figU.suptitle('Torque (tau) of limbs by minimizing more the finger, hand, radius & ulna\nfor a staccato strucked attack for one key.', fontweight="bold")
+figU.suptitle('Torque (tau) of limbs by minimizing more the finger, hand, radius & ulna\nfor a staccato strucked attack of one key.', fontweight="bold")
 figU.legend(loc="upper right", borderaxespad=0, title="Weight of minimisation controls for :", prop={"size": 10})
 
 plt.subplots_adjust(wspace=0.8, hspace=0.8)

@@ -5,11 +5,11 @@ import numpy as np
 
 # Import results with pelvis rotZ
 with open(
-        "/home/lim/Documents/Stage Mathilde/PianOptim/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/pressed/2_10_000_100/*50_AVEC_MAX_BOUND.pckl", 'rb') as file:new_dict = pickle.load(file)
+        "/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/pressed/2_10_000_100/*50_AVEC_MAX_BOUND.pckl", 'rb') as file:new_dict = pickle.load(file)
 with open(
         "", 'rb') as file: new_dict2 = pickle.load(file)
 with open(
-        "/home/lim/Documents/Stage Mathilde/PianOptim/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/pressed/1_every_dof_100/test_contact_xyz_&_minim_divided.pckl", 'rb') as file: new_dict3 = pickle.load(file)
+        "/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/pressed/1_every_dof_100/test_contact_xyz_&_minim_divided.pckl", 'rb') as file: new_dict3 = pickle.load(file)
 
 # Print the dic ###########################################
 # print(new_dict)

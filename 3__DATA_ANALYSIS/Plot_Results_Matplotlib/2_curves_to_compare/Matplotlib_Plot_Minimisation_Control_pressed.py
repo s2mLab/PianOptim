@@ -5,9 +5,9 @@ import numpy as np
 
 # Import results with pelvis rotZ
 with open(
-        "/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/pressed/1_every_dof_minimized_at_100/test_contact_xyz_&_minim_divided.pckl", 'rb') as file:new_dict = pickle.load(file)
+        "/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/pressed/1_every_dof_minimized_at_100/1_every_dof_minimized_at_100.pckl", 'rb') as file:new_dict = pickle.load(file)
 with open(
-        "/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/pressed/2_finger_hand_ulna_radius_minimize_at_10_000/*50_AVEC_MAX_BOUND.pckl", 'rb') as file: new_dict2 = pickle.load(file)
+        "/2__FINAL_MODELES_OSCAR/5:FINAL_Squeletum_hand_finger_1_key_4_phases/pressed/2_finger_hand_ulna_radius_minimize_at_10_000/2_finger_hand_ulna_radius_minimize_at_10_000.pckl", 'rb') as file: new_dict2 = pickle.load(file)
 
 # Print the dic ###########################################
 # print(new_dict)
@@ -79,7 +79,7 @@ for ax in axs.flat:
     ax.set(xlabel='Time (s)', ylabel='q (rad)')
 
 
-figQ.suptitle('States (q) of limbs by minimizing more the finger, hand, radius & ulna\nfor a staccato pressed attack for one key.', fontweight="bold")
+figQ.suptitle('States (q) of limbs by minimizing more the finger, hand, radius & ulna\nfor a staccato pressed attack of one key.', fontweight="bold")
 
 figQ.legend(loc="upper right",        # Position of legend
            borderaxespad=0,        # Small spacing around legend box
@@ -146,7 +146,7 @@ for i in range(0, 3):
         axs[i, j].axvline(x=0.3 + 0.044 + 0.051 + 0.35, color='gray', linestyle='--')
 for ax in axs.flat:
     ax.set(xlabel='Time (s)', ylabel='Qdot (rad.s⁻1)')
-figQdot.suptitle('States (qdot) of limbs by minimizing more the finger, hand, radius & ulna\nfor a staccato pressed attack for one key.', fontweight="bold")
+figQdot.suptitle('States (qdot) of limbs by minimizing more the finger, hand, radius & ulna\nfor a staccato pressed attack of one key.', fontweight="bold")
 
 # legends
 figQdot.legend(loc="upper right", borderaxespad=0, title="Weight of minimisation controls for :", prop={"size": 10})
@@ -215,7 +215,7 @@ for i in range(0, 3):
         axs[i, j].axvline(x=0.3+0.044+0.051+0.35, color='gray', linestyle='--')
 for ax in axs.flat:
     ax.set(xlabel='Time (s)', ylabel='Tau (N.m)')
-figU.suptitle('Torque (tau) of limbs by minimizing more the finger, hand, radius & ulna\nfor a staccato pressed attack for one key.', fontweight="bold")
+figU.suptitle('Torque (tau) of limbs by minimizing more the finger, hand, radius & ulna\nfor a staccato pressed attack of one key.', fontweight="bold")
 figU.legend(loc="upper right", borderaxespad=0, title="Weight of minimisation controls for :", prop={"size": 10})
 
 plt.subplots_adjust(wspace=0.8, hspace=0.8)
