@@ -30,29 +30,8 @@ from bioptim import (
 )
 
 
-# Function to minimize the difference between transitions
 def minimize_difference(all_pn: PenaltyNode):
     return all_pn[0].nlp.controls.cx_end - all_pn[1].nlp.controls.cx
-
-
-# def custom_func_track_finger_marker_key(all_pn: PenaltyNodeList, marker: str) -> MX:
-#     finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, marker)
-#     markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
-#     finger_marker = markers[:, finger_marker_idx]
-#     key = ((0.005*sin(137*(finger_marker[1]+0.0129)))
-#       / (sqrt(0.001**2 + sin(137*(finger_marker[1] + 0.0129))**2))-0.005)
-#
-#     # if_else( condition, si c'est vrai fait ca',  sinon fait ca)
-#     markers_diff_key1 = if_else(
-#         finger_marker[1] < 0.01,
-#         finger_marker[2] - 0,
-#         if_else(
-#             finger_marker[1] < 0.033,  # condition
-#             finger_marker[2] - key,  # True
-#             finger_marker[2]-0,  # False
-#         )
-#     )
-#     return markers_diff_key1
 
 
 def custom_func_track_finger_5_on_the_right_of_principal_finger(all_pn: PenaltyNodeList) -> MX:
@@ -119,7 +98,6 @@ def custom_func_track_principal_finger_pi_in_two_global_axis(all_pn: PenaltyNode
 def prepare_ocp(
         biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/0__On_going/Resultats_FINAL/pressed/bioMod/Squeletum_hand_finger_3D_2_keys_octave_LA_frappe_10_ddl.bioMod",
         ode_solver: OdeSolver = OdeSolver.COLLOCATION(polynomial_degree=4),
-        long_optim: bool = False,
 ) -> OptimalControlProgram:
 
     """
@@ -131,8 +109,6 @@ def prepare_ocp(
         The path to the bioMod
     ode_solver: OdeSolver
         The ode solve to use
-    long_optim: bool
-        If the solver should solve the precise optimization (500 shooting points) or the approximate (50 points)
 
     Returns
     -------
@@ -142,11 +118,11 @@ def prepare_ocp(
     biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
                     biorbd.Model(biorbd_model_path))
 
-    # Average of N frames by phase and the phases time, both measured with the motion capture datas.
+    # Average of N frames by phase ; Average of phases time ; both measured with the motion capture datas.
     n_shooting = (30, 7, 7, 35)
     phase_time = (0.3, 0.044, 0.051, 0.35)
     tau_min, tau_max, tau_init = -200, 200, 0
-
+    # Velocity profile found thanks to the motion capture datas.
     vel_push_array2 = [[0, -0.113772161006927, -0.180575996580578, -0.270097219830468,
                         -0.347421549388341, -0.290588704744975, -0.0996376128423782, 0]]
 
@@ -155,7 +131,8 @@ def prepare_ocp(
     pi_sur_2_phase_2 = np.full((1, n_shooting[2]+1), pi/2)
     pi_sur_2_phase_3 = np.full((1, n_shooting[3]+1), pi/2)
 
-    # Add objective functions # Torques generated into articulations
+    # Objectives
+    # Minimize Torques generated into articulations
     objective_functions = ObjectiveList()
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=0, weight=100,
                             index=[0, 1, 2, 3, 4, 5])
@@ -184,17 +161,15 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=0.0001*50,
                             index=[0, 1, 2, 3, 4, 5, 6, 7])
 
+    # To block ulna rotation before the key pressing.
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=100000*50,
                             index=[7])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=100*50,
-                            index=[8, 9], derivative=True)
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=100*50,
-                            index=[8, 9], derivative=True)
 
     objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
                             target=vel_push_array2, node=Node.ALL, phase=1, marker_index=4,
                             weight=10000*50)
 
+    # To keep the hand/index perpendicular of the key piano all long the attack.
     objective_functions.add(custom_func_track_principal_finger_pi_in_two_global_axis, custom_type=ObjectiveFcn.Lagrange,
                             node=Node.ALL, phase=0, weight=1000*50, quadratic=True, target=pi_sur_2_phase_0,
                             segment="2proxph_2mcp_flexion")
@@ -221,7 +196,14 @@ def prepare_ocp(
                             node=Node.ALL, phase=3, weight=1000*50, quadratic=True, target=pi_sur_2_phase_3,
                             segment="secondmc")
 
-    objective_functions.add( # To minimize the difference between 0 and 1
+    # To avoid the apparition of "noise" caused by the objective function just before.
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=100*50,
+                            index=[8, 9], derivative=True)
+    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=100*50,
+                            index=[8, 9], derivative=True)
+
+    # To minimize the difference between 0 and 1
+    objective_functions.add(
         minimize_difference,
         custom_type=ObjectiveFcn.Mayer,
         node=Node.TRANSITION,
@@ -229,7 +211,8 @@ def prepare_ocp(
         phase=1,
         quadratic=True,
     )
-    objective_functions.add( # To minimize the difference between 1 and 2
+    # To minimize the difference between 1 and 2
+    objective_functions.add(
         minimize_difference,
         custom_type=ObjectiveFcn.Mayer,
         node=Node.TRANSITION,
@@ -237,7 +220,8 @@ def prepare_ocp(
         phase=2,
         quadratic=True,
     )
-    objective_functions.add( # To minimize the difference between 2 and 3
+    # To minimize the difference between 2 and 3
+    objective_functions.add(
         minimize_difference,
         custom_type=ObjectiveFcn.Mayer,
         node=Node.TRANSITION,
@@ -246,11 +230,6 @@ def prepare_ocp(
         quadratic=True,
     )
 
-
-    # Dynamics
-    # dynamics = DynamicsList()
-    # expand = False if isinstance(ode_solver, OdeSolver.IRK) else True
-    # rajouter expend ?
     # Dynamics
     dynamics = DynamicsList()
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=0)
@@ -274,6 +253,7 @@ def prepare_ocp(
     constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
                     node=Node.END, first_marker="finger_marker", second_marker="high_square", phase=3)
 
+    # To keep the index and the small finger above the bed key.
     constraints.add(custom_func_track_principal_finger_and_finger5_above_bed_key,
                     node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=0)
     constraints.add(custom_func_track_principal_finger_and_finger5_above_bed_key,
@@ -292,6 +272,7 @@ def prepare_ocp(
     constraints.add(custom_func_track_principal_finger_and_finger5_above_bed_key,
                     node=Node.ALL, marker="finger_marker_5", min_bound=0, max_bound=10000, phase=3)
 
+    # To keep the small finger on the right of the principal finger.
     constraints.add(custom_func_track_finger_5_on_the_right_of_principal_finger,
                     node=Node.ALL, min_bound=0.00001, max_bound=10000, phase=0)
     constraints.add(custom_func_track_finger_5_on_the_right_of_principal_finger,
@@ -301,17 +282,14 @@ def prepare_ocp(
     constraints.add(custom_func_track_finger_5_on_the_right_of_principal_finger,
                     node=Node.ALL, min_bound=0.00001, max_bound=10000, phase=3)
 
-    # constraints.add(custom_func_track_finger_marker_key,
-    #                 node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=2)
-
     phase_transition = PhaseTransitionList()
     phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=1)
 
     # EXPLANATION
-    # ex : x_bounds[0][3, 0] = vel_pushing
+    # ex: x_bounds[0][3, 0] = vel_pushing
     # [ phase 0 ]
     # [indice du ddl (0 et 1 position y z, 2 et 3 vitesse y z),
-    # time] (0 =» 1st point, 1 =» all middle points, 2 =» last point)
+    # time (0 =» 1st point, 1 =» all middle points, 2 =» last point)]
 
     # Path constraint
     x_bounds = BoundsList()
@@ -377,12 +355,12 @@ def main():
     # # --- Solve the program --- # #
 
     solv = Solver.IPOPT(show_online_optim=True)
-    solv.set_maximum_iterations(1000000)
+    solv.set_maximum_iterations(1)
     solv.set_linear_solver("ma57")
     tic = time.time()
     sol = ocp.solve(solv)
 
-    # # # --- Take important states for Finger_Marker_5 and Finger_marker --- # #
+    # # --- Take important states for Finger_Marker_5 and Finger_marker --- # #
 
     q_finger_marker_5_idx_1 = []
     q_finger_marker_idx_4 = []
@@ -408,7 +386,7 @@ def main():
     q_finger_marker_idx_4 = np.array(q_finger_marker_idx_4)
     q_finger_marker_idx_4 = q_finger_marker_idx_4.reshape((399, 3))
 
-    # # --- Download datas --- #
+    # # --- Download datas on a .pckl file --- #
 
     data = dict(
         states=sol.states, controls=sol.controls, parameters=sol.parameters,
@@ -421,13 +399,13 @@ def main():
         q_finger_marker_idx_4=q_finger_marker_idx_4,
     )
     with open(
-            "/Archives/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/3_10_000_100/3_a_finger_hand_radius_ulna_10000_&_100/test3_max_bound_contact/*50_AVEC_MAX_BOUND.pckl", "wb") as file:
+            "/0__On_going/Resultats_FINAL/pressed/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/1_every_dof_100/test_with_max_bound_contact/asupprimer.pckl", "wb") as file:
         pickle.dump(data, file)
 
     # # --- Print results --- # #
 
-    print("results saved")
-    print('temps de resolution : ', time.time() - tic, 's')
+    print("Tesults saved")
+    print('Temps de resolution : ', time.time() - tic, 's')
     ocp.print(to_console=False, to_graph=False)
     sol.graphs(show_bounds=True)
     sol.print_cost()
@@ -435,5 +413,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
