@@ -1,0 +1,24 @@
+### Axis of developments ###
+
+Axis 1
+ of : To constraint the finger not to pass through the 2D key
+ for that : We create a squared line, representing the key, and through which the finger can't pass through.
+ Code which can help :
+ def custom_func_track_finger_marker_key(all_pn: PenaltyNodeList, marker: str) -> MX:
+     finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, marker)
+     markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
+     finger_marker = markers[:, finger_marker_idx]
+     key = ((0.005*sin(137*(finger_marker[1]+0.0129)))
+       / (sqrt(0.001**2 + sin(137*(finger_marker[1] + 0.0129))**2))-0.005)
+
+     # if_else( condition, si c'est vrai fait ca',  sinon fait ca)
+     markers_diff_key1 = if_else(
+         finger_marker[1] < 0.01,
+         finger_marker[2] - 0,
+         if_else(
+             finger_marker[1] < 0.033,  # condition
+             finger_marker[2] - key,  # True
+             finger_marker[2]-0,  # False
+         )
+     )
+     return markers_diff_key1
