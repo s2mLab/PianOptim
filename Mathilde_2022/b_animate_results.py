@@ -12,7 +12,7 @@ with open(
 
 
 
-biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/a_Mathilde_2022/2__FINAL_MODELS_OSCAR/5___final___squeletum_hand_finger_1_key_4_phases/bioMod/Squeletum_hand_finger_3D_2_keys_octave_LA.bioMod"
+biorbd_model_path: str = "/Mathilde_2022/2__FINAL_MODELS_OSCAR/5___final___squeletum_hand_finger_1_key_4_phases/bioMod/Squeletum_hand_finger_3D_2_keys_octave_LA.bioMod"
 
 # # --- Animate --- # #
 
