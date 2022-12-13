@@ -99,7 +99,7 @@ def custom_func_track_principal_finger_pi_in_two_global_axis(all_pn: PenaltyNode
 
 
 def prepare_ocp(tau_minimisation_weight, objectives_weight_coefficient,
-        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/Mathilde_2022/2__FINAL_MODELS_OSCAR/5___final___squeletum_hand_finger_1_key_4_phases/bioMod/Squeletum_hand_finger_3D_2_keys_octave_LA.bioMod",
+        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/Mathilde_2022/2__final_models_piano/5___final___final___squeletum_hand_finger_1_key_4_phases_!/bioMod/Squeletum_hand_finger_3D_2_keys_octave_LA.bioMod",
         ode_solver: OdeSolver = OdeSolver.COLLOCATION(polynomial_degree=4),
 ) -> OptimalControlProgram:
 
@@ -121,9 +121,9 @@ def prepare_ocp(tau_minimisation_weight, objectives_weight_coefficient,
     biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
                     biorbd.Model(biorbd_model_path))
 
-    # Average of N frames by phase ; Average of phases time ; both measured with the motion capture datas.
+    # Average of N frames by phase ; Average of phases T ; both measured with the motion capture datas.
     n_shooting = (30, 7, 7, 35)
-    phase_time = (0.3, 0.044, 0.051, 0.35)
+    phase_T = (0.3, 0.044, 0.051, 0.35)
     tau_min, tau_max, tau_init = -200, 200, 0
     # Velocity profile found thanks to the motion capture datas.
     vel_push_array2 = [[0, -0.113772161006927, -0.180575996580578, -0.270097219830468,
@@ -292,7 +292,7 @@ def prepare_ocp(tau_minimisation_weight, objectives_weight_coefficient,
     # ex: x_bounds[0][3, 0] = vel_pushing
     # [ phase 0 ]
     # [indice du ddl (0 et 1 position y z, 2 et 3 vitesse y z),
-    # time (0 =» 1st point, 1 =» all middle points, 2 =» last point)]
+    # T (0 =» 1st point, 1 =» all middle points, 2 =» last point)]
 
     # Path constraint
     x_bounds = BoundsList()
@@ -335,7 +335,7 @@ def prepare_ocp(tau_minimisation_weight, objectives_weight_coefficient,
         biorbd_model,
         dynamics,
         n_shooting,
-        phase_time,
+        phase_T,
         x_init,
         u_init,
         x_bounds,
@@ -387,7 +387,7 @@ for tau_minimisation_weight in [100, 10000]:  # Tests
         # # --- Solve the program --- # #
 
         solv = Solver.IPOPT(show_online_optim=False)
-        solv.set_maximum_iterations(1)
+        solv.set_maximum_iterations(1000000)
         solv.set_linear_solver("ma57")
         tic = time.time()
         sol = ocp.solve(solv)
@@ -432,34 +432,38 @@ for tau_minimisation_weight in [100, 10000]:  # Tests
         hand = []
         finger = []
 
-        a = np.delete(sol.controls[0]["tau"], -1, axis=1)
+        dt = [0.3/len(np.delete(sol.controls[0]["tau"][0, :])),
+              0.044/len(np.delete(sol.controls[1]["tau"][0, :])),
+              0.051/len(np.delete(sol.controls[2]["tau"][0, :])),
+              0.35/len(np.delete(sol.controls[3]["tau"][0, :]))]
 
+        a = np.delete(sol.controls[0]["tau"], -1, axis=1)
         simulation += ["minim_" + str(tau_minimisation_weight) + "_obj_" + str(objectives_weight_coefficient)]
-        pelvis_z += [sum(a[0, :])*(0.745/82)]
-        thorax_y += [sum(a[1, :])*(0.745/82)]
-        thorax_z += [sum(a[2, :])*(0.745/82)]
-        humerus_x += [sum(a[3, :])*(0.745/82)]
-        humerus_y += [sum(a[4, :])*(0.745/82)]
-        humerus_z += [sum(a[5, :])*(0.745/82)]
-        ulna += [sum(a[6, :])*(0.745/82)]
-        radius += [sum(a[7, :])*(0.745/82)]
-        hand += [sum(a[8, :])*(0.745/82)]
-        finger += [sum(a[9, :])*(0.745/82)]
+        pelvis_z += [sum(abs((a[0, :])*dt[0]))]
+        thorax_y += [sum(abs((a[1, :])*dt[0]))]
+        thorax_z += [sum(abs((a[2, :])*dt[0]))]
+        humerus_x += [sum(abs((a[3, :])*dt[0]))]
+        humerus_y += [sum(abs((a[4, :])*dt[0]))]
+        humerus_z += [sum(abs((a[5, :])*dt[0]))]
+        ulna += [sum(abs((a[6, :])*dt[0]))]
+        radius += [sum(abs((a[7, :])*dt[0]))]
+        hand += [sum(abs((a[8, :])*dt[0]))]
+        finger += [sum(abs((a[9, :])*dt[0]))]
 
         number_simulation += 1
 
         for i in range(1, 4):
             a = np.delete(sol.controls[i]["tau"], -1, axis=1)
-            pelvis_z[0] += sum(a[0, :]*(0.745/82))
-            thorax_y[0] += sum(a[1, :])*(0.745/82)
-            thorax_z[0] += sum(a[2, :])*(0.745/82)
-            humerus_x[0] += sum(a[3, :])*(0.745/82)
-            humerus_y[0] += sum(a[4, :])*(0.745/82)
-            humerus_z[0] += sum(a[5, :])*(0.745/82)
-            ulna[0] += sum(a[6, :])*(0.745/82)
-            radius[0] += sum(a[7, :])*(0.745/82)
-            hand[0] += sum(a[8, :])*(0.745/82)
-            finger[0] += sum(a[9, :])*(0.745/82)
+            pelvis_z[0] += sum(abs(a[0, :]*dt[i]))
+            thorax_y[0] += sum(abs(a[1, :]*dt[i]))
+            thorax_z[0] += sum(abs(a[2, :]*dt[i]))
+            humerus_x[0] += sum(abs(a[3, :]*dt[i]))
+            humerus_y[0] += sum(abs(a[4, :]*dt[i]))
+            humerus_z[0] += sum(abs(a[5, :]*dt[i]))
+            ulna[0] += sum(abs(a[6, :]*dt[i]))
+            radius[0] += sum(abs(a[7, :]*dt[i]))
+            hand[0] += sum(abs(a[8, :]*dt[i]))
+            finger[0] += sum(abs(a[9, :]*dt[i]))
 
         new_value = pd.DataFrame({'simulation': simulation,
                               'pelvis_z': pelvis_z, 'thorax_y': thorax_y, 'thorax_z': thorax_z, 'humerus_x': humerus_x,
