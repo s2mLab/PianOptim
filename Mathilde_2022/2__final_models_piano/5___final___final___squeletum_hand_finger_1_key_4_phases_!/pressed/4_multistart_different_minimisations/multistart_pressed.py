@@ -588,12 +588,12 @@ MULTI-START : Solve a multiphase ocp, and save the solution results for differen
 
 number_simulation = -1
 
-for tau_minimisation_weight in [100, 10000]:  # Tests
+for tau_minimisation_weight in range(1000, 20000, 3000):  # Tests
     os.mkdir(
-        "../3_multistart_different_minimisations/results/1_results_multistart"
+        "../4_multistart_different_minimisations/results/1_results_multistart"
         "/Solutions__minimisation_weight_for_distal_articulations_at_" + str(tau_minimisation_weight)
     )
-    for objectives_weight_coefficient in [1, 50]:
+    for objectives_weight_coefficient in [tau_minimisation_weight/1000, tau_minimisation_weight/100]:
         print(
             "\nMinimisation weight for ulna, radius, finger and hand at "
             + str(tau_minimisation_weight)
@@ -626,7 +626,7 @@ for tau_minimisation_weight in [100, 10000]:  # Tests
             param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
         )
         with open(
-            "../3_multistart_different_minimisations/results/1_results_multistart"
+            "../4_multistart_different_minimisations/results/1_results_multistart"
             "/Solutions__minimisation_weight_for_distal_articulations_at_"
             + str(tau_minimisation_weight)
             + "/other_objectives_multiply_by_"
@@ -715,7 +715,7 @@ for tau_minimisation_weight in [100, 10000]:  # Tests
         if number_simulation == 0:
             tab_tau = new_value
             with open(
-                "../3_multistart_different_minimisations/results/2_results_analysis/"
+                "../4_multistart_different_minimisations/results/2_results_analysis/"
                 "pareto_front_curve_of_one_proximal_limb_torques_d._on_distal_limbs_torques"
                 "/tab_tau_each_dof" + ".pckl",
                 "wb",
@@ -723,7 +723,7 @@ for tau_minimisation_weight in [100, 10000]:  # Tests
                 pickle.dump(tab_tau, file)
         else:
             with open(
-                "../3_multistart_different_minimisations/results/2_results_analysis/"
+                "../4_multistart_different_minimisations/results/2_results_analysis/"
                 "pareto_front_curve_of_one_proximal_limb_torques_d._on_distal_limbs_torques"
                 "/tab_tau_each_dof" + ".pckl",
                 "rb",
@@ -732,7 +732,7 @@ for tau_minimisation_weight in [100, 10000]:  # Tests
 
             tab_tau = pd.concat([tab_tau, new_value])
             with open(
-                "../3_multistart_different_minimisations/results/2_results_analysis/"
+                "../4_multistart_different_minimisations/results/2_results_analysis/"
                 "pareto_front_curve_of_one_proximal_limb_torques_d._on_distal_limbs_torques"
                 "/tab_tau_each_dof" + ".pckl",
                 "wb",
