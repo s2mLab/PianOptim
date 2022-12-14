@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from mpldatacursor import datacursor
 
 with open(
-        "/home/lim/Documents/Stage Mathilde/PianOptim/Mathilde_2022/archives/2_results_analysis/pareto_front_curve_of_one_proximal_limb_torques_d._on_distal_limbs_torques/tab_tau_each_dof.pckl",
+        "/home/lim/Documents/Stage Mathilde/PianOptim/2_Mathilde_2022/2__final_models_piano/5___final___final___squeletum_hand_finger_1_key_4_phases_!/pressed/4_multistart_different_minimisations/results/2_results_analysis/pareto_front_curve_of_one_proximal_limb_torques_d._on_distal_limbs_torques/tab_tau_each_dof.pckl",
     "rb",
 ) as file:
     tab_tau = pickle.load(file)

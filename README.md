@@ -1,4 +1,4 @@
-# --------- True_Pianoptim ---------
+# True_Pianoptim 
 
 The aim of this project is to define, through numerical simulation and optimal control, new performance strategies that might help reduce exposition to risk of injuries.
 
@@ -9,18 +9,14 @@ The file Piano_final_version.py is a simulation of 5 chords played fortissimo wi
 The file Pianoptim_V1 is a simplified version of the same 5 chords but neglecting keys interaction, so without external forces.
 
 # Mathilde 2022
-FINAL MODEL TO DEVELOP
+FINAL MODEL DEVELOPED 
 
 - The file "2__final_models_piano >> 5___final___final___squeletum_hand_finger_1_key_4_phases" gathered simulations of 1 key (principal LA of the piano)
-played strucked staccato, and pressed staccato with the key interaction, for different values of torque minimisation.
+played strucked staccato, and pressed staccato with optimized movements and the key interaction, for different values of torque minimisation.
 
 - The file "2__final_models_piano >> 5___final___final___squeletum_hand_finger_1_key_4_phases >> pressed >>
-3_multistart_different_minimisations >> multistart_pressed.py " is a multistart code to run multiple simulations
-with different minimisation weights at the same time. Just adapted for pressed attack for the moment. The results are saved in the first file, and analyses are done in the other one. 
-
-    ------> I stopped my intern by the development of the "plot_graph.py" done to plot a pareto front curve of proximal 
-limbs torques depending on distal limbs torques. The curve of the pareto front must still be displayed. And the good minimisation
-combinaison has to be found to run the multistart with this combinaison.
+4_multistart_different_minimisations >> multistart_pressed.py " is a multistart code to run multiple simulations
+with different minimisation weights at the same time. Just adapted for the pressed attack for the moment. The results are saved in the first file, and analyses are done in the other one. 
 
 OLD FINAL MODELS
 
@@ -44,13 +40,3 @@ the used limbs, in order to open their mesh in a 3D software, in MeshLab for exa
 
 - The file "c__CODE_EXPLAINATIONS_FILE" gathered technical explanations on codes developed, and some code advices.
 
-AXES OF DEVELOPMENTS
-
-- Axis 1 :
-Minimize the power of degrees of freedom, instead of the torque.
-
-- Axis 2 :
-Add one or two degrees of freedom for the finger.
-
-- Axis 3 :
-Add muscles to the model.
