@@ -25,7 +25,6 @@ from bioptim import (
     PhaseTransitionList,
     PhaseTransitionFcn,
     PlotType,
-
 )
 
 # Constants from data collect
@@ -106,14 +105,15 @@ mean_time_phase_4 = 1.00338542  # phase 4 is from last marker to first marker
 def minimize_difference(all_pn: PenaltyNode):
     return all_pn[0].nlp.controls.cx_end - all_pn[1].nlp.controls.cx
 
+
 # def custom_func_track_markers():
 #   return markers_diff
 
 
 def prepare_ocp(
-        biorbd_model_path: str = "Piano.bioMod",
-        ode_solver: OdeSolver = OdeSolver.RK4(),
-        long_optim: bool = False,
+    biorbd_model_path: str = "Piano.bioMod",
+    ode_solver: OdeSolver = OdeSolver.RK4(),
+    long_optim: bool = False,
 ) -> OptimalControlProgram:
 
     """
@@ -147,19 +147,34 @@ def prepare_ocp(
     # weight : you want to minimize a lot = 10000, to minimize less = 50
     # index : you just want to minimize pelvis ddl, add : index=0 or pelvis and humerus ddl, add : index=[0, 4]
     objective_functions = ObjectiveList()
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=0,
-                            index=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    objective_functions.add(
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL,
+        key="tau",
+        weight=1000,
+        phase=0,
+        index=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    )
     # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1, phase=0, index=[4, 5, 6])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=1,
-                            index=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    objective_functions.add(
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL,
+        key="tau",
+        weight=1000,
+        phase=1,
+        index=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    )
     # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1, phase=1, index=[4, 5, 6])
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1000, phase=2,
-                            index=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    objective_functions.add(
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL,
+        key="tau",
+        weight=1000,
+        phase=2,
+        index=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    )
     # objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", weight=1, phase=2, index=[4, 5, 6])
 
     # Objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="q",weight=100)
 
-    objective_functions.add( # To minimize the difference between 0 and 1
+    objective_functions.add(  # To minimize the difference between 0 and 1
         minimize_difference,
         custom_type=ObjectiveFcn.Mayer,
         node=Node.TRANSITION,
@@ -167,7 +182,7 @@ def prepare_ocp(
         phase=1,
         quadratic=True,
     )
-    objective_functions.add( # To minimize the difference between 1 and 2
+    objective_functions.add(  # To minimize the difference between 1 and 2
         minimize_difference,
         custom_type=ObjectiveFcn.Mayer,
         node=Node.TRANSITION,
@@ -176,37 +191,45 @@ def prepare_ocp(
         quadratic=True,
     )
 
-    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
-                            custom_type=ObjectiveFcn.Mayer,
-                            node=Node.START,
-                            first_marker="middle_finger",
-                            second_marker="accord_1_haut",
-                            weight=10000, phase=0
-                            )
+    objective_functions.add(
+        ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+        custom_type=ObjectiveFcn.Mayer,
+        node=Node.START,
+        first_marker="middle_finger",
+        second_marker="accord_1_haut",
+        weight=10000,
+        phase=0,
+    )
 
-    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
-                            custom_type=ObjectiveFcn.Mayer,
-                            node=Node.END,
-                            first_marker="middle_finger",
-                            second_marker="accord_2_haut",
-                            weight=10000, phase=0
-                            )
+    objective_functions.add(
+        ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+        custom_type=ObjectiveFcn.Mayer,
+        node=Node.END,
+        first_marker="middle_finger",
+        second_marker="accord_2_haut",
+        weight=10000,
+        phase=0,
+    )
 
-    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
-                            custom_type=ObjectiveFcn.Mayer,
-                            node=Node.END,
-                            first_marker="middle_finger",
-                            second_marker="accord_2_haut",
-                            weight=10000, phase=1
-                            )
+    objective_functions.add(
+        ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+        custom_type=ObjectiveFcn.Mayer,
+        node=Node.END,
+        first_marker="middle_finger",
+        second_marker="accord_2_haut",
+        weight=10000,
+        phase=1,
+    )
 
-    objective_functions.add(ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
-                            custom_type=ObjectiveFcn.Mayer,
-                            node=Node.END,
-                            first_marker="middle_finger",
-                            second_marker="accord_3_haut",
-                            weight=10000, phase=2
-                            )
+    objective_functions.add(
+        ObjectiveFcn.Mayer.SUPERIMPOSE_MARKERS,
+        custom_type=ObjectiveFcn.Mayer,
+        node=Node.END,
+        first_marker="middle_finger",
+        second_marker="accord_3_haut",
+        weight=10000,
+        phase=2,
+    )
 
     # Dynamics
     dynamics = DynamicsList()
@@ -219,32 +242,81 @@ def prepare_ocp(
     constraints = ConstraintList()
 
     # Super impositions
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.START, first_marker="middle_finger",
-                    second_marker="accord_1_haut", phase=0)
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_finger",
-                    second_marker="accord_2_haut", phase=0)
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_finger",
-                    second_marker="accord_2_haut", phase=1)
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS, node=Node.END, first_marker="middle_finger",
-                    second_marker="accord_3_haut", phase=2)
+    constraints.add(
+        ConstraintFcn.SUPERIMPOSE_MARKERS,
+        node=Node.START,
+        first_marker="middle_finger",
+        second_marker="accord_1_haut",
+        phase=0,
+    )
+    constraints.add(
+        ConstraintFcn.SUPERIMPOSE_MARKERS,
+        node=Node.END,
+        first_marker="middle_finger",
+        second_marker="accord_2_haut",
+        phase=0,
+    )
+    constraints.add(
+        ConstraintFcn.SUPERIMPOSE_MARKERS,
+        node=Node.END,
+        first_marker="middle_finger",
+        second_marker="accord_2_haut",
+        phase=1,
+    )
+    constraints.add(
+        ConstraintFcn.SUPERIMPOSE_MARKERS,
+        node=Node.END,
+        first_marker="middle_finger",
+        second_marker="accord_3_haut",
+        phase=2,
+    )
 
     # Target velocity z , with min bound = mean vel z - stdev and max bound = mean vel z + stdev
     # To constraint the vertical velocity of the marker of the hand when the chord is played.
     # min_bound/max_bound = - stdev.../+ stdev... = velocity interval that the marker of the hand has to reach
-    constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_0, min_bound=-stdev_vel_z_0,
-                    max_bound=stdev_vel_z_0, node=Node.START, phase=0, axes=Axis.Z, marker_index=0)
+    constraints.add(
+        ConstraintFcn.TRACK_MARKERS_VELOCITY,
+        target=vel_z_0,
+        min_bound=-stdev_vel_z_0,
+        max_bound=stdev_vel_z_0,
+        node=Node.START,
+        phase=0,
+        axes=Axis.Z,
+        marker_index=0,
+    )
 
-    constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_1, min_bound=-stdev_vel_z_1,
-                    max_bound=stdev_vel_z_1,
-                    node=Node.END, phase=0, axes=Axis.Z, marker_index=1)
+    constraints.add(
+        ConstraintFcn.TRACK_MARKERS_VELOCITY,
+        target=vel_z_1,
+        min_bound=-stdev_vel_z_1,
+        max_bound=stdev_vel_z_1,
+        node=Node.END,
+        phase=0,
+        axes=Axis.Z,
+        marker_index=1,
+    )
 
-    constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_2, min_bound=-stdev_vel_z_2,
-                    max_bound=stdev_vel_z_2,
-                    node=Node.END, phase=1, axes=Axis.Z, marker_index=2)
+    constraints.add(
+        ConstraintFcn.TRACK_MARKERS_VELOCITY,
+        target=vel_z_2,
+        min_bound=-stdev_vel_z_2,
+        max_bound=stdev_vel_z_2,
+        node=Node.END,
+        phase=1,
+        axes=Axis.Z,
+        marker_index=2,
+    )
 
-    constraints.add(ConstraintFcn.TRACK_MARKERS_VELOCITY, target=vel_z_3, min_bound=-stdev_vel_z_3,
-                    max_bound=stdev_vel_z_3,
-                    node=Node.END, phase=2, axes=Axis.Z, marker_index=3)
+    constraints.add(
+        ConstraintFcn.TRACK_MARKERS_VELOCITY,
+        target=vel_z_3,
+        min_bound=-stdev_vel_z_3,
+        max_bound=stdev_vel_z_3,
+        node=Node.END,
+        phase=2,
+        axes=Axis.Z,
+        marker_index=3,
+    )
 
     # Path constraint # x_bounds = limit conditions
     x_bounds = BoundsList()
@@ -298,9 +370,8 @@ def main():
     tic = time.time()
     sol = ocp.solve(solv)
 
-    print('temps de resolution : ', time.time() - tic)
+    print("temps de resolution : ", time.time() - tic)
     ocp.print(to_console=False, to_graph=False)
-
 
     # # --- Show results --- #
     sol.animate(show_floor=False, show_global_ref_frame=False)

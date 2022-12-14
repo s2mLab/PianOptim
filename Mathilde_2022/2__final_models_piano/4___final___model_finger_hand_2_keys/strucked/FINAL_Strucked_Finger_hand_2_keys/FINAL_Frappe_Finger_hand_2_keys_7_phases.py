@@ -1,4 +1,3 @@
-
 import math
 from casadi import MX, sqrt, if_else, sin
 from math import ceil
@@ -24,8 +23,7 @@ from bioptim import (
     OdeSolver,
     BiorbdInterface,
     Solver,
-    Axis
-
+    Axis,
 )
 
 # PAR DEFAULT : M et S
@@ -35,7 +33,9 @@ def custom_func_track_finger_marker_key(all_pn: PenaltyNodeList, marker: str) ->
     finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, marker)
     markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
     finger_marker = markers[:, finger_marker_idx]
-    key = ((0.005*sin(137*(finger_marker[1]+0.0129))) / (sqrt(0.001**2 + sin(137*(finger_marker[1] + 0.0129))**2))-0.005)
+    key = (0.005 * sin(137 * (finger_marker[1] + 0.0129))) / (
+        sqrt(0.001**2 + sin(137 * (finger_marker[1] + 0.0129)) ** 2)
+    ) - 0.005
 
     # if_else( condition, si c'est vrai fait ca',  sinon fait ca)
     markers_diff_key = if_else(
@@ -45,19 +45,24 @@ def custom_func_track_finger_marker_key(all_pn: PenaltyNodeList, marker: str) ->
             finger_marker[1] < 0.033,  # condition
             finger_marker[2] - key,  # True
             finger_marker[2] - 0,  # False
-        )
+        ),
     )
     return markers_diff_key
 
 
 def prepare_ocp(
-        biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/2:FINAL_MODELES/4:FINAL_Finger_hand_2_keys/frappe_&_pressed/FINAL_Frappe_Finger_hand_2_keys/FINAL_Frappe_Finger_hand_2_keys_7_phases.bioMod",
-        ode_solver: OdeSolver = OdeSolver.COLLOCATION()
+    biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/2:FINAL_MODELES/4:FINAL_Finger_hand_2_keys/frappe_&_pressed/FINAL_Frappe_Finger_hand_2_keys/FINAL_Frappe_Finger_hand_2_keys_7_phases.bioMod",
+    ode_solver: OdeSolver = OdeSolver.COLLOCATION(),
 ) -> OptimalControlProgram:
-    biorbd_model = (biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
-                    biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path), biorbd.Model(biorbd_model_path),
-                    biorbd.Model(biorbd_model_path)
-                    )
+    biorbd_model = (
+        biorbd.Model(biorbd_model_path),
+        biorbd.Model(biorbd_model_path),
+        biorbd.Model(biorbd_model_path),
+        biorbd.Model(biorbd_model_path),
+        biorbd.Model(biorbd_model_path),
+        biorbd.Model(biorbd_model_path),
+        biorbd.Model(biorbd_model_path),
+    )
 
     # Average of N frames by phase and the phases time, both measured with the motion capture datas.
     n_shooting = (100, 6, 9, 50, 6, 9, 50)
@@ -88,12 +93,22 @@ def prepare_ocp(
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=5, weight=0.0001)
     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", index=1, phase=6, weight=0.0001)
 
-    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=vel_pushing, node=three_quarter_node_phase_1, phase=1, marker_index=4,
-                            weight=1000)
-    objective_functions.add(ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
-                            target=vel_pushing, node=three_quarter_node_phase_5, phase=4, marker_index=4,
-                            weight=1000)
+    objective_functions.add(
+        ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
+        target=vel_pushing,
+        node=three_quarter_node_phase_1,
+        phase=1,
+        marker_index=4,
+        weight=1000,
+    )
+    objective_functions.add(
+        ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
+        target=vel_pushing,
+        node=three_quarter_node_phase_5,
+        phase=4,
+        marker_index=4,
+        weight=1000,
+    )
     # Dynamics
     dynamics = DynamicsList()
     dynamics.add(DynamicsFcn.TORQUE_DRIVEN, phase=0)
@@ -107,27 +122,61 @@ def prepare_ocp(
     # Constraints
     constraints = ConstraintList()
 
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
-                    node=Node.START, first_marker="finger_marker", second_marker="high_square", phase=0)
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
-                    node=Node.END, first_marker="finger_marker", second_marker="high_square", phase=0)
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
-                    node=Node.END, first_marker="finger_marker", second_marker="low_square", phase=1)
-    constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
-                    node=Node.ALL, contact_index=0, min_bound=0, phase=2)
+    constraints.add(
+        ConstraintFcn.SUPERIMPOSE_MARKERS,
+        node=Node.START,
+        first_marker="finger_marker",
+        second_marker="high_square",
+        phase=0,
+    )
+    constraints.add(
+        ConstraintFcn.SUPERIMPOSE_MARKERS,
+        node=Node.END,
+        first_marker="finger_marker",
+        second_marker="high_square",
+        phase=0,
+    )
+    constraints.add(
+        ConstraintFcn.SUPERIMPOSE_MARKERS,
+        node=Node.END,
+        first_marker="finger_marker",
+        second_marker="low_square",
+        phase=1,
+    )
+    constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES, node=Node.ALL, contact_index=0, min_bound=0, phase=2)
 
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
-                    node=Node.END, first_marker="finger_marker", second_marker="high_square2", phase=3)
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
-                    node=Node.END, first_marker="finger_marker", second_marker="low_square2", phase=4)
-    constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES,
-                    node=Node.ALL, contact_index=0, min_bound=0, phase=5)
+    constraints.add(
+        ConstraintFcn.SUPERIMPOSE_MARKERS,
+        node=Node.END,
+        first_marker="finger_marker",
+        second_marker="high_square2",
+        phase=3,
+    )
+    constraints.add(
+        ConstraintFcn.SUPERIMPOSE_MARKERS,
+        node=Node.END,
+        first_marker="finger_marker",
+        second_marker="low_square2",
+        phase=4,
+    )
+    constraints.add(ConstraintFcn.TRACK_CONTACT_FORCES, node=Node.ALL, contact_index=0, min_bound=0, phase=5)
 
-    constraints.add(custom_func_track_finger_marker_key,
-                    node=Node.ALL, marker="finger_marker", min_bound=0, max_bound=10000, phase=3)
+    constraints.add(
+        custom_func_track_finger_marker_key,
+        node=Node.ALL,
+        marker="finger_marker",
+        min_bound=0,
+        max_bound=10000,
+        phase=3,
+    )
 
-    constraints.add(ConstraintFcn.SUPERIMPOSE_MARKERS,
-                    node=Node.END, first_marker="finger_marker", second_marker="high_square", phase=6)
+    constraints.add(
+        ConstraintFcn.SUPERIMPOSE_MARKERS,
+        node=Node.END,
+        first_marker="finger_marker",
+        second_marker="high_square",
+        phase=6,
+    )
 
     phase_transition = PhaseTransitionList()
     phase_transition.add(PhaseTransitionFcn.IMPACT, phase_pre_idx=1)
@@ -204,18 +253,21 @@ def main():
     # # --- Download datas --- #
 
     data = dict(
-        states=sol.states, controls=sol.controls, parameters=sol.parameters,
+        states=sol.states,
+        controls=sol.controls,
+        parameters=sol.parameters,
         iterations=sol.iterations,
-        cost=np.array(sol.cost)[0][0], detailed_cost=sol.detailed_cost,
+        cost=np.array(sol.cost)[0][0],
+        detailed_cost=sol.detailed_cost,
         real_time_to_optimize=sol.real_time_to_optimize,
-        param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp]
+        param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
     )
 
     with open("results_download/results_1.pckl", "wb") as file:
         pickle.dump(data, file)
 
     # --- Show results --- #
-    #sol.animate(markers_size=0.0010, contacts_size=0.0010, show_floor=False,
+    # sol.animate(markers_size=0.0010, contacts_size=0.0010, show_floor=False,
     #            show_segments_center_of_mass=True, show_global_ref_frame=True,
     #            show_local_ref_frame=False,),
     sol.graphs(show_bounds=True)
