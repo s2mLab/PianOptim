@@ -9,7 +9,7 @@ The file Piano_final_version.py is a simulation of 5 chords played fortissimo wi
 The file Pianoptim_V1 is a simplified version of the same 5 chords but neglecting keys interaction, so without external forces.
 
 # Mathilde 2022
-FINAL MODEL DEVELOPED 
+FINAL MODELS DEVELOPED 
 
 - The file "2__final_models_piano >> 5___final___final___squeletum_hand_finger_1_key_4_phases" gathered simulations of 1 key (principal LA of the piano)
 played strucked staccato, and pressed staccato with optimized movements and the key interaction, for different values of torque minimisation.
