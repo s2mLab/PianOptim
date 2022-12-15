@@ -11,10 +11,10 @@ The file Pianoptim_V1 is a simplified version of the same 5 chords but neglectin
 # Mathilde 2022
 FINAL MODELS DEVELOPED 
 
-- The file "2__final_models_piano >> 5___final___final___squeletum_hand_finger_1_key_4_phases" gathered simulations of 1 key (principal LA of the piano)
-played strucked staccato, and pressed staccato with optimized movements and the key interaction, for different values of torque minimisation.
+- The file "2__final_models_piano >> 1___final_model___squeletum_hand_finger_1_key_4_phases" gathered simulations of 1 key (principal LA of the piano)
+played strucked staccato, and pressed staccato, with optimized movements and the key interaction, for different values of torque minimisation.
 
-- The file "2__final_models_piano >> 5___final___final___squeletum_hand_finger_1_key_4_phases >> pressed >>
+- The file "2__final_models_piano >> 1___final_model___squeletum_hand_finger_1_key_4_phases >> pressed >>
 4_multistart_different_minimisations >> multistart_pressed.py " is a multistart code to run multiple simulations
 with different minimisation weights at the same time. Just adapted for the pressed attack for the moment. The results are saved in the first file, and analyses are done in the other one. 
 
@@ -36,7 +36,7 @@ the used limbs, in order to open their mesh in a 3D software, in MeshLab for exa
 
 - The file "a__show_bioMod.py" is to show a bioMod.
 
-- The file "b__animate_results" is to animate the a .pckl results file, saved during a simulation.
+- The file "b__animate_pckl_results" is to animate the a .pckl results file, saved during a simulation.
 
 - The file "c__CODE_EXPLAINATIONS_FILE" gathered technical explanations on codes developed, and some code advices.
 

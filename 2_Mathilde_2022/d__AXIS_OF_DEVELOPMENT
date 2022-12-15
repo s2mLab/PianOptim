@@ -1,10 +1,10 @@
 AXES OF DEVELOPMENTS
 
-- Axis 1 : I stopped my intern by the development of the ""2__final_models_piano >> 5___final___final___squeletum_hand_finger_1_key_4_phases >> pressed >>
-4_multistart_different_minimisations >> results >> 2_results_analysis >> pareto_front_curve_of_one_proximal_limb_torques_d._on_distal_limbs_torques >>
+- Axis 1 : I stopped my intern by the development of the ""2__final_models_piano >> 1___final_model___squeletum_hand_finger_1_key_4_phases >> pressed >>
+4_multistart_different_minimisations >> 2_results_analysis >> pareto_front_curve_of_one_proximal_limb_torques_d._on_distal_limbs_torques >>
 plot_graph.py", done to plot a pareto front curve of proximal limbs torques depending on distal limbs torques.
 The curve of the pareto front must still be displayed. And the good minimisation combinaison must still be found
-to run the multistart with this combinaison. The actual results are tests.
+to run the multistart with this combinaison.
 
 - Axis 2 :
 Minimize the power of degrees of freedom, instead of the torque.
