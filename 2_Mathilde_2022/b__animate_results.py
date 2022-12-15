@@ -7,12 +7,12 @@ from bioptim import (
 )
 
 with open(
-    "/home/lim/Documents/Stage Mathilde/PianOptim/2_Mathilde_2022/2__final_models_piano/5___final___final___squeletum_hand_finger_1_key_4_phases_!/pressed/1_every_dof_minimized_at_100/1_every_dof_minimized_at_100.pckl", "rb"
+        "/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/1_every_dof_minimized_at_100/1_every_dof_minimized_at_100.pckl", "rb"
 ) as file:
     new_dict = pickle.load(file)
 
 
-biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/2_Mathilde_2022/2__final_models_piano/5___final___final___squeletum_hand_finger_1_key_4_phases_!/bioMod/Squeletum_hand_finger_3D_2_keys_octave_LA.bioMod"
+biorbd_model_path: str = "/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/bioMod/Squeletum_hand_finger_3D_2_keys_octave_LA.bioMod"
 
 # # --- Animate --- # #
 
