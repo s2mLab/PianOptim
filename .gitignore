@@ -37,7 +37,7 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# Unit test.bioMod / coverage reports
 htmlcov/
 .tox/
 .nox/
@@ -127,3 +127,21 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+../../../.idea/
+
+Piano_optimisation_minimalisation.py
+
+Results/Piano_results_3_phases_without_pelvis_rotZ_and_thorax.pckl
+
+Results/Piano_results_3_phases_without_pelvis_rotZ.pckl
+
+Results/Piano_results_3_phases.pckl
+
+Results/Piano_results_without_pelvis_rotZ_and_thorax.pckl
+
+Results/Piano_results_without_pelvis_rotZ.pckl
+
+Piano_results.pckl
+
+Piano_with_3_phases_minimize_torque.py
