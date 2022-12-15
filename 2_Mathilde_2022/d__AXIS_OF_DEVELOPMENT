@@ -6,11 +6,12 @@ plot_graph.py", done to plot a pareto front curve of proximal limbs torques depe
 The curve of the pareto front must still be displayed. And the good minimisation combinaison must still be found
 to run the multistart with this combinaison.
 
-- Axis 2 :
-Minimize the power of degrees of freedom, instead of the torque.
+- Axis 2 : Have a look of the proportion of torque minimisation objectives for each limbs (cf. file "d_axis_2_proportion_of_minimisation_objective".
+Two limb torques can be minimize with the same weight, but the "cost" of their final minimisation can be different,
+because of the different limb cost proportions.
 
-- Axis 3 :
-Add one or two degrees of freedom for the finger.
+- Axis 3 : Minimize the power of degrees of freedom, instead of the torque.
 
-- Axis 4 :
-Add muscles to the model.
+- Axis 4 : Add one or two degrees of freedom for the finger.
+
+- Axis 5 : Add muscles to the model.
