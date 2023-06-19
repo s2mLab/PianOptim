@@ -80,7 +80,6 @@ def custom_func_track_principal_finger_pi_in_two_global_axis(controller: Penalty
 def prepare_ocp(
     biorbd_model_path: str = "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/bioMod/Squeletum_hand_finger_3D_2_keys_octave_LA.bioMod",
     ode_solver: OdeSolver = OdeSolver.COLLOCATION(polynomial_degree=4),
-    phase_time = (0.3, 0.027, 0.058, 0.3),
     # assume_phase_dynamics: bool = True,
 ) -> OptimalControlProgram:
 
