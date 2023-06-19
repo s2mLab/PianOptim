@@ -45,9 +45,9 @@ def custom_func_track_finger_5_on_the_right_of_principal_finger(controller: Pena
 
     return markers_diff_key2
 
-def custom_func_track_principal_finger_and_finger5_above_bed_key(controller: PenaltyController, marker_name: str) -> MX:
+def custom_func_track_principal_finger_and_finger5_above_bed_key(controller: PenaltyController, marker: str) -> MX:
     biorbd_model = controller.model
-    finger_marker_idx = biorbd.marker_index(biorbd_model.model, marker_name)
+    finger_marker_idx = biorbd.marker_index(biorbd_model.model, marker)
     markers = controller.mx_to_cx("markers", biorbd_model.markers, controller.states["q"])
     finger_marker = markers[:, finger_marker_idx]
 
