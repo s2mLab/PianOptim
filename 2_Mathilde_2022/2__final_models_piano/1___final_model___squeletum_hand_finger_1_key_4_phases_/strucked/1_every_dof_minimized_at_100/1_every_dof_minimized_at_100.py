@@ -26,11 +26,12 @@ from bioptim import (
     ConstraintList,
     OdeSolver,
     Solver,
+    MultinodeObjectiveList,
 )
 
-# def minimize_difference(controllers: list[PenaltyController, PenaltyController]):
-#     pre, post = controllers
-#     return pre.controls.cx - post.controls.cx
+def minimize_difference(controllers: list[PenaltyController, PenaltyController]):
+    pre, post = controllers
+    return pre.controls.cx_end - post.controls.cx
 
 def custom_func_track_finger_5_on_the_right_of_principal_finger(controller: PenaltyController) -> MX:
     finger_marker_idx = biorbd.marker_index(controller.model.model, "finger_marker")
@@ -248,33 +249,35 @@ def prepare_ocp(
         ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=100, index=[8, 9], derivative=True
     )
 
+    multinode_objectives = MultinodeObjectiveList()
+
     # To minimize the difference between 0 and 1
-    # objective_functions.add(
-    #     minimize_difference,
-    #     custom_type=ObjectiveFcn.Mayer,
-    #     weight=1000,
-    #     nodes_phase=(0, 1),
-    #     nodes=(Node.END, Node.START),
-    #     quadratic=True,
-    # )
+    multinode_objectives.add(
+        minimize_difference,
+        custom_type=ObjectiveFcn.Mayer,
+        weight=1000,
+        nodes_phase=(0, 1),
+        nodes=(Node.END, Node.START),
+        quadratic=True,
+    )
     # # To minimize the difference between 0 and 1
-    # objective_functions.add(
-    #     minimize_difference,
-    #     custom_type=ObjectiveFcn.Mayer,
-    #     weight=1000,
-    #     nodes_phase=(1, 2),
-    #     nodes=(Node.END, Node.START),
-    #     quadratic=True,
-    # )
+    multinode_objectives.add(
+        minimize_difference,
+        custom_type=ObjectiveFcn.Mayer,
+        weight=1000,
+        nodes_phase=(1, 2),
+        nodes=(Node.END, Node.START),
+        quadratic=True,
+    )
     # # To minimize the difference between 2 and 3
-    # objective_functions.add(
-    #     minimize_difference,
-    #     custom_type=ObjectiveFcn.Mayer,
-    #     weight=1000,
-    #     nodes_phase=(2, 3),
-    #     nodes=(Node.END, Node.START),
-    #     quadratic=True,
-    # )
+    multinode_objectives.add(
+        minimize_difference,
+        custom_type=ObjectiveFcn.Mayer,
+        weight=1000,
+        nodes_phase=(2, 3),
+        nodes=(Node.END, Node.START),
+        quadratic=True,
+    )
 
     # Dynamics
     dynamics = DynamicsList()
@@ -555,7 +558,7 @@ def main():
     ocp.print(to_console=False, to_graph=False)
     # sol.graphs(show_bounds=True)
     sol.print_cost()
-    sol.animate(show_floor=False, show_global_center_of_mass=False, show_segments_center_of_mass=False, show_global_ref_frame=False, show_local_ref_frame=False, show_markers=False)
+    sol.animate(show_floor=False, show_global_center_of_mass=False, show_segments_center_of_mass=False, show_global_ref_frame=False, show_local_ref_frame=False, show_markers=False,n_frames = 500)
 
 
 
