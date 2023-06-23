@@ -126,7 +126,9 @@ x=np.linspace(0,Time,y_q)
 axs[0].plot(x,concatenated_array_q_0[0,:],color='red')
 axs[0].set_title('q')
 
-axs[1].plot(x,concatenated_array_qdot_0[0,:],color='red')
+axs[1].plot(x,concatenated_array_qdot_0[0,:],color='red', label="data1")
+axs[1].plot(x,concatenated_array_q_0[0,:],color='blue', label="data2")
+
 axs[1].set_title('q_dot')
 
 x=np.linspace(0,Time,y_t)
