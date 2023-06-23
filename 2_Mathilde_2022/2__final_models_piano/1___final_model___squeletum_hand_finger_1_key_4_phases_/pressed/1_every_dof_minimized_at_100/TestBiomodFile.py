@@ -55,7 +55,7 @@ from numpy import concatenate as Cn
 import numpy as np
 from scipy.interpolate import interp1d
 
-with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/1_every_dof_minimized_at_100/1_every_dof_minimized_at_100.pckl', 'rb') as file:
+with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/strucked/1_every_dof_minimized_at_100/1_every_dof_minimized_at_100.pckl', 'rb') as file:
     data = pickle.load(file)
 
 # print(data)
@@ -93,11 +93,16 @@ x3,y3=(array3_dot.shape)
 x4,y4=(array4_dot.shape)
 concatenated_array_qdot_0 = np.concatenate((array1_dot, array2_dot,array3_dot, array4_dot), axis=1)
 
+y_q=y1+y2+y3+y4
 #####################
 array1_dot = data['controls'][0]['tau']  # First array
+array1_dot=array1_dot[:, :-1]
 array2_dot = data['controls'][1]['tau']  # Second array
+array2_dot=array2_dot[:, :-1]
 array3_dot = data['controls'][2]['tau']  # Third array
+array3_dot=array3_dot[:, :-1]
 array4_dot = data['controls'][3]['tau']  # Fourth array
+array4_dot=array4_dot[:, :-1]
 
 # Create a new array with the same number of rows as the original arrays,
 # but with additional columns to match the shape of the largest array
@@ -107,46 +112,30 @@ x2,y2=(array2_dot.shape)
 x3,y3=(array3_dot.shape)
 x4,y4=(array4_dot.shape)
 
+
+y_t=y1+y2+y3+y4
+
 # Concatenate the new arrays along axis 1 (horizontally)
 concatenated_array_tau_0 = np.concatenate((array1_dot, array2_dot,array3_dot, array4_dot), axis=1)
 
-fig, axs = plt.subplots(nrows=4, ncols=1)
-x=np.linspace(0,Time,399)
+fig, axs = plt.subplots(nrows=3, ncols=1)
+x=np.linspace(0,Time,y_q)
 
 
 # Plot data on each subplot
-axs[0].plot(x,concatenated_array_q_0[0,:])
+axs[0].plot(x,concatenated_array_q_0[0,:],color='red')
 axs[0].set_title('q')
 
-axs[1].plot(x,concatenated_array_qdot_0[0,:])
+axs[1].plot(x,concatenated_array_qdot_0[0,:],color='red')
 axs[1].set_title('q_dot')
 
-x=np.linspace(0,Time,83)
+x=np.linspace(0,Time,y_t)
 
 axs[2].plot(x,concatenated_array_tau_0[0,:], color='red')
 axs[2].set_title('tau')
-step = 0.3  # Desired step size
 tick_positions = [-1.3, -1, -0.7, -0.5, -0.2]
-axs[2].set_yticks(tick_positions)
-axs[2].fill_between(x, concatenated_array_tau_0[0,:], color='lightblue')
 tick_positions_2 = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
 axs[2].set_xticks(tick_positions_2)
-
-#
-# x=np.linspace(0,Time,82)
-# arr_without_last_col = concatenated_array_tau_0[:, :-1]
-# # Interpolate to obtain a continuous curve
-# interp_func = interp1d(x, arr_without_last_col, kind='linear')
-# x_new = np.linspace(min(x), max(x), 100)
-# y_new = interp_func(x_new)
-#
-# axs[3].plot(x_new, y_new[0][:], color='blue')
-# step = 0.3  # Desired step size
-# tick_positions = [-1.3, -1, -0.7, -0.5, -0.2]
-# axs[3].set_yticks(tick_positions)
-# tick_positions_2 = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
-# axs[3].set_xticks(tick_positions_2)
-#
 
 plt.tight_layout()
 
