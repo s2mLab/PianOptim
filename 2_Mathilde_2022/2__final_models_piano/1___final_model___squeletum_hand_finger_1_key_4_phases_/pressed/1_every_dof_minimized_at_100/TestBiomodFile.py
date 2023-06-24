@@ -9,6 +9,7 @@ with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano
 print(data)
 
 T_s=(data['phase_time'][0]+data['phase_time'][1]+data['phase_time'][2]+data['phase_time'][3])  #Simulation Time
+specific_points = [0,data['phase_time'][0], data['phase_time'][0]+data['phase_time'][1], data['phase_time'][0]+data['phase_time'][1]+data['phase_time'][2], data['phase_time'][0]+data['phase_time'][1]+data['phase_time'][2]+data['phase_time'][3]]
 
 array_0_q = data['states'][0]['q']  # First array
 array_1_q = data['states'][1]['q']  # Second array
@@ -78,17 +79,20 @@ for i in range(0,10):
     axs[0].plot(x_q, concatenated_array_q[i,:], color='red')
     axs[0].set_title('q')
     plt.xticks([0.1 * tick for tick in range(0, math.ceil(T_g))])
+    for point in specific_points:
+        plt.axvline(x=point, color='blue', linestyle='--')
+
     # y_min = math.ceil(min(concatenated_array_q[i]) - 0.1)
     # y_max = math.ceil(max(concatenated_array_q[i]) + 0.1)
     # plt.yticks([0.2 * tick for tick in range(y_min, y_max)])
 
     axs[1].plot(x_qdot, concatenated_array_qdot[i,:],color='red')
-   #axs[1].plot(x,concatenated_array_q_0[0,:],color='blue', label="data2")
     axs[1].set_title('q_dot')
     plt.xticks([0.1 * tick for tick in range(0, T_g)])
-    # y_min = math.ceil(min(concatenated_array_qdot[i]) - 0.1)
-    # y_max = math.ceil(max(concatenated_array_qdot[i]) + 0.1)
-    # plt.yticks([0.2 * tick for tick in range(y_min, y_max)])
+    for point in specific_points:
+        plt.axvline(x=point, color='blue', linestyle='--')
+
+
     x_tau=np.linspace(0, T_s, y_tau)
     axs[2].plot(x_tau,concatenated_array_tau[i,:], color='red')
     axs[2].set_title('tau')
@@ -97,6 +101,8 @@ for i in range(0,10):
     # y_max = math.ceil(max(concatenated_array_tau[i]) + 0.1)
     # plt.yticks([0.2 * tick for tick in range(y_min, y_max)])
     fig.text(0.5, 0.04, 'Time (sec)', ha='center')
+    for point in specific_points:
+        plt.axvline(x=point, color='blue', linestyle='--')
 
     plt.tight_layout()
 
