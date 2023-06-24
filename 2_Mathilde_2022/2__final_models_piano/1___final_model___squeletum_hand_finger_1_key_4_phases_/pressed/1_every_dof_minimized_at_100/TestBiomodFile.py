@@ -70,7 +70,7 @@ T_g=math.ceil(T_s+0.2)
 
 for i in range(0,10):
 
-    fig, axs = plt.subplots(nrows=3, ncols=1)
+    fig, axs = plt.subplots(nrows=4, ncols=1)
     fig.suptitle(Name[i])
 
     x_q= np.linspace(0, T_s, y_q)
@@ -79,10 +79,6 @@ for i in range(0,10):
 
     axs[0].plot(x_q, concatenated_array_q[i,:], color='red')
     axs[0].set_title('q')
-    for point in specific_points:
-        axs[0].axvline(x=point, color='g', linestyle='--')
-
-    plt.xticks([0.1 * tick for tick in range(0, math.ceil(T_g))])
 
     # y_min = math.ceil(min(concatenated_array_q[i]) - 0.1)
     # y_max = math.ceil(max(concatenated_array_q[i]) + 0.1)
@@ -90,24 +86,27 @@ for i in range(0,10):
 
     axs[1].plot(x_qdot, concatenated_array_qdot[i,:],color='red')
     axs[1].set_title('q_dot')
-    plt.xticks([0.1 * tick for tick in range(0, T_g)])
-    for point in specific_points:
-        axs[1].axvline(x=point, color='g', linestyle='--')
+
 
     x_tau=np.linspace(0, T_s, y_tau)
-    axs[2].plot(x_tau,concatenated_array_tau[i,:], color='red')
+    axs[2].plot(x_tau, concatenated_array_tau[i,:], color='red')
     axs[2].set_title('tau')
-    plt.xticks([0.1 * tick for tick in range(0, math.ceil(T_g))])
-    for point in specific_points:
-        axs[2].axvline(x=point, color='g', linestyle='--')
-    # y_min = math.ceil(min(concatenated_array_tau[i]) - 0.1)
-    # y_max = math.ceil(max(concatenated_array_tau[i]) + 0.1)
-    # plt.yticks([0.2 * tick for tick in range(y_min, y_max)])
-    fig.text(0.5, 0.04, 'Time (sec)', ha='center')
+    axs[2].set_xlabel('Time (sec)')
+
+    for ax in axs:
+        plt.xticks([0.1 * tick for tick in range(0, T_g)])
+        plt.grid(True)
+
+        for point in specific_points:
+            ax.axvline(x=point, color='g', linestyle='--')
 
     plt.tight_layout()
 
+    plt.figure()
+    plt.plot(concatenated_array_q[i, :], concatenated_array_qdot[i, :])
+    plt.title(Name[i])
+    plt.xlabel('q')
+    plt.ylabel('qdot')
+
 plt.show()
-
-
 
