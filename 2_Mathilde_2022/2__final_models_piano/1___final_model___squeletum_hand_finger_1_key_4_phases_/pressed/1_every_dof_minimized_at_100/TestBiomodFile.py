@@ -4,17 +4,19 @@ import numpy as np
 import math
 
 with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/strucked/1_every_dof_minimized_at_100/1_every_dof_minimized_at_100.pckl', 'rb') as file:
-    data = pickle.load(file)
+    data_struck = pickle.load(file)
 
-print(data)
+with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/1_every_dof_minimized_at_100/1_every_dof_minimized_at_100.pckl', 'rb') as file:
+    data_Pressed = pickle.load(file)
 
-T_s=(data['phase_time'][0]+data['phase_time'][1]+data['phase_time'][2]+data['phase_time'][3])  #Simulation Time
-specific_points = [0, data['phase_time'][0], data['phase_time'][0]+data['phase_time'][1], data['phase_time'][0]+data['phase_time'][1]+data['phase_time'][2], data['phase_time'][0]+data['phase_time'][1]+data['phase_time'][2]+data['phase_time'][3]]
 
-array_0_q = data['states'][0]['q']  # First array
-array_1_q = data['states'][1]['q']  # Second array
-array_2_q = data['states'][2]['q']  # Third array
-array_3_q = data['states'][3]['q']  # Fourth array
+T_s=(data_struck['phase_time'][0]+data_struck['phase_time'][1]+data_struck['phase_time'][2]+data_struck['phase_time'][3])  #Simulation Time
+specific_points = [0, data_struck['phase_time'][0], data_struck['phase_time'][0]+data_struck['phase_time'][1], data_struck['phase_time'][0]+data_struck['phase_time'][1]+data_struck['phase_time'][2], data_struck['phase_time'][0]+data_struck['phase_time'][1]+data_struck['phase_time'][2]+data_struck['phase_time'][3]]
+
+array_0_q = data_struck['states'][0]['q']  # First array
+array_1_q = data_struck['states'][1]['q']  # Second array
+array_2_q = data_struck['states'][2]['q']  # Third array
+array_3_q = data_struck['states'][3]['q']  # Fourth array
 
 x1,y1=(array_0_q.shape)
 x2,y2=(array_1_q .shape)
@@ -27,10 +29,10 @@ print(y_q)
 concatenated_array_q= np.concatenate((array_0_q, array_1_q, array_2_q, array_3_q), axis=1)  #All Phases
 
 #####################
-array_0_qdot = data['states'][0]['qdot']  # First array
-array_1_qdot = data['states'][1]['qdot']  # Second array
-array_2_qdot = data['states'][2]['qdot']  # Third array
-array_3_qdot = data['states'][3]['qdot']  # Fourth array
+array_0_qdot = data_struck['states'][0]['qdot']  # First array
+array_1_qdot = data_struck['states'][1]['qdot']  # Second array
+array_2_qdot = data_struck['states'][2]['qdot']  # Third array
+array_3_qdot = data_struck['states'][3]['qdot']  # Fourth array
 
 x1,y1=(array_0_qdot.shape)
 x2,y2=(array_1_qdot.shape)
@@ -43,16 +45,16 @@ print(y_qdot)
 concatenated_array_qdot= np.concatenate((array_0_qdot, array_1_qdot, array_2_qdot, array_3_qdot), axis=1)  #All Phases
 
 #####################
-array_0_tau = data['controls'][0]['tau']  # First array
+array_0_tau = data_struck['controls'][0]['tau']  # First array
 array_0_tau=array_0_tau[:, :-1]   #last node is NAN : Not a Number
 
-array_1_tau= data['controls'][1]['tau']  # Second array
+array_1_tau= data_struck['controls'][1]['tau']  # Second array
 array_1_tau=array_1_tau[:, :-1]
 
-array_2_tau= data['controls'][2]['tau']  # Third array
+array_2_tau= data_struck['controls'][2]['tau']  # Third array
 array_2_tau=array_2_tau[:, :-1]
 
-array_3_tau= data['controls'][3]['tau']  # Fourth array
+array_3_tau= data_struck['controls'][3]['tau']  # Fourth array
 array_3_tau=array_3_tau[:, :-1]
 
 x1,y1=(array_0_tau.shape)
@@ -103,7 +105,7 @@ for i in range(0,10):
     # y_min = math.ceil(min(concatenated_array_tau[i]) - 0.1)
     # y_max = math.ceil(max(concatenated_array_tau[i]) + 0.1)
     # plt.yticks([0.2 * tick for tick in range(y_min, y_max)])
-    fig.text(0.5, 0.04, 'Time (sec)', ha='center')
+    fig.text(0.5, 0.02, 'Time (sec)', ha='center')
 
     plt.tight_layout()
 
