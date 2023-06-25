@@ -108,5 +108,9 @@ for i in range(0,10):
     plt.xlabel('q')
     plt.ylabel('qdot')
 
+    plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.plot3D(concatenated_array_q[i, :], concatenated_array_qdot[i, :], x_q[i], 'gray')
+
 plt.show()
 
