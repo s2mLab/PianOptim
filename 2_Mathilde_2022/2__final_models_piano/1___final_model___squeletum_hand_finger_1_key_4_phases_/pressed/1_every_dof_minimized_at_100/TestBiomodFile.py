@@ -13,93 +13,93 @@ with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano
 T_s=(data_struck['phase_time'][0]+data_struck['phase_time'][1]+data_struck['phase_time'][2]+data_struck['phase_time'][3])  #Simulation Time
 specific_points = [0, data_struck['phase_time'][0], data_struck['phase_time'][0]+data_struck['phase_time'][1], data_struck['phase_time'][0]+data_struck['phase_time'][1]+data_struck['phase_time'][2], data_struck['phase_time'][0]+data_struck['phase_time'][1]+data_struck['phase_time'][2]+data_struck['phase_time'][3]]
 
-array_0_q = data_struck['states'][0]['q']  # First array
-array_1_q = data_struck['states'][1]['q']  # Second array
-array_2_q = data_struck['states'][2]['q']  # Third array
-array_3_q = data_struck['states'][3]['q']  # Fourth array
+array_0_q_s = data_struck['states'][0]['q']  # First array
+array_1_q_s = data_struck['states'][1]['q']  # Second array
+array_2_q_s = data_struck['states'][2]['q']  # Third array
+array_3_q_s = data_struck['states'][3]['q']  # Fourth array
 
-x1,y1=(array_0_q.shape)
-x2,y2=(array_1_q .shape)
-x3,y3=(array_2_q.shape)
-x4,y4=(array_3_q.shape)
+x1,y1=(array_0_q_s.shape)
+x2,y2=(array_1_q_s .shape)
+x3,y3=(array_2_q_s.shape)
+x4,y4=(array_3_q_s.shape)
 
 y_q=y1+y2+y3+y4
 print(y_q)
 # Concatenate the new arrays along axis 1 (horizontally)
-concatenated_array_q= np.concatenate((array_0_q, array_1_q, array_2_q, array_3_q), axis=1)  #All Phases
+concatenated_array_q_s= np.concatenate((array_0_q_s, array_1_q_s, array_2_q_s, array_3_q_s), axis=1)  #All Phases
 
 #####################
-array_0_qdot = data_struck['states'][0]['qdot']  # First array
-array_1_qdot = data_struck['states'][1]['qdot']  # Second array
-array_2_qdot = data_struck['states'][2]['qdot']  # Third array
-array_3_qdot = data_struck['states'][3]['qdot']  # Fourth array
+array_0_qdot_s = data_struck['states'][0]['qdot']  # First array
+array_1_qdot_s = data_struck['states'][1]['qdot']  # Second array
+array_2_qdot_s = data_struck['states'][2]['qdot']  # Third array
+array_3_qdot_s = data_struck['states'][3]['qdot']  # Fourth array
 
-x1,y1=(array_0_qdot.shape)
-x2,y2=(array_1_qdot.shape)
-x3,y3=(array_2_qdot.shape)
-x4,y4=(array_3_qdot.shape)
+x1,y1=(array_0_qdot_s.shape)
+x2,y2=(array_1_qdot_s.shape)
+x3,y3=(array_2_qdot_s.shape)
+x4,y4=(array_3_qdot_s.shape)
 
 y_qdot=y1+y2+y3+y4
 print(y_qdot)
 # Concatenate the new arrays along axis 1 (horizontally)
-concatenated_array_qdot= np.concatenate((array_0_qdot, array_1_qdot, array_2_qdot, array_3_qdot), axis=1)  #All Phases
+concatenated_array_qdot_s= np.concatenate((array_0_qdot_s, array_1_qdot_s, array_2_qdot_s, array_3_qdot_s), axis=1)  #All Phases
 
 #####################
-array_0_tau = data_struck['controls'][0]['tau']  # First array
-array_0_tau=array_0_tau[:, :-1]   #last node is NAN : Not a Number
+array_0_tau_s = data_struck['controls'][0]['tau']  # First array
+array_0_tau_s= array_0_tau_s[:, :-1]   #last node is NAN : Not a Number
 
-array_1_tau= data_struck['controls'][1]['tau']  # Second array
-array_1_tau=array_1_tau[:, :-1]
+array_1_tau_s= data_struck['controls'][1]['tau']  # Second array
+array_1_tau_s= array_1_tau_s[:, :-1]
 
-array_2_tau= data_struck['controls'][2]['tau']  # Third array
-array_2_tau=array_2_tau[:, :-1]
+array_2_tau_s= data_struck['controls'][2]['tau']  # Third array
+array_2_tau_s= array_2_tau_s[:, :-1]
 
-array_3_tau= data_struck['controls'][3]['tau']  # Fourth array
-array_3_tau=array_3_tau[:, :-1]
+array_3_tau_s= data_struck['controls'][3]['tau']  # Fourth array
+array_3_tau_s= array_3_tau_s[:, :-1]
 
-x1,y1=(array_0_tau.shape)
-x2,y2=(array_1_tau.shape)
-x3,y3=(array_2_tau.shape)
-x4,y4=(array_3_tau.shape)
+x1,y1=(array_0_tau_s.shape)
+x2,y2=(array_1_tau_s.shape)
+x3,y3=(array_2_tau_s.shape)
+x4,y4=(array_3_tau_s.shape)
 
 y_tau=y1+y2+y3+y4
 print(y_tau)
 # Concatenate the new arrays along axis 1 (horizontally)
-concatenated_array_tau= np.concatenate((array_0_tau, array_1_tau, array_2_tau, array_3_tau), axis=1)
+concatenated_array_tau_s= np.concatenate((array_0_tau_s, array_1_tau_s, array_2_tau_s, array_3_tau_s), axis=1)
 
 Name=["Pelvis_RotZ","Thorax_RotY","Thorax_RotZ","Humerus_Right_RotX","Humerus_Right_RotY","Humerus_Right_RotZ","Ulna_Right_RotZ","Radius_Right_RotY","Wrist_RotX","Finger_RotX"]
-T_g=math.ceil(T_s+0.2)
+T_g_s=math.ceil(T_s + 0.2)
 
 for i in range(0,10):
 
     fig, axs = plt.subplots(nrows=3, ncols=1)
     fig.suptitle(Name[i])
 
-    x_q= np.linspace(0, T_s, y_q)
-    x_qdot= np.linspace(0, T_s, y_qdot)
+    x_q_s= np.linspace(0, T_s, y_q)
+    x_qdot_s= np.linspace(0, T_s, y_qdot)
     # Plot data on each subplot
 
-    axs[0].plot(x_q, concatenated_array_q[i,:], color='red')
+    axs[0].plot(x_q_s, concatenated_array_q_s[i, :], color='red')
     axs[0].set_title('q')
     for point in specific_points:
         axs[0].axvline(x=point, color='g', linestyle='--')
 
-    plt.xticks([0.1 * tick for tick in range(0, math.ceil(T_g))])
+    plt.xticks([0.1 * tick for tick in range(0, math.ceil(T_g_s))])
 
     # y_min = math.ceil(min(concatenated_array_q[i]) - 0.1)
     # y_max = math.ceil(max(concatenated_array_q[i]) + 0.1)
     # plt.yticks([0.2 * tick for tick in range(y_min, y_max)])
 
-    axs[1].plot(x_qdot, concatenated_array_qdot[i,:],color='red')
+    axs[1].plot(x_qdot_s, concatenated_array_qdot_s[i, :], color='red')
     axs[1].set_title('q_dot')
-    plt.xticks([0.1 * tick for tick in range(0, T_g)])
+    plt.xticks([0.1 * tick for tick in range(0, T_g_s)])
     for point in specific_points:
         axs[1].axvline(x=point, color='g', linestyle='--')
 
-    x_tau=np.linspace(0, T_s, y_tau)
-    axs[2].plot(x_tau,concatenated_array_tau[i,:], color='red')
+    x_tau_s=np.linspace(0, T_s, y_tau)
+    axs[2].plot(x_tau_s, concatenated_array_tau_s[i, :], color='red')
     axs[2].set_title('tau')
-    plt.xticks([0.1 * tick for tick in range(0, math.ceil(T_g))])
+    plt.xticks([0.1 * tick for tick in range(0, math.ceil(T_g_s))])
     for point in specific_points:
         axs[2].axvline(x=point, color='g', linestyle='--')
     # y_min = math.ceil(min(concatenated_array_tau[i]) - 0.1)
