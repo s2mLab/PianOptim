@@ -515,43 +515,17 @@ def main():
     # # --- Solve the program --- # #
 
     solv = Solver.IPOPT(show_online_optim=True)
-    solv.set_maximum_iterations(100)
+    solv.set_maximum_iterations(1000000)
     solv.set_linear_solver("ma57")
     tic = time.time()
     sol = ocp.solve(solv)
 
-    # # --- Take important states for Finger_Marker_5 and Finger_marker --- # #
 
-    # q_finger_marker_5_idx_1 = []
-    # q_finger_marker_idx_4 = []
-    # phase_shape = []
-    # phase_time = []
-    # for k in [1, 4]:
-    #     for i in range(4):
-    #         # Number of nodes per phase : 0=151, 1=36, 2=36, 3=176 (399) (bc COLLOCATION)
-    #         for j in range(sol.states[i]["q"].shape[1]):
-    #             q_all_markers = BiorbdInterface.mx_to_cx(
-    #                 "markers", sol.ocp.nlp[i].model.markers, sol.states[i]["q"][:, j]
-    #             )  # q_markers = 3 * 10
-    #             q_marker = q_all_markers["o0"][:, k]  # q_marker_1_one_node = 3 * 1
-    #             if k == 1:
-    #                 q_finger_marker_5_idx_1.append(q_marker)
-    #             elif k == 4:
-    #                 q_finger_marker_idx_4.append(q_marker)
-    #         if k == 1:
-    #             phase_time.append(ocp.nlp[i].tf)
-    #             phase_shape.append(sol.states[i]["q"].shape[1])
-    #
-    # q_finger_marker_5_idx_1 = np.array(q_finger_marker_5_idx_1)
-    # q_finger_marker_5_idx_1 = q_finger_marker_5_idx_1.reshape((399, 3))
-    #
-    # q_finger_marker_idx_4 = np.array(q_finger_marker_idx_4)
-    # q_finger_marker_idx_4 = q_finger_marker_idx_4.reshape((399, 3))
-    #
     # # --- Download datas on a .pckl file --- #
 
     data = dict(
         states=sol.states,
+        states_no_intermediate=sol.states_no_intermediate,
         controls=sol.controls,
         parameters=sol.parameters,
         iterations=sol.iterations,
@@ -559,49 +533,15 @@ def main():
         detailed_cost=sol.detailed_cost,
         real_time_to_optimize=sol.real_time_to_optimize,
         param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
+        phase_time=sol.phase_time,
+        Time=sol.time,
 
     )
 
-    file_path = "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/1_every_dof_minimized_at_100/Test.pckl"
-
-    with open(file_path, "wb") as file:
+    with open(
+            "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/Results/V_1.pckl",
+            "wb") as file:
         pickle.dump(data, file)
-    #
-    data = dict(
-        states=sol.states,
-        controls=sol.controls,
-        parameters=sol.parameters,
-        iterations=sol.iterations,
-        cost=np.array(sol.cost)[0][0],
-        detailed_cost=sol.detailed_cost,
-        real_time_to_optimize=sol.real_time_to_optimize,
-        param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
-
-    )
-
-    file_path = "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/1_every_dof_minimized_at_100/Test.pckl"
-
-    with open(file_path, "wb") as file:
-        pickle.dump(data, file)
-    #
-    # # # --- Print results --- #
-    # with open(file_path, 'rb') as file:
-    #     loaded_data = pickle.load(file)
-    #     print("States:", loaded_data["states"]["q"])
-
-    # print("Controls:", sol.controls)
-    # print("Parameters:", sol.parameters)
-    # print("Iterations:", sol.iterations)
-    # print("Cost:", np.array(sol.cost)[0][0])
-    # print("Detailed Cost:", sol.detailed_cost)
-    # print("Real Time to Optimize:", sol.real_time_to_optimize)
-    # print("Param Scaling:", [nlp.parameters.scaling for nlp in ocp.nlp])
-    # print("Phaswith open(file_path, 'rb') as file:
-    #     loaded_data = pickle.load(file)e Time:", phase_time)
-    # print("Phase Shape:", phase_shape)
-    # print("q_finger_marker_5_idx_1:", q_finger_marker_5_idx_1)
-    # print("q_finger_marker_idx_4:", q_finger_marker_idx_4)
-    #
 
     print("Tesults saved")
     print("Temps de resolution : ", time.time() - tic, "s")
@@ -610,6 +550,11 @@ def main():
     ocp.print(to_console=False, to_graph=False)
     # sol.graphs(show_bounds=True)
     sol.animate(show_floor=False, show_global_center_of_mass=False, show_segments_center_of_mass=False, show_global_ref_frame=True, show_local_ref_frame=False, show_markers=False, n_frames=500,)
+
+
+
+
+
 
 
 if __name__ == "__main__":
