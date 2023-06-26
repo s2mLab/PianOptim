@@ -127,6 +127,8 @@ concatenated_array_time_s= np.concatenate((array_0_time_s, array_1_time_s, array
 
 Name=["Pelvis_RotZ","Thorax_RotY","Thorax_RotZ","Humerus_Right_RotX","Humerus_Right_RotY","Humerus_Right_RotZ","Ulna_Right_RotZ","Radius_Right_RotY","Wrist_RotX","Finger_RotX"]
 
+margin = 0.1
+margin_b = 1
 
 for i in range(0,10):
 
@@ -135,21 +137,26 @@ for i in range(0,10):
 
     axs[0].plot(concatenated_array_time_s,concatenated_array_q_s[i,:], color='red')
     axs[0].set_title('q')
-
+    axs[0].set_xlim(np.min(concatenated_array_time_s), np.max(concatenated_array_time_s))
+    axs[0].set_ylim(np.min(concatenated_array_q_s[i,:])-margin, np.max(concatenated_array_q_s[i,:])+margin)
 
     axs[1].plot(concatenated_array_time_s,concatenated_array_qdot_s[i,:],color='red')
     axs[1].set_title('q_dot')
-
+    axs[1].set_xlim(np.min(concatenated_array_time_s), np.max(concatenated_array_time_s))
+    axs[1].set_ylim(np.min(concatenated_array_qdot_s[i,:])-margin_b, np.max(concatenated_array_qdot_s[i,:])+margin_b)
 
     axs[2].plot(concatenated_array_time_s,concatenated_array_tau_s[i,:], color='red')
     axs[2].set_title('tau')
     axs[2].set_xlabel('Time (sec)')
+    axs[2].set_xlim(np.min(concatenated_array_time_s), np.max(concatenated_array_time_s))
+    axs[2].set_ylim(np.min(concatenated_array_tau_s[i, :])-margin_b, np.max(concatenated_array_tau_s[i, :])+margin_b)
 
     for ax in axs:
         ax.grid(True)
         ax.xaxis.set_minor_locator(AutoMinorLocator())
         ax.yaxis.set_minor_locator(AutoMinorLocator())
         ax.grid(which='minor', linestyle=':', linewidth='0.2', color='black')
+
 
         for point in specific_points_s:
             ax.axvline(x=point, color='g', linestyle='--')
