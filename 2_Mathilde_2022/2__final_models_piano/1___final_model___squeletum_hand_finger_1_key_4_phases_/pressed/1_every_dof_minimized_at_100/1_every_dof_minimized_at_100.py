@@ -332,7 +332,7 @@ def prepare_ocp(
         ConstraintFcn.TRACK_CONTACT_FORCES, node=Node.ALL, contact_index=1, min_bound=-5, max_bound=5, phase=2
     )
     constraints.add(
-        ConstraintFcn.TRACK_CONTACT_FORCES, node=Node.ALL_SHOOTING, contact_index=2, min_bound=0, max_bound=60, phase=2
+        ConstraintFcn.TRACK_CONTACT_FORCES, node=Node.ALL_SHOOTING, contact_index=2, min_bound=0, max_bound=30, phase=2
     )
 
 
@@ -548,27 +548,41 @@ def main():
     # q_finger_marker_idx_4 = np.array(q_finger_marker_idx_4)
     # q_finger_marker_idx_4 = q_finger_marker_idx_4.reshape((399, 3))
     #
-    # # # --- Download datas on a .pckl file --- #
+    # # --- Download datas on a .pckl file --- #
+
+    data = dict(
+        states=sol.states,
+        controls=sol.controls,
+        parameters=sol.parameters,
+        iterations=sol.iterations,
+        cost=np.array(sol.cost)[0][0],
+        detailed_cost=sol.detailed_cost,
+        real_time_to_optimize=sol.real_time_to_optimize,
+        param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
+
+    )
+
+    file_path = "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/1_every_dof_minimized_at_100/Test.pckl"
+
+    with open(file_path, "wb") as file:
+        pickle.dump(data, file)
     #
-    # data = dict(
-    #     states=sol.states,
-    #     controls=sol.controls,
-    #     parameters=sol.parameters,
-    #     iterations=sol.iterations,
-    #     cost=np.array(sol.cost)[0][0],
-    #     detailed_cost=sol.detailed_cost,
-    #     real_time_to_optimize=sol.real_time_to_optimize,
-    #     param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
-    #     phase_time=phase_time,
-    #     phase_shape=phase_shape,
-    #     q_finger_marker_5_idx_1=q_finger_marker_5_idx_1,
-    #     q_finger_marker_idx_4=q_finger_marker_idx_4,
-    # )
-    #
-    # file_path = "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/1_every_dof_minimized_at_100/1_every_dof_minimized_at_100.pckl"
-    #
-    # with open(file_path, "wb") as file:
-    #     pickle.dump(data, file)
+    data = dict(
+        states=sol.states,
+        controls=sol.controls,
+        parameters=sol.parameters,
+        iterations=sol.iterations,
+        cost=np.array(sol.cost)[0][0],
+        detailed_cost=sol.detailed_cost,
+        real_time_to_optimize=sol.real_time_to_optimize,
+        param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
+
+    )
+
+    file_path = "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/1_every_dof_minimized_at_100/Test.pckl"
+
+    with open(file_path, "wb") as file:
+        pickle.dump(data, file)
     #
     # # # --- Print results --- #
     # with open(file_path, 'rb') as file:

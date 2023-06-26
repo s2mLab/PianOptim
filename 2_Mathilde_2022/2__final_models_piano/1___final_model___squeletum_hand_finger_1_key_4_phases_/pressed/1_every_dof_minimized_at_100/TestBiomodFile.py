@@ -9,12 +9,17 @@ with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano
 with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/1_every_dof_minimized_at_100/Test.pckl', 'rb') as file:
     data_2 = pickle.load(file)
 
+<<<<<<< HEAD
 #
 # T_s=(data_1['phase_time'][0]+data_1['phase_time'][1]+data_1['phase_time'][2]+data_1['phase_time'][3])  #Simulation Time
 # specific_points_s = [0, data_1['phase_time'][0], data_1['phase_time'][0] + data_1['phase_time'][1], data_1['phase_time'][0] + data_1['phase_time'][1] + data_1['phase_time'][2], data_1['phase_time'][0] + data_1['phase_time'][1] + data_1['phase_time'][2] + data_1['phase_time'][3]]
 #
 # T_p=(data_2['phase_time'][0]+data_2['phase_time'][1]+data_2['phase_time'][2]+data_2['phase_time'][3])  #Simulation Time
 # specific_points_p = [0, data_2['phase_time'][0], data_2['phase_time'][0] + data_2['phase_time'][1], data_2['phase_time'][0] + data_2['phase_time'][1] + data_2['phase_time'][2], data_2['phase_time'][0] + data_2['phase_time'][1] + data_2['phase_time'][2] + data_2['phase_time'][3]]
+=======
+T_s=(data['phase_time'][0]+data['phase_time'][1]+data['phase_time'][2]+data['phase_time'][3])  #Simulation Time
+specific_points = [0, data['phase_time'][0], data['phase_time'][0]+data['phase_time'][1], data['phase_time'][0]+data['phase_time'][1]+data['phase_time'][2], data['phase_time'][0]+data['phase_time'][1]+data['phase_time'][2]+data['phase_time'][3]]
+>>>>>>> UpdatedVersionStruckTouch
 
 
 array_0_q_s = data_1['states'][0]['q']  # First array
@@ -156,6 +161,14 @@ for i in range(0,10):
     axs[0].plot(concatenated_array_q_s[i,:], color='red')
     axs[0].plot(concatenated_array_q_p[i,:], color='blue')
 
+<<<<<<< HEAD
+=======
+    x_q= np.linspace(0, T_s, y_q)
+    x_qdot= np.linspace(0, T_s, y_qdot)
+    # Plot data on each subplot
+
+    axs[0].plot(x_q, concatenated_array_q[i,:], color='red')
+>>>>>>> UpdatedVersionStruckTouch
     axs[0].set_title('q')
 
     # y_min = math.ceil(min(concatenated_array_q[i]) - 0.1)
@@ -167,8 +180,22 @@ for i in range(0,10):
     axs[1].set_title('q_dot')
 
 
+<<<<<<< HEAD
     # x_tau_s=np.linspace(0, T_s, y_tau_s, dtype=float)
     axs[2].plot(concatenated_array_tau_s[i,:], color='red')
+=======
+    x_tau=np.linspace(0, T_s, y_tau)
+    axs[2].plot(x_tau, concatenated_array_tau[i,:], color='red')
+    axs[2].set_title('tau')
+    axs[2].set_xlabel('Time (sec)')
+
+    for ax in axs:
+        plt.xticks([0.1 * tick for tick in range(0, T_g)])
+        plt.grid(True)
+
+        for point in specific_points:
+            ax.axvline(x=point, color='g', linestyle='--')
+>>>>>>> UpdatedVersionStruckTouch
 
     # x_tau_p=np.linspace(0, T_p, y_tau_p, dtype=float)
     axs[2].plot(concatenated_array_tau_p[i,:], color='blue')
@@ -187,6 +214,7 @@ for i in range(0,10):
     #         ax.axvline(x=point, color='r', linestyle=':')
     plt.tight_layout()
 
+<<<<<<< HEAD
     # plt.figure()
     # plt.plot(concatenated_array_q_s[i, :], concatenated_array_qdot_s[i, :])
     # plt.title(Name[i])
@@ -198,6 +226,17 @@ for i in range(0,10):
     # ax.plot3D(concatenated_array_q_s[i, :], concatenated_array_qdot_s[i, :], x_q_s[i], 'gray')
 
 plt.show()
+=======
+    plt.figure()
+    plt.plot(concatenated_array_q[i, :], concatenated_array_qdot[i, :])
+    plt.title(Name[i])
+    plt.xlabel('q')
+    plt.ylabel('qdot')
+>>>>>>> UpdatedVersionStruckTouch
 
+    plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.plot3D(concatenated_array_q[i, :], concatenated_array_qdot[i, :], x_q[i], 'gray')
 
+plt.show()
 
