@@ -6,7 +6,7 @@ import math
 with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/1_every_dof_minimized_at_100/1_every_dof_minimized_at_100.pckl', 'rb') as file:
     data_1 = pickle.load(file)
 
-with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/1_every_dof_minimized_at_100/Test.pckl', 'rb') as file:
+with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/Results/V_1.pckl', 'rb') as file:
     data_2 = pickle.load(file)
 
 #

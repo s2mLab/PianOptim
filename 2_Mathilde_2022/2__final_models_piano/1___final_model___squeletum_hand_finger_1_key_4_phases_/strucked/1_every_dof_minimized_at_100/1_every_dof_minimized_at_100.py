@@ -4,6 +4,7 @@
  """
 from casadi import MX, acos, dot, pi
 import time
+import bioviz
 import numpy as np
 import biorbd_casadi as biorbd
 import pickle
@@ -503,53 +504,27 @@ def main():
     sol = ocp.solve(solv)
     #
     # # # # --- Take important states for Finger_Marker_5 and Finger_marker --- # #
-    # #
-    q_finger_marker_5_idx_1 = []
-    q_finger_marker_idx_4 = []
-    phase_shape = []
-    phase_time = []
-    #
-    # for k in [1, 4]:
-    #     for i in range(4):
-    #         # Number of nodes per phase : 0=151, 1=31, 2=46, 3=151 (251) (bc COLLOCATION)
-    #         for j in range(sol.states[i]["q"].shape[1]):
-    #             q_all_markers = controller.mx_to_cx("markers", sol.ocp.nlp[i].model.markers, sol.states[i]["q"][:, j])  # q_markers = 3 * 10
-    #             q_marker = q_all_markers["o0"][:, k]  # q_marker_1_one_node = 3 * 1
-    #             if k == 1:
-    #                 q_finger_marker_5_idx_1.append(q_marker)
-    #             elif k == 4:
-    #                 q_finger_marker_idx_4.append(q_marker)
-    #         if k == 1:
-    #             phase_time.append(ocp.nlp[i].tf)
-    #             phase_shape.append(sol.states[i]["q"].shape[1])
-    #
-    # q_finger_marker_5_idx_1 = np.array(q_finger_marker_5_idx_1)
-    # q_finger_marker_5_idx_1 = q_finger_marker_5_idx_1.reshape((379, 3))
-    # q_finger_marker_5_idx_1 = q_finger_marker_5_idx_1.reshape((379, 3))
-    #
-    # q_finger_marker_idx_4 = np.array(q_finger_marker_idx_4)
-    # q_finger_marker_idx_4 = q_finger_marker_idx_4.reshape((379, 3))
-    #
+
     # # # --- Download datas on a .pckl file --- #
-    # #
-    # data = dict(
-    #     states=sol.states,
-    #     controls=sol.controls,
-    #     parameters=sol.parameters,
-    #     iterations=sol.iterations,
-    #     cost=np.array(sol.cost)[0][0],
-    #     detailed_cost=sol.detailed_cost,
-    #     real_time_to_optimize=sol.real_time_to_optimize,
-    #     param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
-    #     phase_time=phase_time,
-    #     phase_shape=phase_shape,
-    #     q_finger_marker_5_idx_1=q_finger_marker_5_idx_1,
-    #     q_finger_marker_idx_4=q_finger_marker_idx_4,
-    # )
-    #
-    # with open(
-    #         "/0__On_going/Resultats_FINAL/strucked/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/1_every_dof_100/2_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0.pckl", "wb") as file:
-    #     pickle.dump(data, file)
+
+    data = dict(
+        states=sol.states,
+        states_no_intermediate=sol.states_no_intermediate,
+        controls=sol.controls,
+        parameters=sol.parameters,
+        iterations=sol.iterations,
+        cost=np.array(sol.cost)[0][0],
+        detailed_cost=sol.detailed_cost,
+        real_time_to_optimize=sol.real_time_to_optimize,
+        param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
+        phase_time=sol.phase_time,
+        Time=sol.time,
+
+    )
+
+    with open(
+            "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/strucked/Results/V_1.pckl", "wb") as file:
+        pickle.dump(data, file)
 
     # # --- Print results --- # #
 
@@ -558,8 +533,7 @@ def main():
     ocp.print(to_console=False, to_graph=False)
     # sol.graphs(show_bounds=True)
     sol.print_cost()
-    sol.animate(show_floor=False, show_global_center_of_mass=False, show_segments_center_of_mass=False, show_global_ref_frame=False, show_local_ref_frame=False, show_markers=False,n_frames = 500)
-
+    sol.animate(show_floor=False, show_global_center_of_mass=False, show_segments_center_of_mass=False, show_global_ref_frame=False, show_local_ref_frame=False, show_markers=False, n_frames=500)
 
 
 if __name__ == "__main__":
