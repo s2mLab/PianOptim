@@ -1,10 +1,13 @@
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.ticker import AutoMinorLocator
 import math
 
 with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/Results/V_1.pckl', 'rb') as file:
     data_1 = pickle.load(file)
+
+specific_points_s = [data_1['phase_time'][0], data_1['phase_time'][0] + data_1['phase_time'][1], data_1['phase_time'][0] + data_1['phase_time'][1] + data_1['phase_time'][2], data_1['phase_time'][0] + data_1['phase_time'][1] + data_1['phase_time'][2] + data_1['phase_time'][3],data_1['phase_time'][0] + data_1['phase_time'][1] + data_1['phase_time'][2] + data_1['phase_time'][3]++ data_1['phase_time'][4]]
 
 #####################
 array_0_q_s = data_1['states'][0]['q']  # First array
@@ -144,8 +147,27 @@ for i in range(0,10):
     axs[2].set_title('tau')
     axs[2].set_xlabel('Time (sec)')
 
+    for ax in axs:
+        ax.grid(True)
+        ax.xaxis.set_minor_locator(AutoMinorLocator())
+        ax.yaxis.set_minor_locator(AutoMinorLocator())
+        ax.grid(which='minor', linestyle=':', linewidth='0.2', color='black')
+
+        for point in specific_points_s:
+            ax.axvline(x=point, color='g', linestyle='--')
 
     plt.tight_layout()
+
+    # plt.figure()
+    # plt.plot(concatenated_array_q_s[i, :], concatenated_array_qdot_s[i, :])
+    # plt.title(Name[i])
+    # plt.xlabel('q')
+    # plt.ylabel('qdot')
+    #
+    # plt.figure()
+    # ax = plt.axes(projection='3d')
+    # ax.plot3D(concatenated_array_q_s[i, :], concatenated_array_qdot_s[i, :], x_q_s[i], 'gray')
+
 
 plt.show()
 
