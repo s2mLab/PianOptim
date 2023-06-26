@@ -163,16 +163,6 @@ for i in range(0,10):
 
     plt.tight_layout()
 
-    # plt.figure()
-    # plt.plot(concatenated_array_q_s[i, :], concatenated_array_qdot_s[i, :])
-    # plt.title(Name[i])
-    # plt.xlabel('q')
-    # plt.ylabel('qdot')
-    #
-    # plt.figure()
-    # ax = plt.axes(projection='3d')
-    # ax.plot3D(concatenated_array_q_s[i, :], concatenated_array_qdot_s[i, :], x_q_s[i], 'gray')
-
 
 plt.show()
 
