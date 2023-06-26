@@ -78,25 +78,23 @@ concatenated_array_qdot_nis= np.concatenate((array_0_qdot_nis, array_1_qdot_nis,
 #####################
 array_0_tau_s = data_1['controls'][0]['tau']  # First array
 repeated_array_0_tau_s = np.repeat(array_0_tau_s[:,:-1], 5, axis=1)
+last_column = repeated_array_0_tau_s[:, -1]
+repeated_array_0_tau_s = np.hstack((repeated_array_0_tau_s, last_column.reshape(-1, 1)))
 
 array_1_tau_s= data_1['controls'][1]['tau']  # Second array
 repeated_array_1_tau_s = np.repeat(array_1_tau_s[:,:-1], 5, axis=1)
-first_column = repeated_array_1_tau_s[:, 0]
-repeated_array_0_tau_s = np.hstack((repeated_array_0_tau_s, first_column.reshape(-1, 1)))
-
+last_column = repeated_array_1_tau_s[:, -1]
+repeated_array_1_tau_s = np.hstack((repeated_array_1_tau_s, last_column.reshape(-1, 1)))
 
 array_2_tau_s= data_1['controls'][2]['tau']  # Third array
 repeated_array_2_tau_s = np.repeat(array_2_tau_s[:,:-1], 5, axis=1)
-first_column = repeated_array_2_tau_s[:, 0]
-repeated_array_1_tau_s = np.hstack((repeated_array_1_tau_s, first_column.reshape(-1, 1)))
+last_column = repeated_array_2_tau_s[:, -1]
+repeated_array_2_tau_s = np.hstack((repeated_array_2_tau_s, last_column.reshape(-1, 1)))
 
 array_3_tau_s= data_1['controls'][3]['tau']  # Fourth array
 repeated_array_3_tau_s = np.repeat(array_3_tau_s[:,:-1], 5, axis=1)
 last_column = repeated_array_3_tau_s[:, -1]
 repeated_array_3_tau_s = np.hstack((repeated_array_3_tau_s, last_column.reshape(-1, 1)))
-
-last_column = repeated_array_3_tau_s[:, 0]
-repeated_array_2_tau_s = np.hstack((repeated_array_2_tau_s, last_column.reshape(-1, 1)))
 
 
 x1_s,y1_s=(repeated_array_0_tau_s.shape)
