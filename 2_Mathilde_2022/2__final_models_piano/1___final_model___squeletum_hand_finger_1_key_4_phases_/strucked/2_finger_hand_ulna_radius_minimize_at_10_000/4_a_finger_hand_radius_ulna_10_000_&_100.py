@@ -268,7 +268,7 @@ def prepare_ocp(
     multinode_objectives.add(
         minimize_difference,
         custom_type=ObjectiveFcn.Mayer,
-        weight=1000,
+        weight=1000* 50,
         nodes_phase=(0, 1),
         nodes=(Node.END, Node.START),
         quadratic=True,
@@ -277,7 +277,7 @@ def prepare_ocp(
     multinode_objectives.add(
         minimize_difference,
         custom_type=ObjectiveFcn.Mayer,
-        weight=1000,
+        weight=1000* 50,
         nodes_phase=(1, 2),
         nodes=(Node.END, Node.START),
         quadratic=True,
@@ -286,7 +286,7 @@ def prepare_ocp(
     multinode_objectives.add(
         minimize_difference,
         custom_type=ObjectiveFcn.Mayer,
-        weight=1000,
+        weight=1000* 50,
         nodes_phase=(2, 3),
         nodes=(Node.END, Node.START),
         quadratic=True,
