@@ -4,7 +4,6 @@
  """
 from casadi import MX, acos, dot, pi
 import time
-import bioviz
 import numpy as np
 import biorbd_casadi as biorbd
 import pickle
