@@ -13,7 +13,7 @@ specific_points_s = [data_1['phase_time'][0], data_1['phase_time'][0] + data_1['
 
 #####################
 
-with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/Results/all', 'rb') as file:
+with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/Results/V_1.pckl', 'rb') as file:
     data_2 = pickle.load(file)
 
 specific_points_p = [data_2['phase_time'][0], data_2['phase_time'][0] + data_2['phase_time'][1], data_2['phase_time'][0] + data_2['phase_time'][1] + data_2['phase_time'][2], data_2['phase_time'][0] + data_2['phase_time'][1] + data_2['phase_time'][2] + data_2['phase_time'][3],data_2['phase_time'][0] + data_2['phase_time'][1] + data_2['phase_time'][2] + data_2['phase_time'][3]+ data_2['phase_time'][4]]
