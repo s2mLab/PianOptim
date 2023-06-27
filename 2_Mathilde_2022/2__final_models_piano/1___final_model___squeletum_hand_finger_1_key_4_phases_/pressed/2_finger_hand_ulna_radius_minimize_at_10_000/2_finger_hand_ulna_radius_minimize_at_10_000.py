@@ -554,8 +554,8 @@ def main():
     print("Tesults saved")
     print("Temps de resolution : ", time.time() - tic, "s")
     ocp.print(to_console=False, to_graph=False)
-    sol.graphs(show_bounds=True)
     sol.print_cost()
+    sol.animate(show_floor=False, show_global_center_of_mass=False, show_segments_center_of_mass=False, show_global_ref_frame=True, show_local_ref_frame=False, show_markers=False, n_frames=500,)
 
 
 if __name__ == "__main__":
