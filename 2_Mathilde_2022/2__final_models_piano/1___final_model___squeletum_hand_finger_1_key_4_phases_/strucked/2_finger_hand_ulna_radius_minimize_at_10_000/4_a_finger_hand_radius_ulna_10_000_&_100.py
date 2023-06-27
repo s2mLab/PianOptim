@@ -7,8 +7,10 @@ import time
 import numpy as np
 import biorbd_casadi as biorbd
 import pickle
+
 from bioptim import (
-    PenaltyNode,
+    BiorbdModel,
+    PenaltyController,
     ObjectiveList,
     PhaseTransitionFcn,
     DynamicsList,
@@ -22,48 +24,43 @@ from bioptim import (
     DynamicsFcn,
     ObjectiveFcn,
     ConstraintList,
-    PenaltyNodeList,
-    QAndQDotBounds,
     OdeSolver,
-    BiorbdInterface,
     Solver,
+    MultinodeObjectiveList,
 )
 
+def minimize_difference(controllers: list[PenaltyController, PenaltyController]):
+    pre, post = controllers
+    return pre.controls.cx_end - post.controls.cx
 
-def minimize_difference(all_pn: PenaltyNode):
-    return all_pn[0].nlp.controls.cx_end - all_pn[1].nlp.controls.cx
-
-
-def custom_func_track_finger_5_on_the_right_of_principal_finger(all_pn: PenaltyNodeList) -> MX:
-    finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, "finger_marker")
-    markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
+def custom_func_track_finger_5_on_the_right_of_principal_finger(controller: PenaltyController) -> MX:
+    finger_marker_idx = biorbd.marker_index(controller.model.model, "finger_marker")
+    markers = controller.mx_to_cx("markers", controller.model.markers, controller.states["q"])
     finger_marker = markers[:, finger_marker_idx]
 
-    finger_marker_5_idx = biorbd.marker_index(all_pn.nlp.model, "finger_marker_5")
-    markers_5 = BiorbdInterface.mx_to_cx("markers_5", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
+    finger_marker_5_idx = biorbd.marker_index(controller.model.model, "finger_marker_5")
+    markers_5 = controller.mx_to_cx("markers_5", controller.model.markers, controller.states["q"])
     finger_marker_5 = markers_5[:, finger_marker_5_idx]
 
     markers_diff_key2 = finger_marker[1] - finger_marker_5[1]
 
     return markers_diff_key2
 
-
-def custom_func_track_principal_finger_and_finger5_above_bed_key(all_pn: PenaltyNodeList, marker: str) -> MX:
-    finger_marker_idx = biorbd.marker_index(all_pn.nlp.model, marker)
-    markers = BiorbdInterface.mx_to_cx("markers", all_pn.nlp.model.markers, all_pn.nlp.states["q"])
+def custom_func_track_principal_finger_and_finger5_above_bed_key(controller: PenaltyController, marker_name: str) -> MX:
+    biorbd_model = controller.model
+    finger_marker_idx = biorbd.marker_index(biorbd_model.model, marker_name)
+    markers = controller.mx_to_cx("markers", biorbd_model.markers, controller.states["q"])
     finger_marker = markers[:, finger_marker_idx]
 
     markers_diff_key3 = finger_marker[2] - (0.07808863830566405 - 0.02)
 
     return markers_diff_key3
 
-
-def custom_func_track_principal_finger_pi_in_two_global_axis(all_pn: PenaltyNodeList, segment: str) -> MX:
-    model = all_pn.nlp.model
-    rotation_matrix_index = biorbd.segment_index(model, segment)
-    q = all_pn.nlp.states["q"].mx
+def custom_func_track_principal_finger_pi_in_two_global_axis(controller: PenaltyController, segment: str) -> MX:
+    rotation_matrix_index = biorbd.segment_index(controller.model.model, segment)
+    q = controller.states["q"].mx
     # global JCS gives the local matrix according to the global matrix
-    principal_finger_axis = all_pn.nlp.model.globalJCS(q, rotation_matrix_index).to_mx()  # x finger = y global
+    principal_finger_axis= controller.model.model.globalJCS(q, rotation_matrix_index).to_mx()  # x finger = y global
     y = MX.zeros(4)
     y[:4] = np.array([0, 1, 0, 1])
     # @ x : pour avoir l'orientation du vecteur x du jcs local exprimé dans le global
@@ -75,36 +72,21 @@ def custom_func_track_principal_finger_pi_in_two_global_axis(all_pn: PenaltyNode
     global_y[:3] = np.array([0, 1, 0])
 
     teta = acos(dot(principal_finger_y, global_y[:3]))
-    output_casadi = BiorbdInterface.mx_to_cx("scal_prod", teta, all_pn.nlp.states["q"])
+    output_casadi = controller.mx_to_cx("scal_prod", teta, controller.states["q"])
 
     return output_casadi
 
-
 def prepare_ocp(
-    biorbd_model_path: str = "/home/lim/Documents/Stage Mathilde/PianOptim/a_Mathilde_2022/2__FINAL_MODELS_OSCAR/5___final___squeletum_hand_finger_1_key_4_phases/bioMod/Squeletum_hand_finger_3D_2_keys_octave_LA.bioMod",
+    biorbd_model_path: str = "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/bioMod/Squeletum_hand_finger_3D_2_keys_octave_LA.bioMod",
     ode_solver: OdeSolver = OdeSolver.COLLOCATION(polynomial_degree=4),
 ) -> OptimalControlProgram:
 
-    """
-    Prepare the ocp
-
-    Parameters
-    ----------
-    biorbd_model_path: str
-        The path to the bioMod
-    ode_solver: OdeSolver
-        The ode solve to use
-
-    Returns
-    -------
-    The OptimalControlProgram ready to be solved
-    """
 
     biorbd_model = (
-        biorbd.Model(biorbd_model_path),
-        biorbd.Model(biorbd_model_path),
-        biorbd.Model(biorbd_model_path),
-        biorbd.Model(biorbd_model_path),
+        BiorbdModel(biorbd_model_path),
+        BiorbdModel(biorbd_model_path),
+        BiorbdModel(biorbd_model_path),
+        BiorbdModel(biorbd_model_path),
     )
 
     # Average of N frames by phase ; Average of phases time ; both measured with the motion capture datas.
@@ -280,30 +262,33 @@ def prepare_ocp(
     )
 
     # To minimize the difference between 0 and 1
-    objective_functions.add(
+    multinode_objectives = MultinodeObjectiveList()
+
+    # To minimize the difference between 0 and 1
+    multinode_objectives.add(
         minimize_difference,
         custom_type=ObjectiveFcn.Mayer,
-        node=Node.TRANSITION,
-        weight=1000 * 50,
-        phase=1,
+        weight=1000,
+        nodes_phase=(0, 1),
+        nodes=(Node.END, Node.START),
         quadratic=True,
     )
-    # To minimize the difference between 1 and 2
-    objective_functions.add(
+    # # To minimize the difference between 0 and 1
+    multinode_objectives.add(
         minimize_difference,
         custom_type=ObjectiveFcn.Mayer,
-        node=Node.TRANSITION,
-        weight=1000 * 50,
-        phase=2,
+        weight=1000,
+        nodes_phase=(1, 2),
+        nodes=(Node.END, Node.START),
         quadratic=True,
     )
-    # To minimize the difference between 2 and 3
-    objective_functions.add(
+    # # To minimize the difference between 2 and 3
+    multinode_objectives.add(
         minimize_difference,
         custom_type=ObjectiveFcn.Mayer,
-        node=Node.TRANSITION,
-        weight=1000 * 50,
-        phase=3,
+        weight=1000,
+        nodes_phase=(2, 3),
+        nodes=(Node.END, Node.START),
         quadratic=True,
     )
 
@@ -463,20 +448,20 @@ def prepare_ocp(
 
     # Path constraint
     x_bounds = BoundsList()
-    x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
-    x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
-    x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
-    x_bounds.add(bounds=QAndQDotBounds(biorbd_model[0]))
+    x_bounds.add(bounds=biorbd_model[0].bounds_from_ranges(["q", "qdot"]))
+    x_bounds.add(bounds=biorbd_model[0].bounds_from_ranges(["q", "qdot"]))
+    x_bounds.add(bounds=biorbd_model[0].bounds_from_ranges(["q", "qdot"]))
+    x_bounds.add(bounds=biorbd_model[0].bounds_from_ranges(["q", "qdot"]))
 
     x_bounds[0][[0, 1, 2], 0] = 0
     x_bounds[3][[0, 1, 2], 2] = 0
 
     # Initial guess
     x_init = InitialGuessList()
-    x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
-    x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
-    x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
-    x_init.add([0] * (biorbd_model[0].nbQ() + biorbd_model[0].nbQdot()))
+    x_init.add([0] * (biorbd_model[0].nb_q + biorbd_model[0].nb_qdot))
+    x_init.add([0] * (biorbd_model[0].nb_q + biorbd_model[0].nb_qdot))
+    x_init.add([0] * (biorbd_model[0].nb_q + biorbd_model[0].nb_qdot))
+    x_init.add([0] * (biorbd_model[0].nb_q + biorbd_model[0].nb_qdot))
 
     for i in range(4):
         x_init[i][4, 0] = 0.08
@@ -487,16 +472,16 @@ def prepare_ocp(
 
     # Define control path constraint
     u_bounds = BoundsList()
-    u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
-    u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
-    u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
-    u_bounds.add([tau_min] * biorbd_model[0].nbGeneralizedTorque(), [tau_max] * biorbd_model[0].nbGeneralizedTorque())
+    u_bounds.add([tau_min] * biorbd_model[0].nb_tau, [tau_max] * biorbd_model[0].nb_tau)
+    u_bounds.add([tau_min] * biorbd_model[0].nb_tau, [tau_max] * biorbd_model[0].nb_tau)
+    u_bounds.add([tau_min] * biorbd_model[0].nb_tau, [tau_max] * biorbd_model[0].nb_tau)
+    u_bounds.add([tau_min] * biorbd_model[0].nb_tau, [tau_max] * biorbd_model[0].nb_tau)
 
     u_init = InitialGuessList()
-    u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
-    u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
-    u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
-    u_init.add([tau_init] * biorbd_model[0].nbGeneralizedTorque())
+    u_init.add([tau_init] * biorbd_model[0].nb_tau)
+    u_init.add([tau_init] * biorbd_model[0].nb_tau)
+    u_init.add([tau_init] * biorbd_model[0].nb_tau)
+    u_init.add([tau_init] * biorbd_model[0].nb_tau)
 
     return OptimalControlProgram(
         biorbd_model,
@@ -532,36 +517,10 @@ def main():
 
     # # --- Take important states for Finger_Marker_5 and Finger_marker --- # #
 
-    q_finger_marker_5_idx_1 = []
-    q_finger_marker_idx_4 = []
-    phase_shape = []
-    phase_time = []
-    for k in [1, 4]:
-        for i in range(4):
-            # Number of nodes per phase : 0=151, 1=31, 2=46, 3=151 (251) (bc COLLOCATION)
-            for j in range(sol.states[i]["q"].shape[1]):
-                q_all_markers = BiorbdInterface.mx_to_cx(
-                    "markers", sol.ocp.nlp[i].model.markers, sol.states[i]["q"][:, j]
-                )  # q_markers = 3 * 10
-                q_marker = q_all_markers["o0"][:, k]  # q_marker_1_one_node = 3 * 1
-                if k == 1:
-                    q_finger_marker_5_idx_1.append(q_marker)
-                elif k == 4:
-                    q_finger_marker_idx_4.append(q_marker)
-            if k == 1:
-                phase_time.append(ocp.nlp[i].tf)
-                phase_shape.append(sol.states[i]["q"].shape[1])
-
-    q_finger_marker_5_idx_1 = np.array(q_finger_marker_5_idx_1)
-    q_finger_marker_5_idx_1 = q_finger_marker_5_idx_1.reshape((379, 3))
-
-    q_finger_marker_idx_4 = np.array(q_finger_marker_idx_4)
-    q_finger_marker_idx_4 = q_finger_marker_idx_4.reshape((379, 3))
-
-    # # --- Download datas on a .pckl file --- #
 
     data = dict(
         states=sol.states,
+        states_no_intermediate=sol.states_no_intermediate,
         controls=sol.controls,
         parameters=sol.parameters,
         iterations=sol.iterations,
@@ -569,15 +528,14 @@ def main():
         detailed_cost=sol.detailed_cost,
         real_time_to_optimize=sol.real_time_to_optimize,
         param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
-        phase_time=phase_time,
-        phase_shape=phase_shape,
-        q_finger_marker_5_idx_1=q_finger_marker_5_idx_1,
-        q_finger_marker_idx_4=q_finger_marker_idx_4,
+        phase_time=sol.phase_time,
+        Time=sol.time,
+
     )
 
-    # with open(
-    #         "/0__On_going/5:FINAL_Squeletum_hand_finger_1_key_4_phases/strucked/3_FINAL_with_thorax_blocked_in_x_&_-1_in_z_&_thorax_pelvis_init_0/2_10_000_100/4_a_finger_hand_radius_ulna_10_000_&_100/1.pckl", "wb") as file:
-    #     pickle.dump(data, file)
+    with open(
+            "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/strucked/Results/V_1_distal_joints.pckl","wb") as file:
+        pickle.dump(data, file)
 
     # # --- Print results --- # #
 
