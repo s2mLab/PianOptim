@@ -136,17 +136,17 @@ for i in range(0,10):
     fig.suptitle(Name[i])
 
     axs[0].plot(concatenated_array_time_s,concatenated_array_q_s[i,:], color='red')
-    axs[0].set_title('q')
+    axs[0].set_title('q (rad)')
     axs[0].set_xlim(np.min(concatenated_array_time_s), np.max(concatenated_array_time_s))
     axs[0].set_ylim(np.min(concatenated_array_q_s[i,:])-margin, np.max(concatenated_array_q_s[i,:])+margin)
 
     axs[1].plot(concatenated_array_time_s,concatenated_array_qdot_s[i,:],color='red')
-    axs[1].set_title('q_dot')
+    axs[1].set_title('q_dot (rad/sec)')
     axs[1].set_xlim(np.min(concatenated_array_time_s), np.max(concatenated_array_time_s))
     axs[1].set_ylim(np.min(concatenated_array_qdot_s[i,:])-margin_b, np.max(concatenated_array_qdot_s[i,:])+margin_b)
 
     axs[2].plot(concatenated_array_time_s,concatenated_array_tau_s[i,:], color='red')
-    axs[2].set_title('tau')
+    axs[2].set_title('tau (N.m)')
     axs[2].set_xlabel('Time (sec)')
     axs[2].set_xlim(np.min(concatenated_array_time_s), np.max(concatenated_array_time_s))
     axs[2].set_ylim(np.min(concatenated_array_tau_s[i, :])-margin_b, np.max(concatenated_array_tau_s[i, :])+margin_b)
