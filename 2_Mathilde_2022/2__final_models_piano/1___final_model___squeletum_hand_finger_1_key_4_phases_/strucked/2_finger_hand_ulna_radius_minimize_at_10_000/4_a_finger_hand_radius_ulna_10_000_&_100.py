@@ -344,7 +344,7 @@ def prepare_ocp(
     constraints.add(
         custom_func_track_principal_finger_and_finger5_above_bed_key,
         node=Node.ALL,
-        marker="finger_marker",
+        marker_name="finger_marker",
         min_bound=0,
         max_bound=10000,
         phase=0,
@@ -352,7 +352,7 @@ def prepare_ocp(
     constraints.add(
         custom_func_track_principal_finger_and_finger5_above_bed_key,
         node=Node.ALL,
-        marker="finger_marker",
+        marker_name="finger_marker",
         min_bound=0,
         max_bound=10000,
         phase=1,
@@ -360,7 +360,7 @@ def prepare_ocp(
     constraints.add(
         custom_func_track_principal_finger_and_finger5_above_bed_key,
         node=Node.ALL,
-        marker="finger_marker",
+        marker_name="finger_marker",
         min_bound=0,
         max_bound=10000,
         phase=2,
@@ -368,7 +368,7 @@ def prepare_ocp(
     constraints.add(
         custom_func_track_principal_finger_and_finger5_above_bed_key,
         node=Node.ALL,
-        marker="finger_marker",
+        marker_name="finger_marker",
         min_bound=0,
         max_bound=10000,
         phase=3,
@@ -377,7 +377,7 @@ def prepare_ocp(
     constraints.add(
         custom_func_track_principal_finger_and_finger5_above_bed_key,
         node=Node.ALL,
-        marker="finger_marker_5",
+        marker_name="finger_marker_5",
         min_bound=0,
         max_bound=10000,
         phase=0,
@@ -385,7 +385,7 @@ def prepare_ocp(
     constraints.add(
         custom_func_track_principal_finger_and_finger5_above_bed_key,
         node=Node.ALL,
-        marker="finger_marker_5",
+        marker_name="finger_marker_5",
         min_bound=0,
         max_bound=10000,
         phase=1,
@@ -393,7 +393,7 @@ def prepare_ocp(
     constraints.add(
         custom_func_track_principal_finger_and_finger5_above_bed_key,
         node=Node.ALL,
-        marker="finger_marker_5",
+        marker_name="finger_marker_5",
         min_bound=0,
         max_bound=10000,
         phase=2,
@@ -401,7 +401,7 @@ def prepare_ocp(
     constraints.add(
         custom_func_track_principal_finger_and_finger5_above_bed_key,
         node=Node.ALL,
-        marker="finger_marker_5",
+        marker_name="finger_marker_5",
         min_bound=0,
         max_bound=10000,
         phase=3,
