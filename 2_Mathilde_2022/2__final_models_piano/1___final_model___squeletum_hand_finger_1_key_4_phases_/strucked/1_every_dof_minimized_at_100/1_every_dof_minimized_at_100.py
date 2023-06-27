@@ -523,7 +523,7 @@ def main():
     )
 
     with open(
-            "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/strucked/Results/V_1.pckl", "wb") as file:
+            "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/strucked/Results/alldofs_struckTouch_1.pckl", "wb") as file:
         pickle.dump(data, file)
 
     # # --- Print results --- # #
