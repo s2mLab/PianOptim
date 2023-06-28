@@ -2,7 +2,7 @@
  !! Les axes du modèle ne sont pas les mêmes que ceux généralement utilisés en biomécanique : x axe de flexion, y supination/pronation, z vertical
  ici on a : Y -» X , Z-» Y et X -» Z
  """
-from casadi import MX, acos, dot, pi
+from casadi import MX, acos, dot, pi, fabs
 import time
 import numpy as np
 import biorbd_casadi as biorbd
@@ -79,8 +79,13 @@ def custom_func_track_principal_finger_pi_in_two_global_axis(controller: Penalty
 
     return output_casadi
 
-    # principal_finger_axis = all_pn.nlp.model.globalJCS(q, rotation_matrix_index).to_mx()  # x finger = y global
+def compute_power(controller: PenaltyController):
+    variable_1 =controller.mx_to_cx("markers", controller.model.markers, controller.states["qdot"])
+    variable_2 =controller.mx_to_cx("markers", controller.model.markers, controller.controls["tau"])
 
+    P=fabs(variable_2*variable_1)
+
+    return P
 
 def prepare_ocp(
     biorbd_model_path: str = "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/bioMod/Squeletum_hand_finger_3D_2_keys_octave_LA.bioMod",
