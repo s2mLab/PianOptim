@@ -81,7 +81,7 @@ def custom_func_track_principal_finger_pi_in_two_global_axis(controller: Penalty
 
 def compute_power(controller: PenaltyController):
     variable_1 =controller.mx_to_cx("markers", controller.model.markers, controller.states["qdot"])
-    variable_2 =controller.mx_to_cx("markers", controller.model.markers, controller.controls["tau"])
+    variable_2 =controller.mx_to_cx("markers", controller.model.markers, controller.states["q"])
 
     P=fabs(variable_2*variable_1)
 
@@ -153,6 +153,24 @@ def prepare_ocp(
     objective_functions.add(
         ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=100, index=[0, 1, 2, 3, 4, 5]
     )
+
+    objective_functions.add(
+        compute_power,
+        custom_type=ObjectiveFcn.Mayer,
+        node=Node.ALL,
+        quadratic=True,
+        phase=0,
+        index=2,
+    )
+
+    # objective_functions.add(
+    #     compute_power,
+    #     custom_type=ObjectiveFcn.Mayer,
+    #     node=Node.ALL,
+    #     quadratic=True,
+    #     phase=0,
+    #     index=[3],
+    # )
 
     # Special articulations called individually in order to see, in the results, the individual objectives cost of each.
     for j in [6, 7, 8, 9]:
