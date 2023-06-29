@@ -142,18 +142,37 @@ def prepare_ocp(
     # Objectives
     # Minimize Torques generated into articulations
     objective_functions = ObjectiveList()
-    
-    for j in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]:
+    objective_functions.add(
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=0, weight=100, index=[0, 1, 2, 3, 4, 6, 7]
+    )
+    objective_functions.add(
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=1, weight=100, index=[0, 1, 2, 3, 4, 6, 7]
+    )
+    objective_functions.add(
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=2, weight=100, index=[0, 1, 2, 3, 4, 6, 7]
+    )
+    objective_functions.add(
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=100, index=[0, 1, 2, 3, 4, 6, 7]
+    )
+
+    for i in [0, 1, 2, 3]:
+        objective_functions.add(
+            ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=i, weight=20, index=[5]
+        )
+    # Special articulations called individually in order to see, in the results, the individual objectives cost of each.
+    for j in [8, 9]:
         for i in [0, 1, 2, 3]:
             objective_functions.add(
-                compute_power,
-                custom_type=ObjectiveFcn.Lagrange,
-                segment_idx=[j],
-                node=Node.ALL_SHOOTING,
-                quadratic=True,
-                phase=i,
-                method=1,
-            )
+                    compute_power,
+                    custom_type=ObjectiveFcn.Lagrange,
+                    segment_idx=[j],
+                    node=Node.ALL_SHOOTING,
+                    quadratic=True,
+                    phase=i,
+                    method=1,
+                    weight=100,
+                )
+
 
     objective_functions.add(
         ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=0.0001, index=[0, 1, 2, 3, 4, 5, 6, 7]
@@ -169,7 +188,8 @@ def prepare_ocp(
     )
 
     # To block ulna rotation before the key pressing.
-    objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=100000, index=[7])
+    for i in [0, 1, 2, 3]:
+        objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=i, weight=10000, index=[3,7])
 
     objective_functions.add(
         ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
