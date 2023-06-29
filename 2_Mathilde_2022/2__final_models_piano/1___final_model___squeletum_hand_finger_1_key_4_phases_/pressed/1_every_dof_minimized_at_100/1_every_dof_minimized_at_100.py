@@ -2,7 +2,7 @@
  !! Les axes du modèle ne sont pas les mêmes que ceux généralement utilisés en biomécanique : x axe de flexion, y supination/pronation, z vertical
  ici on a : Y -» X , Z-» Y et X -» Z
  """
-from casadi import MX, acos, dot, pi, fabs
+from casadi import MX, acos, dot, pi
 import time
 import numpy as np
 import biorbd_casadi as biorbd
@@ -81,9 +81,8 @@ def custom_func_track_principal_finger_pi_in_two_global_axis(controller: Penalty
 
 def compute_power(controller: PenaltyController, segment_idx:int, method:int):
 
-    segments_qdot = controller.states["qdot"].cx_end[segment_idx]
-    segments_tau = controller.controls["tau"].cx_end[segment_idx]
-
+    segments_qdot = controller.states["qdot"].cx[segment_idx]
+    segments_tau = controller.controls["tau"].cx[segment_idx]
     Power= segments_tau * segments_qdot
 
     return Power
@@ -143,34 +142,18 @@ def prepare_ocp(
     # Objectives
     # Minimize Torques generated into articulations
     objective_functions = ObjectiveList()
-    objective_functions.add(
-        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=0, weight=100, index=[0, 1, 2, 3, 4, 5]
-    )
-    objective_functions.add(
-        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=1, weight=100, index=[0, 1, 2, 3, 4, 5]
-    )
-    objective_functions.add(
-        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=2, weight=100, index=[0, 1, 2, 3, 4, 5]
-    )
-    objective_functions.add(
-        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=100, index=[0, 1, 2, 3, 4, 5]
-    )
-
-    objective_functions.add(
-        compute_power,
-        custom_type=ObjectiveFcn.Lagrange,
-        segment_idx=[2],
-        node=Node.ALL,
-        quadratic=True,
-        phase=0,
-        method=1,
-    )
-
-
-    # Special articulations called individually in order to see, in the results, the individual objectives cost of each.
-    for j in [6, 7, 8, 9]:
+    
+    for j in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]:
         for i in [0, 1, 2, 3]:
-            objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=i, weight=100, index=j)
+            objective_functions.add(
+                compute_power,
+                custom_type=ObjectiveFcn.Lagrange,
+                segment_idx=[j],
+                node=Node.ALL_SHOOTING,
+                quadratic=True,
+                phase=i,
+                method=1,
+            )
 
     objective_functions.add(
         ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=0.0001, index=[0, 1, 2, 3, 4, 5, 6, 7]
