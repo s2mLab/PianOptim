@@ -1,6 +1,6 @@
 import bioviz
 
-model_path = "/2__FINAL_MODELES_OSCAR/5___FINAL_Squeletum_hand_finger_1_key_4_phases/bioMod/Squeletum_hand_finger_3D_2_keys_octave_LA.bioMod"
+model_path = "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/bioMod/Squeletum_hand_finger_3D_2_keys_octave_LA.bioMod"
 
 b = bioviz.Viz(
     model_path,
