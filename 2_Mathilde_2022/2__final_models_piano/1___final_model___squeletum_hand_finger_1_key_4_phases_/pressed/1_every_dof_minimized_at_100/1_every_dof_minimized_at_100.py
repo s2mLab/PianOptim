@@ -157,9 +157,8 @@ def prepare_ocp(
 
     for i in [0, 3]:
         objective_functions.add(
-            ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=i, weight=20, index=[5]
+            ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=i, weight=10, index=[5]
         )
-
 
     # Special articulations called individually in order to see, in the results, the individual objectives cost of each.
     for j in [8, 9]:
