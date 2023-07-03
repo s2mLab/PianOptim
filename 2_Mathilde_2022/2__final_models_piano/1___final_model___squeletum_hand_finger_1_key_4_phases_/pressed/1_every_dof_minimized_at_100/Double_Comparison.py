@@ -6,14 +6,14 @@ import math
 
 #data_1:strucked  _s    data_2:pressed   _p
 
-with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/strucked/Results/alldofs_struckTouch_1.pckl', 'rb') as file:
+with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/Results/Presssed_AllDOFs.pckl', 'rb') as file:
     data_1 = pickle.load(file)
 
 specific_points_s = [data_1['phase_time'][0], data_1['phase_time'][0] + data_1['phase_time'][1], data_1['phase_time'][0] + data_1['phase_time'][1] + data_1['phase_time'][2], data_1['phase_time'][0] + data_1['phase_time'][1] + data_1['phase_time'][2] + data_1['phase_time'][3],data_1['phase_time'][0] + data_1['phase_time'][1] + data_1['phase_time'][2] + data_1['phase_time'][3]+ data_1['phase_time'][4]]
 
 #####################
 
-with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/Results/V_1.pckl', 'rb') as file:
+with open('/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/Results/alldofs_pressedTouch_power.pckl', 'rb') as file:
     data_2 = pickle.load(file)
 
 specific_points_p = [data_2['phase_time'][0], data_2['phase_time'][0] + data_2['phase_time'][1], data_2['phase_time'][0] + data_2['phase_time'][1] + data_2['phase_time'][2], data_2['phase_time'][0] + data_2['phase_time'][1] + data_2['phase_time'][2] + data_2['phase_time'][3],data_2['phase_time'][0] + data_2['phase_time'][1] + data_2['phase_time'][2] + data_2['phase_time'][3]+ data_2['phase_time'][4]]
@@ -262,22 +262,22 @@ for i in range(0,10):
     fig, axs = plt.subplots(nrows=4, ncols=1)
     fig.suptitle(Name[i])
 
-    axs[0].plot(concatenated_array_time_s,concatenated_array_q_s[i,:], color='red', label='Struck')
-    axs[0].plot(concatenated_array_time_p,concatenated_array_q_p[i,:], color='blue', label='Pressed')
+    axs[0].plot(concatenated_array_time_s,concatenated_array_q_s[i,:], color='red', label='Same weight')
+    axs[0].plot(concatenated_array_time_p,concatenated_array_q_p[i,:], color='blue', label='Power')
     axs[0].set_title('q (rad)')
     axs[0].legend()
     axs[0].set_xlim(np.min(concatenated_array_time_s), np.max(concatenated_array_time_s)+0.2)
     axs[0].set_ylim(np.min(concatenated_array_q_s[i,:])-margin, np.max(concatenated_array_q_s[i,:])+margin)
 
-    axs[1].plot(concatenated_array_time_s,concatenated_array_qdot_s[i,:],color='red', label='Struck')
-    axs[1].plot(concatenated_array_time_p,concatenated_array_qdot_p[i,:], color='blue', label='Pressed')
+    axs[1].plot(concatenated_array_time_s,concatenated_array_qdot_s[i,:],color='red', label='Same weight')
+    axs[1].plot(concatenated_array_time_p,concatenated_array_qdot_p[i,:], color='blue', label='Power')
     axs[1].set_title('q_dot (rad/sec)')
     axs[1].legend()
     axs[1].set_xlim(np.min(concatenated_array_time_s), np.max(concatenated_array_time_s)+0.2)
     axs[1].set_ylim(np.min(concatenated_array_qdot_s[i,:])-margin_b, np.max(concatenated_array_qdot_s[i,:])+margin_b)
 
-    axs[2].plot(concatenated_array_time_s,concatenated_array_tau_s[i,:], color='red', label='Struck')
-    axs[2].plot(concatenated_array_time_p,concatenated_array_tau_p[i,:], color='blue', label='Pressed')
+    axs[2].plot(concatenated_array_time_s,concatenated_array_tau_s[i,:], color='red', label='Same weight')
+    axs[2].plot(concatenated_array_time_p,concatenated_array_tau_p[i,:], color='blue', label='Power')
     axs[2].set_title('tau (N/m)')
     axs[2].set_xlabel('Time (sec)')
     axs[2].legend()

@@ -79,7 +79,7 @@ def custom_func_track_principal_finger_pi_in_two_global_axis(controller: Penalty
 
     return output_casadi
 
-def compute_power(controller: PenaltyController, segment_idx:int, method:int):
+def Minimize_Power(controller: PenaltyController, segment_idx:int, method:int):
 
     segments_qdot = controller.states["qdot"].cx[segment_idx]
     segments_tau = controller.controls["tau"].cx[segment_idx]
@@ -143,23 +143,29 @@ def prepare_ocp(
     # Minimize Torques generated into articulations
     objective_functions = ObjectiveList()
     objective_functions.add(
-        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=0, weight=100, index=[0, 1, 2, 6, 7, 8, 9]
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=0, weight=100, index=[0, 1, 2, 3, 4, 6, 7]
     )
     objective_functions.add(
-        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=1, weight=100, index=[0, 1, 2, 6, 7, 8, 9]
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=1, weight=100, index=[0, 1, 2, 3, 4, 5, 6, 7]
     )
     objective_functions.add(
-        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=2, weight=100, index=[0, 1, 2, 6, 7, 8, 9]
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=2, weight=100, index=[0, 1, 2, 3, 4, 5, 6, 7]
     )
     objective_functions.add(
-        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=100, index=[0, 1, 2, 6, 7, 8, 9]
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=100, index=[0, 1, 2, 3, 4, 6, 7]
     )
 
+    for i in [0, 3]:
+        objective_functions.add(
+            ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=i, weight=20, index=[5]
+        )
+
+
     # Special articulations called individually in order to see, in the results, the individual objectives cost of each.
-    for j in [3, 4, 5]:
+    for j in [8, 9]:
         for i in [0, 1, 2, 3]:
             objective_functions.add(
-                    compute_power,
+                    Minimize_Power,
                     custom_type=ObjectiveFcn.Lagrange,
                     segment_idx=[j],
                     node=Node.ALL_SHOOTING,
@@ -185,8 +191,11 @@ def prepare_ocp(
 
     # To block ulna rotation before the key pressing.
     for i in [0, 1, 2, 3]:
-        objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=i, weight=100000, index=[7])
+        objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=i, weight=10000, index=[3,7])
 
+    # for i in [0, 1, 2, 3]:
+    #     objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=i, weight=100000, index=[3])
+    #
     objective_functions.add(
         ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
         target=vel_push_array2,
@@ -280,12 +289,12 @@ def prepare_ocp(
     )
 
     # To avoid the apparition of "noise" caused by the objective function just before.
-    # objective_functions.add(
-    #     ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=100, index=[8, 9], derivative=True
-    # )
-    # objective_functions.add(
-    #     ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=100, index=[8, 9], derivative=True
-    # )
+    objective_functions.add(
+        ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=100, index=[8, 9], derivative=True
+    )
+    objective_functions.add(
+        ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=100, index=[8, 9], derivative=True
+    )
 
 
     Mul_Node_Obj = MultinodeObjectiveList()
