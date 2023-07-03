@@ -143,22 +143,21 @@ def prepare_ocp(
     # Minimize Torques generated into articulations
     objective_functions = ObjectiveList()
     objective_functions.add(
-        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=0, weight=100, index=[0, 1, 2, 3, 4, 6, 7]
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=0, weight=100, index=[0, 1, 2, 3, 4, 5, 6, 7]
     )
     objective_functions.add(
-        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=1, weight=100, index=[0, 1, 2, 3, 4, 6, 7]
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=1, weight=100, index=[0, 1, 2, 3, 4, 5, 6, 7]
     )
     objective_functions.add(
-        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=2, weight=100, index=[0, 1, 2, 3, 4, 6, 7]
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=2, weight=100, index=[0, 1, 2, 3, 4, 5, 6, 7]
     )
     objective_functions.add(
         ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=100, index=[0, 1, 2, 3, 4, 6, 7]
     )
 
-    for i in [0, 1, 2, 3]:
-        objective_functions.add(
-            ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=i, weight=20, index=[5]
-        )
+    objective_functions.add(
+        ObjectiveFcn.Lagrange.MINIMIZE_CONTROL, key="tau", phase=3, weight=20, index=[5]
+    )
     # Special articulations called individually in order to see, in the results, the individual objectives cost of each.
     for j in [8, 9]:
         for i in [0, 1, 2, 3]:
@@ -189,7 +188,7 @@ def prepare_ocp(
 
     # To block ulna rotation before the key pressing.
     for i in [0, 1, 2, 3]:
-        objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=i, weight=10000, index=[3,7])
+        objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=i, weight=10000, index=[8, 9])
 
     objective_functions.add(
         ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
@@ -284,12 +283,12 @@ def prepare_ocp(
     )
 
     # To avoid the apparition of "noise" caused by the objective function just before.
-    objective_functions.add(
-        ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=100, index=[8, 9], derivative=True
-    )
-    objective_functions.add(
-        ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=100, index=[8, 9], derivative=True
-    )
+    # objective_functions.add(
+    #     ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=0, weight=100, index=[8, 9], derivative=True
+    # )
+    # objective_functions.add(
+    #     ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=100, index=[8, 9], derivative=True
+    # )
 
 
     Mul_Node_Obj = MultinodeObjectiveList()
@@ -570,7 +569,7 @@ def main():
     sol.print_cost()
     ocp.print(to_console=False, to_graph=False)
     # sol.graphs(show_bounds=True)
-    sol.animate(show_floor=False, show_global_center_of_mass=False, show_segments_center_of_mass=False, show_global_ref_frame=True, show_local_ref_frame=False, show_markers=False, n_frames=500,)
+    sol.animate(show_floor=False, show_global_center_of_mass=False, show_segments_center_of_mass=False, show_global_ref_frame=True, show_local_ref_frame=False, show_markers=False, n_frames=250,)
 
 
 
