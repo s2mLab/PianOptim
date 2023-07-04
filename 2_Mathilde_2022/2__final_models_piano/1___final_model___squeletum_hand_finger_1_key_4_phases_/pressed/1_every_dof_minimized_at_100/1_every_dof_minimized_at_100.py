@@ -188,9 +188,18 @@ def prepare_ocp(
         ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=3, weight=0.0001, index=[0, 1, 2, 3, 4, 5, 6, 7]
     )
 
-    # To block ulna rotation before the key pressing.
-    for i in [0, 1, 2, 3]:
-        objective_functions.add(ObjectiveFcn.Lagrange.MINIMIZE_STATE, key="qdot", phase=i, weight=100, index=[3,7])
+    for j in [3, 7]:
+        for i in [0, 1, 2, 3]:
+            objective_functions.add(
+                    Minimize_Power,
+                    custom_type=ObjectiveFcn.Lagrange,
+                    segment_idx=[j],
+                    node=Node.ALL_SHOOTING,
+                    quadratic=True,
+                    phase=i,
+                    method=1,
+                    weight=100000,
+                )
 
     objective_functions.add(
         ObjectiveFcn.Mayer.TRACK_MARKERS_VELOCITY,
