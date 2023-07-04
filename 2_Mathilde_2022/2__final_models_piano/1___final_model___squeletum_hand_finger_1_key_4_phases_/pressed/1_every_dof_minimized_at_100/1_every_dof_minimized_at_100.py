@@ -171,7 +171,7 @@ def prepare_ocp(
                     quadratic=True,
                     phase=i,
                     method=1,
-                    weight=100,
+                    weight=10000,
                 )
 
 
@@ -198,7 +198,7 @@ def prepare_ocp(
                     quadratic=True,
                     phase=i,
                     method=1,
-                    weight=100000,
+                    weight=1000000,
                 )
 
     objective_functions.add(
