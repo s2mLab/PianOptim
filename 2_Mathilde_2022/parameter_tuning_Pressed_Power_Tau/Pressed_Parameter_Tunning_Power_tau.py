@@ -10,6 +10,7 @@ import pickle
 from dataclasses import make_dataclass
 import pandas as pd
 import os
+import subprocess
 
 from bioptim import (
     BiorbdModel,
@@ -545,10 +546,9 @@ Parameter_Tunning: Solve a multiphase ocp, and save the solution results for dif
 number_simulation = -1
 
 for tau_minimisation_weight in range(100, 200, 100):  # Tests
-    os.mkdir(
-        "home/alpha/pianoptim/PianOptim/2_Mathilde_2022/parameter_tuning_Pressed_Power_Tau"
-        "/Solutions__minimisation_weight_for_distal_articulations_at_" + str(tau_minimisation_weight)
-    )
+    directory ="home/alpha/pianoptim/PianOptim/2_Mathilde_2022/parameter_tuning_Pressed_Power_Tau/pckles"
+    # Specify the name of the folder you want to create
+    name ="/Solutions__minimisation_weight_for_distal_articulations_at_" + str(tau_minimisation_weight)
 
     for objectives_weight_coefficient in [tau_minimisation_weight/100, tau_minimisation_weight/100]:
         print(
@@ -559,7 +559,7 @@ for tau_minimisation_weight in range(100, 200, 100):  # Tests
             + "."
         )
 
-    ocp = prepare_ocp(tau_minimisation_weight, objectives_weight_coefficient)
+    ocp = prepare_ocp()
     ocp.add_plot_penalty(CostType.ALL)
 
     # # --- Solve the program --- # #
@@ -606,10 +606,8 @@ for tau_minimisation_weight in range(100, 200, 100):  # Tests
 
     with open(
 
-        "home/alpha/pianoptim/PianOptim/2_Mathilde_2022/parameter_tuning_Pressed_Power_Tau"
-        "/Solutions__minimisation_weight_for_distal_articulations_at_" + str(tau_minimisation_weight)+
-        "/other objectives multiply by_"
-        + str(objectives_weight_coefficient)
+        "home/alpha/pianoptim/PianOptim/2_Mathilde_2022/parameter_tuning_Pressed_Power_Tau/pckles"+
+        "/Solutions__minimisation_weight_for_distal_articulations_at_" + str(tau_minimisation_weight)
         + ".pckl", "wb",
        ) as file:
         pickle.dump(data, file)
