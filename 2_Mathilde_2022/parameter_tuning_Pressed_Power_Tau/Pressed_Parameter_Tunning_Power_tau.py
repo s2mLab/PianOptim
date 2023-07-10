@@ -2,7 +2,7 @@
  !! Les axes du modèle ne sont pas les mêmes que ceux généralement utilisés en biomécanique : x axe de flexion, y supination/pronation, z vertical
  ici on a : Y -» X , Z-» Y et X -» Z
  """
-from casadi import MX, acos, dot, pi
+from casadi import MX, acos, dot, pi, Function
 import time
 import numpy as np
 import biorbd_casadi as biorbd
@@ -538,24 +538,55 @@ def prepare_ocp(
     )
 
 
-def main():
-    """
-    Defines a multiphase ocp and animate the results
-    """
+"""
+Parameter_Tunning: Solve a multiphase ocp, and save the solution results for different weight of minimisations.  
+"""
 
-    ocp = prepare_ocp()
+number_simulation = -1
+
+for tau_minimisation_weight in range(100, 200, 100):  # Tests
+    os.mkdir(
+        "home/alpha/pianoptim/PianOptim/2_Mathilde_2022/parameter_tuning_Pressed_Power_Tau"
+        "/Solutions__minimisation_weight_for_distal_articulations_at_" + str(tau_minimisation_weight)
+    )
+
+    for objectives_weight_coefficient in [tau_minimisation_weight/100, tau_minimisation_weight/100]:
+        print(
+            "\nMinimisation weight at "
+            + str(tau_minimisation_weight)
+            + " & other articulations minimized at 100, with other objectives multiply by "
+            + str(objectives_weight_coefficient)
+            + "."
+        )
+
+    ocp = prepare_ocp(tau_minimisation_weight, objectives_weight_coefficient)
     ocp.add_plot_penalty(CostType.ALL)
 
     # # --- Solve the program --- # #
 
-    solv = Solver.IPOPT(show_online_optim=True)
-    solv.set_maximum_iterations(1000000)
+    solv = Solver.IPOPT(show_online_optim=False)
+    solv.set_maximum_iterations(100000000)
     solv.set_linear_solver("ma57")
     tic = time.time()
     sol = ocp.solve(solv)
 
 
     # # --- Download datas on a .pckl file --- #
+    q_sym = MX.sym('q_sym', 10, 1)
+    qdot_sym = MX.sym('qdot_sym', 10, 1)
+    tau_sym = MX.sym('tau_sym', 10, 1)
+    Calculaing_Force = Function("Temp", [q_sym, qdot_sym, tau_sym], [
+        ocp.nlp[2].model.contact_forces_from_constrained_forward_dynamics(q_sym, qdot_sym, tau_sym)])
+
+    rows = 7
+    cols = 3
+    F = [[0] * cols for _ in range(rows)]
+
+    for i in range(0, 7):
+        F[i] = Calculaing_Force(sol.states[2]["q"][:, i], sol.states[2]["qdot"][:, i], sol.controls[2]['tau'][:, i])
+
+    F_array = np.array(F)
+
 
     data = dict(
         states=sol.states,
@@ -569,12 +600,18 @@ def main():
         param_scaling=[nlp.parameters.scaling for nlp in ocp.nlp],
         phase_time=sol.phase_time,
         Time=sol.time,
+        Force_Values=F_array,
 
     )
 
     with open(
-            "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/2__final_models_piano/1___final_model___squeletum_hand_finger_1_key_4_phases_/pressed/Results/alldofs_pressedTouch_power.pckl",
-            "wb") as file:
+
+        "home/alpha/pianoptim/PianOptim/2_Mathilde_2022/parameter_tuning_Pressed_Power_Tau"
+        "/Solutions__minimisation_weight_for_distal_articulations_at_" + str(tau_minimisation_weight)+
+        "/other objectives multiply by_"
+        + str(objectives_weight_coefficient)
+        + ".pckl", "wb",
+       ) as file:
         pickle.dump(data, file)
 
     print("Tesults saved")
@@ -584,11 +621,6 @@ def main():
     ocp.print(to_console=False, to_graph=False)
     # sol.graphs(show_bounds=True)
     sol.animate(show_floor=False, show_global_center_of_mass=False, show_segments_center_of_mass=False, show_global_ref_frame=True, show_local_ref_frame=False, show_markers=False, n_frames=250,)
-
-
-
-
-
 
 
 if __name__ == "__main__":
