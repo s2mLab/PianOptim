@@ -543,27 +543,22 @@ def prepare_ocp(
 Parameter_Tunning: Solve a multiphase ocp, and save the solution results for different weight of minimisations.  
 """
 
-number_simulation = -1
-
 for tau_minimisation_weight in range(100, 301, 100):  # Tests
 
-    start = tau_minimisation_weight/1000
-    stop = tau_minimisation_weight/50
-    step = tau_minimisation_weight/1000
+    # start = 1
+    # stop = 3
+    # step = 1
+    #
+    # value = np.arange(start, stop, step)
+    #
+    Loop=0.0
+    .ocp
 
-    value = start
 
-    # Loop while the current value is less than the stop value
-    while value < stop:
-        directory = "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/parameter_tuning_Pressed_Power_Tau/pckles"
-
-        # Create the directory if it doesn't exist
-        os.makedirs(directory, exist_ok=True)
-
-        name = str(tau_minimisation_weight) + " + " + str(value) + ".pckl"
-
-        # Combine the directory path and filename
-        filepath = os.path.join(directory, name)
+    zv92461 
+    #
+    # while Loop < stop:
+    #     print("value")
 
     ocp = prepare_ocp()
     ocp.add_plot_penalty(CostType.ALL)
@@ -609,7 +604,18 @@ for tau_minimisation_weight in range(100, 301, 100):  # Tests
 
     )
 
+    directory = "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/parameter_tuning_Pressed_Power_Tau/pckles"
+
+    # Create the directory if it doesn't exist
+    os.makedirs(directory, exist_ok=True)
+
+    name = str(tau_minimisation_weight) + " + " + str(Loop) + ".pckl"
+
+    # Combine the directory path and filename
+    filepath = os.path.join(directory, name)
+
     # Open the file in write mode and save the data
     with open(filepath, "wb") as file:
         pickle.dump(data, file)
 
+        # Loop+=step
