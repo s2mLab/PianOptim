@@ -545,19 +545,25 @@ Parameter_Tunning: Solve a multiphase ocp, and save the solution results for dif
 
 number_simulation = -1
 
-for tau_minimisation_weight in range(100, 200, 100):  # Tests
-    directory ="home/alpha/pianoptim/PianOptim/2_Mathilde_2022/parameter_tuning_Pressed_Power_Tau/pckles"
-    # Specify the name of the folder you want to create
-    name ="/Solutions__minimisation_weight_for_distal_articulations_at_" + str(tau_minimisation_weight)
+for tau_minimisation_weight in range(100, 301, 100):  # Tests
 
-    for objectives_weight_coefficient in [tau_minimisation_weight/100, tau_minimisation_weight/100]:
-        print(
-            "\nMinimisation weight at "
-            + str(tau_minimisation_weight)
-            + " & other articulations minimized at 100, with other objectives multiply by "
-            + str(objectives_weight_coefficient)
-            + "."
-        )
+    start = tau_minimisation_weight/1000
+    stop = tau_minimisation_weight/50
+    step = tau_minimisation_weight/1000
+
+    value = start
+
+    # Loop while the current value is less than the stop value
+    while value < stop:
+        directory = "/home/alpha/pianoptim/PianOptim/2_Mathilde_2022/parameter_tuning_Pressed_Power_Tau/pckles"
+
+        # Create the directory if it doesn't exist
+        os.makedirs(directory, exist_ok=True)
+
+        name = str(tau_minimisation_weight) + " + " + str(value) + ".pckl"
+
+        # Combine the directory path and filename
+        filepath = os.path.join(directory, name)
 
     ocp = prepare_ocp()
     ocp.add_plot_penalty(CostType.ALL)
@@ -565,7 +571,7 @@ for tau_minimisation_weight in range(100, 200, 100):  # Tests
     # # --- Solve the program --- # #
 
     solv = Solver.IPOPT(show_online_optim=False)
-    solv.set_maximum_iterations(100000000)
+    solv.set_maximum_iterations(1)
     solv.set_linear_solver("ma57")
     tic = time.time()
     sol = ocp.solve(solv)
@@ -587,7 +593,6 @@ for tau_minimisation_weight in range(100, 200, 100):  # Tests
 
     F_array = np.array(F)
 
-
     data = dict(
         states=sol.states,
         states_no_intermediate=sol.states_no_intermediate,
@@ -604,22 +609,7 @@ for tau_minimisation_weight in range(100, 200, 100):  # Tests
 
     )
 
-    with open(
-
-        "home/alpha/pianoptim/PianOptim/2_Mathilde_2022/parameter_tuning_Pressed_Power_Tau/pckles"+
-        "/Solutions__minimisation_weight_for_distal_articulations_at_" + str(tau_minimisation_weight)
-        + ".pckl", "wb",
-       ) as file:
+    # Open the file in write mode and save the data
+    with open(filepath, "wb") as file:
         pickle.dump(data, file)
 
-    print("Tesults saved")
-    print("Temps de resolution : ", time.time() - tic, "s")
-
-    sol.print_cost()
-    ocp.print(to_console=False, to_graph=False)
-    # sol.graphs(show_bounds=True)
-    sol.animate(show_floor=False, show_global_center_of_mass=False, show_segments_center_of_mass=False, show_global_ref_frame=True, show_local_ref_frame=False, show_markers=False, n_frames=250,)
-
-
-if __name__ == "__main__":
-    main()
